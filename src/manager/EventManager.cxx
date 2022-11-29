@@ -37,17 +37,17 @@ namespace Artie
     {
         StartFunctionProfile();
         std::vector<PrimaryGeneration> primaries;
-        primaries.emplace_back(
-            PrimaryGeneration(
-                "Am241",
-                95, 241,
-                0.0 * eplus,
-                0.,
-                {0., 0., 0.},
-                0.0 * keV,
-                {0., 0., 1.}
-            )
-        );
+        // primaries.emplace_back(
+        //     PrimaryGeneration(
+        //         "Am241",
+        //         95, 241,
+        //         0.0 * eplus,
+        //         0.,
+        //         {0., 0., 0.},
+        //         0.0 * keV,
+        //         {0., 0., 1.}
+        //     )
+        // );
         // primaries.emplace_back(
         //     PrimaryGeneration(
         //         "alpha",
@@ -66,15 +66,15 @@ namespace Artie
         //         {0., 1., 0.}
         //     )
         // );
-        // primaries.emplace_back(
-        //     PrimaryGeneration(
-        //         "mu-",
-        //         10 * s,
-        //         {0., 0., 1.},
-        //         {5 * MeV},
-        //         {0., 1., 0.}
-        //     )
-        // );
+        primaries.emplace_back(
+            PrimaryGeneration(
+                "neutron",
+                0,
+                {0., 0., -99*cm},
+                {57 * keV},
+                {0., 0., 1.}
+            )
+        );
         EndFunctionProfile("GeneratePrimaryList");
         return primaries;
     }
@@ -400,7 +400,8 @@ namespace Artie
         G4double        energy = preStepPoint->GetTotalEnergy();
         G4ThreeVector   particleMomentum = preStepPoint->GetMomentum();
 
-        G4bool detected_hit = GetComponentFromCopyNumber(copyNo)->ProcessHits(step, history);
+        G4bool detected_hit = GetComponent(copyNo)->ProcessHits(step, history);
+
         mHits.emplace_back(
             Hit(
                 copyNo, trackID,

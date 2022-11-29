@@ -23,7 +23,7 @@
 #include "Argon.hh"
 #include "Analysis.hh"
 #include "ActionInitialization.hh"
-#include "ArtieITargetDetector.hh"
+#include "ArgonCubeDetector.hh"
 #include "DetectorConstruction.hh"
 #include "PhysicsList.hh"
 #include "PrimaryGeneratorAction.hh"
@@ -46,8 +46,9 @@ int main(int argc, char** argv)
     RunManager->SetUserInitialization(PhysicsList);
 
     // create the argon cube detector
-    auto detector = new Artie::ArtieITargetDetector(
-        2.5 * cm, 168/2.0 * cm, 2.5 * cm, 5.0 * cm, {0.,0.,(168/2.0 + 5.0)*cm}
+    auto detector = new Artie::ArgonCubeDetector(
+        10 * cm, 10 * cm, 10 * cm,
+        8, 8, 1 * mm
     );
     auto detectorConstruction = new Artie::DetectorConstruction(
         100 * cm, 100 * cm, 100 * cm, detector

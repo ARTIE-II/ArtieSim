@@ -11,12 +11,6 @@
 /vis/modeling/trajectories/create/drawByParticleID
 /vis/modeling/trajectories/drawByParticleID-0/default/setDrawStepPts true
 
-/vis/filtering/trajectories/create/particleFilter
-/vis/filtering/trajectories/particleFilter-0/add thermalelectron
-/vis/filtering/trajectories/particleFilter-0/add opticalphoton
-/vis/filtering/trajectories/particleFilter-0/invert true
-
-
 #/vis/filtering/trajectories/particleFilter-0/add gamma
 
 # Decorations
@@ -35,7 +29,7 @@
 #
 # Axes, scale, etc.
 /vis/scene/add/scale   # Simple scale line
-#/vis/scene/add/axes    # Simple axes: x=red, y=green, z=blue.
+/vis/scene/add/axes 50 0 -99 25 cm    # Simple axes: x=red, y=green, z=blue.
 /vis/scene/add/eventID # Drawn at end of event
 /vis/scene/add/date    # Date stamp
 

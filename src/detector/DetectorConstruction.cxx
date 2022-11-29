@@ -70,7 +70,7 @@ namespace Artie
                 "Physical_ExperimentalHall",
                 0, 
                 false,
-                0
+                -1
             )
         );
 
@@ -79,6 +79,7 @@ namespace Artie
         {
             mDetector->GetDetectorComponent(ii)->SetMotherLogical(mLogicalExperimentalHall.get());
             mDetector->GetDetectorComponent(ii)->Construct();
+            mDetector->GetDetectorComponent(ii)->GetPhysicalVolume().get()->SetCopyNo(ii);
             Manager->AddComponent(mDetector->GetDetectorComponent(ii));
         }
 
@@ -89,13 +90,11 @@ namespace Artie
     void DetectorConstruction::ConstructSDandField()
     {
         SensitiveDetector* Sensitive = new SensitiveDetector("SensitiveDetector");
-        G4int CopyNumber = 0;
+        
         for (G4int ii = 0; ii < mDetector->GetNumberOfComponents(); ii++)
         {
             if(mDetector->GetDetectorComponent(ii)->GetSensitive()) {
-                SetSensitiveDetector(mDetector->GetDetectorComponent(ii)->GetLogicalVolume().get(), Sensitive);
-                EventManager::GetEventManager()->SetComponentCopyNumber(CopyNumber, ii);
-                CopyNumber += 1;
+                SetSensitiveDetector(mDetector->GetDetectorComponent(ii)->GetLogicalVolume().get(), Sensitive); 
             }
         }
     }

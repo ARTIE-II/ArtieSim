@@ -187,8 +187,8 @@ namespace Artie
             return sDetectorComponents[index];
         }
         static G4int GetNumberOfComponents() { return sDetectorComponents.size(); }
-        static void SetComponentCopyNumber(G4int copyNumber, G4int component) { sComponentCopyNumber[copyNumber] = component; }
-        static std::shared_ptr<DetectorComponent> GetComponentFromCopyNumber(G4int index)
+        inline static thread_local void SetComponentCopyNumber(G4int copyNumber, G4int component) { sComponentCopyNumber[copyNumber] = component; }
+        inline static thread_local std::shared_ptr<DetectorComponent> GetComponentFromCopyNumber(G4int index)
         {
             return sDetectorComponents[sComponentCopyNumber[index]];
         }
@@ -227,8 +227,8 @@ namespace Artie
         inline static std::shared_ptr<PhysicsList> sPhysicsList = {nullptr};
         inline static G4double sEventMaxTime = 2.e19 * ns;
 
-        inline static std::map<G4int, G4int> sComponentCopyNumber;
-        inline static std::vector<std::shared_ptr<DetectorComponent>> sDetectorComponents = {nullptr};
+        inline static thread_local std::map<G4int, G4int> sComponentCopyNumber;
+        inline static std::vector<std::shared_ptr<DetectorComponent>> sDetectorComponents = {};
 
         inline static G4String sOutputFileName = "default";
         inline static G4int sCurrentTupleIndex = 0;
