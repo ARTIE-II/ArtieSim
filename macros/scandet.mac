@@ -1,0 +1,3 @@
+/argon_cube/numberY {cols}
+/run/reinitializeGeometry
+/run/beamOn 100
