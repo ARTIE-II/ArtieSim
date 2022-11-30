@@ -12,7 +12,7 @@
 
 namespace Artie
 {
-    class Polyurethane
+    class Polyurethane : public Material
     {
     public:
         /**
@@ -21,13 +21,10 @@ namespace Artie
          */
         Polyurethane(G4String name);
         ~Polyurethane();
-
-        std::shared_ptr<G4Material> GetMaterial() const { return mMaterial; }
         
         void DefineMaterials();
 
     private:
-        G4String mName;
-        std::shared_ptr<G4Material> mMaterial = {nullptr};
+
     };
 }

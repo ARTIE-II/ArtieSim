@@ -45,6 +45,7 @@
 
 #include "G4ProcessTable.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4UnitsTable.hh"
 #include "G4PhysListFactory.hh"
 
 #include "NeutronHPPhysics.hh"
@@ -57,17 +58,15 @@ namespace Artie
         PhysicsList();
         ~PhysicsList();
 
-        //virtual void ConstructParticle();
-        //virtual void ConstructProcess();
         virtual void SetCuts();
 
         void PrintPhysicsLists();
 
     private:
-        std::shared_ptr<G4PhysListFactory> mPhysListFactory;
+        std::shared_ptr<G4PhysListFactory> mPhysicsListFactory;
         std::vector<G4String> mPhysicsLists;
 
-        std::shared_ptr<G4ProcessManager> mPManager = {nullptr};
+        std::shared_ptr<G4ProcessManager> mPhysicsManager = {nullptr};
         std::shared_ptr<G4ProcessVector> mProcesses = {nullptr};
     };
 }

@@ -8,6 +8,7 @@
 #pragma once
 #include <memory>
 
+#include "Material.hh"
 #include "G4NistManager.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4MaterialPropertiesTable.hh"
@@ -19,7 +20,7 @@ namespace Artie
     static constexpr G4double Ar38MassMol = 37.962*g/mole;
     static constexpr G4double Ar40MassMol = 39.962*g/mole;
 
-    class Argon
+    class Argon : public Material
     {
     public:
         /**
@@ -37,6 +38,7 @@ namespace Artie
             G4String name,
             G4double temperature=85.8 * kelvin, 
             G4double pressure   =0.952 * atmosphere,
+            enum G4State state  =kStateLiquid,
             G4double Ar36Ratio  =0.334, 
             G4double Ar38Ratio  =0.063, 
             G4double Ar40Ratio  =99.603
@@ -45,6 +47,7 @@ namespace Artie
 
         void SetTemperature(G4double temperature);
         void SetPressure(G4double pressure);
+        void SetState(enum G4State state);
         void SetRatios(
             G4double Ar36Ratio, 
             G4double Ar38Ratio, 
@@ -60,6 +63,7 @@ namespace Artie
         
         G4double GetTemperature() const   { return mTemperature; }
         G4double GetPressure() const      { return mPressure; }
+        enum G4State GetState() const     { return mState; }
         G4double GetAr36Ratio() const     { return mAr36Ratio; }
         G4double GetAr38Ratio() const     { return mAr38Ratio; }
         G4double GetAr40Ratio() const     { return mAr40Ratio; }
@@ -81,15 +85,13 @@ namespace Artie
         std::vector<G4double> GetRayleighScatteringEnergies() const { return mRayleighScatteringEnergies; }
         std::vector<G4double> GetRayleighScatteringSpectrum() const { return mRayleighScatteringSpectrum; }
 
-        std::shared_ptr<G4Material> GetMaterial() const { return mMaterial; }
-
         void DefineMaterials();
         void PrintProperties();
 
     private:
-        G4String mName;
         G4double mTemperature;
         G4double mPressure;
+        enum G4State mState;
 
         G4double mAr36Ratio, mAr38Ratio, mAr40Ratio;
         G4double mAr36Density, mAr38Density, mAr40Density;
@@ -116,6 +118,5 @@ namespace Artie
         std::shared_ptr<G4Isotope> mIAr38 = {nullptr};
         std::shared_ptr<G4Isotope> mIAr40 = {nullptr};
         std::shared_ptr<G4Element> mArIsotopes = {nullptr};
-        std::shared_ptr<G4Material> mMaterial = {nullptr};
     };
 }

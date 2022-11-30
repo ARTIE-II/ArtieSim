@@ -9,8 +9,11 @@
 
 namespace Artie
 {
-    NeutronHPPhysics::NeutronHPPhysics(const G4String& name)
-    :  G4VPhysicsConstructor(name), fThermal(true)
+    NeutronHPPhysics::NeutronHPPhysics(
+        const G4String& name, G4bool thermal
+    )
+    : G4VPhysicsConstructor(name)
+    , mThermalNeutrons(true)
     {
     }
 
@@ -21,23 +24,23 @@ namespace Artie
     void NeutronHPPhysics::ConstructProcess()
     {
         G4ParticleDefinition* neutron = G4Neutron::Neutron();
-        fPManager.reset(neutron->GetProcessManager());
-        fProcesses.reset(fPManager->GetProcessList());
+        mPhysicsManager.reset(neutron->GetProcessManager());
+        mProcesses.reset(mPhysicsManager->GetProcessList());
         
         // delete all neutron processes if already registered
         G4VProcess* process = 0;
-        process = fPManager->GetProcess("hadElastic");
-        if (process) fPManager->RemoveProcess(process);
-        process = fPManager->GetProcess("neutronInelastic");
-        if (process) fPManager->RemoveProcess(process);
-        process = fPManager->GetProcess("nCapture");      
-        if (process) fPManager->RemoveProcess(process);
-        process = fPManager->GetProcess("nFission");      
-        if (process) fPManager->RemoveProcess(process);      
+        process = mPhysicsManager->GetProcess("hadElastic");
+        if (process) mPhysicsManager->RemoveProcess(process);
+        process = mPhysicsManager->GetProcess("neutronInelastic");
+        if (process) mPhysicsManager->RemoveProcess(process);
+        process = mPhysicsManager->GetProcess("nCapture");      
+        if (process) mPhysicsManager->RemoveProcess(process);
+        process = mPhysicsManager->GetProcess("nFission");      
+        if (process) mPhysicsManager->RemoveProcess(process);      
                 
         // (re) create process: elastic
         G4HadronElasticProcess* process1 = new G4HadronElasticProcess();
-        fPManager->AddDiscreteProcess(process1);
+        mPhysicsManager->AddDiscreteProcess(process1);
 
         // model1a
         G4ParticleHPElastic*  model1a = new G4ParticleHPElastic();
@@ -45,7 +48,7 @@ namespace Artie
         process1->AddDataSet(new G4ParticleHPElasticData());
 
         // model1b
-        if (fThermal) 
+        if (mThermalNeutrons) 
         {
             model1a->SetMinEnergy(4*eV);   
             G4ParticleHPThermalScattering* model1b = new G4ParticleHPThermalScattering();
@@ -57,7 +60,7 @@ namespace Artie
         G4HadronInelasticProcess* process2 = new G4HadronInelasticProcess(
             "neutronInelastic"
         );
-        fPManager->AddDiscreteProcess(process2);   
+        mPhysicsManager->AddDiscreteProcess(process2);   
 
         // cross section data set
         G4ParticleHPInelasticData* dataSet2 = new G4ParticleHPInelasticData();
@@ -69,7 +72,7 @@ namespace Artie
 
         // (re) create process: nCapture   
         G4NeutronCaptureProcess* process3 = new G4NeutronCaptureProcess();
-        fPManager->AddDiscreteProcess(process3);  
+        mPhysicsManager->AddDiscreteProcess(process3);  
 
         // cross section data set
         G4ParticleHPCaptureData* dataSet3 = new G4ParticleHPCaptureData();
@@ -81,7 +84,7 @@ namespace Artie
         
         // (re) create process: nFission   
         G4NeutronFissionProcess* process4 = new G4NeutronFissionProcess();
-        fPManager->AddDiscreteProcess(process4);
+        mPhysicsManager->AddDiscreteProcess(process4);
 
         // cross section data set
         G4ParticleHPFissionData* dataSet4 = new G4ParticleHPFissionData();
@@ -96,9 +99,9 @@ namespace Artie
     {
         // print out all processes for neutrons
         G4cout << "Enabled Neutron HP Physics Processes:" << G4endl;
-        for(size_t ii = 0; ii < fProcesses->size(); ii++)
+        for(size_t ii = 0; ii < mProcesses->size(); ii++)
         {
-            G4cout << "\t[" << ii << "]: " << (*fProcesses)[ii]->GetProcessName() << G4endl;
+            G4cout << "\t[" << ii << "]: " << (*mProcesses)[ii]->GetProcessName() << G4endl;
         }
     }
 }

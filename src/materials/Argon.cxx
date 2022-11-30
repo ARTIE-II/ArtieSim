@@ -12,11 +12,13 @@ namespace Artie
     Argon::Argon(
         G4String name,
         G4double temperature, G4double pressure,
+        enum G4State state,
         G4double Ar36Ratio, G4double Ar38Ratio, G4double Ar40Ratio
     )
-    : mName(name)
+    : Material(name)
     , mTemperature(temperature)
     , mPressure(pressure)
+    , mState(state)
     , mAr36Ratio(Ar36Ratio)
     , mAr38Ratio(Ar38Ratio)
     , mAr40Ratio(Ar40Ratio)
@@ -41,6 +43,11 @@ namespace Artie
     void Argon::SetPressure(G4double pressure)
     {
         mPressure = pressure;
+        DefineMaterials();
+    }
+    void Argon::SetState(enum G4State state)
+    {
+        mState = state;
         DefineMaterials();
     }
 
@@ -122,7 +129,7 @@ namespace Artie
                 18.0,           // number
                 mAverageMassMol,// # of components
                 mAverageDensity,// density
-                kStateLiquid,   // state
+                mState,         // state
                 GetTemperature(),   // temperature
                 GetPressure()       // pressure
             )

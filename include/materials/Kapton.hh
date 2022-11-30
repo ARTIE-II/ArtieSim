@@ -12,7 +12,7 @@
 
 namespace Artie
 {
-    class Kapton
+    class Kapton : public Material
     {
     public:
         /**
@@ -22,12 +22,9 @@ namespace Artie
         Kapton(G4String name);
         ~Kapton();
 
-        std::shared_ptr<G4Material> GetMaterial() const { return mMaterial; }
-
         void DefineMaterials();
 
     private:
-        G4String mName;
-        std::shared_ptr<G4Material> mMaterial = {nullptr};
+    
     };
 }

@@ -13,7 +13,7 @@ namespace Artie
         G4String name,
         G4double density
     )
-    : mName(name)
+    : Material(name)
     , mDensity(density)
     {
         DefineMaterials();

@@ -203,15 +203,49 @@ namespace Artie
             AnalysisManager->CreateNtupleIColumn("detected");
             AnalysisManager->FinishNtuple(index);
         }
+        if(SaveNeutronData())
+        {
+            G4int index = GetIndex("NeutronRunData");
+            AnalysisManager->CreateNtuple("NeutronRunData", "NeutronRunData");
+            AnalysisManager->CreateNtupleIColumn("num_events");
+            AnalysisManager->CreateNtupleIColumn("num_detected");
+            AnalysisManager->CreateNtupleIColumn("num_elastic");
+            AnalysisManager->CreateNtupleIColumn("num_inelastic");
+            AnalysisManager->CreateNtupleIColumn("num_capture");
+            AnalysisManager->CreateNtupleIColumn("num_fission");
+            AnalysisManager->CreateNtupleIColumn("num_scatter");
+            AnalysisManager->CreateNtupleIColumn("num_scatter_out");
+            AnalysisManager->CreateNtupleIColumn("num_scatter_detector");
+            AnalysisManager->FinishNtuple(index);
+
+            index = GetIndex("NeutronEventData");
+            AnalysisManager->CreateNtuple("NeutronEventData", "NeutronEventData");
+            AnalysisManager->CreateNtupleDColumn("neutron_energy");
+            AnalysisManager->CreateNtupleDColumn("arrival_time");
+            AnalysisManager->CreateNtupleDColumn("arrival_energy");
+            AnalysisManager->CreateNtupleIColumn("num_elastic");
+            AnalysisManager->CreateNtupleIColumn("num_inelastic");
+            AnalysisManager->CreateNtupleIColumn("num_capture");
+            AnalysisManager->CreateNtupleIColumn("num_fission");
+            AnalysisManager->CreateNtupleIColumn("num_scatter");
+            AnalysisManager->CreateNtupleIColumn("num_scatter_out");
+            AnalysisManager->CreateNtupleIColumn("gas_first");
+            AnalysisManager->CreateNtupleDColumn("first_scatter_z");
+            AnalysisManager->CreateNtupleDColumn("max_dphi");
+            AnalysisManager->CreateNtupleDColumn("max_dp");
+            AnalysisManager->CreateNtupleDColumn("max_dE");
+            AnalysisManager->FinishNtuple(index);
+        }
         EndFunctionProfile("CreateTuples");
     }
 
     void EventManager::FillParticleMaps(G4int EventID)
     {
-        StartFunctionProfile();
         if(!SaveParticleMaps()) {
             return;
         }
+        StartFunctionProfile();
+
         auto AnalysisManager = G4AnalysisManager::Instance();
         G4int index = GetIndex("ParticleMaps");
         for(auto const& [key, val] : mParticleName)
@@ -228,10 +262,11 @@ namespace Artie
     }
     void EventManager::FillPrimaryInfo(G4int EventID)
     {
-        StartFunctionProfile();
         if(!SavePrimaryInfo()) {
             return;
         }
+        StartFunctionProfile();
+
         auto AnalysisManager = G4AnalysisManager::Instance();
         G4int index = GetIndex("Primaries");
         for(size_t ii = 0; ii < mPrimaryData.size(); ii++)
@@ -264,10 +299,11 @@ namespace Artie
 
     void EventManager::FillHits(G4int EventID)
     {
-        StartFunctionProfile();
         if (!SaveHits()) {
             return;
         }
+        StartFunctionProfile();
+
         auto AnalysisManager = G4AnalysisManager::Instance();
         G4int index = GetIndex("Hits");
         for(size_t ii = 0; ii < mHits.size(); ii++)
@@ -289,6 +325,60 @@ namespace Artie
             AnalysisManager->AddNtupleRow(index);
         }
         EndFunctionProfile("FillHits");
+    }
+
+    void EventManager::FillNeutronEventData(G4int EventID)
+    {
+        if (!SaveNeutronData()) {
+            return;
+        }
+        StartFunctionProfile();
+
+        auto AnalysisManager = G4AnalysisManager::Instance();
+        G4int index = GetIndex("NeutronEventData");
+        for(size_t ii = 0; ii < mNeutronEventData.size(); ii++)
+        {
+            AnalysisManager->FillNtupleDColumn(index, 0, mNeutronEventData[ii].neutron_energy);
+            AnalysisManager->FillNtupleDColumn(index, 1, mNeutronEventData[ii].arrival_time);
+            AnalysisManager->FillNtupleDColumn(index, 2, mNeutronEventData[ii].arrival_energy);
+            AnalysisManager->FillNtupleIColumn(index, 3, mNeutronEventData[ii].num_elastic);
+            AnalysisManager->FillNtupleIColumn(index, 4, mNeutronEventData[ii].num_inelastic);
+            AnalysisManager->FillNtupleIColumn(index, 5, mNeutronEventData[ii].num_capture);
+            AnalysisManager->FillNtupleIColumn(index, 6, mNeutronEventData[ii].num_fission);
+            AnalysisManager->FillNtupleIColumn(index, 7, mNeutronEventData[ii].num_scatter);
+            AnalysisManager->FillNtupleIColumn(index, 8, mNeutronEventData[ii].num_scatter_out);
+            AnalysisManager->FillNtupleIColumn(index, 9, mNeutronEventData[ii].gas_first);
+            AnalysisManager->FillNtupleDColumn(index, 10,mNeutronEventData[ii].first_scatter_z);
+            AnalysisManager->FillNtupleDColumn(index, 11,mNeutronEventData[ii].max_dphi);
+            AnalysisManager->FillNtupleDColumn(index, 12,mNeutronEventData[ii].max_dp);
+            AnalysisManager->FillNtupleDColumn(index, 13,mNeutronEventData[ii].max_dE);
+            AnalysisManager->AddNtupleRow(index);
+        }
+
+        EndFunctionProfile("FillNeutronEventData");
+    }
+
+    void EventManager::FillNeutronRunData()
+    {
+        if (!SaveNeutronData()) {
+            return;
+        }
+        StartFunctionProfile();
+
+        auto AnalysisManager = G4AnalysisManager::Instance();
+        G4int index = GetIndex("NeutronRunData");
+        AnalysisManager->FillNtupleDColumn(index, 0, mNeutronRunData.num_events);
+        AnalysisManager->FillNtupleDColumn(index, 1, mNeutronRunData.num_detected);
+        AnalysisManager->FillNtupleIColumn(index, 2, mNeutronRunData.num_elastic);
+        AnalysisManager->FillNtupleIColumn(index, 3, mNeutronRunData.num_inelastic);
+        AnalysisManager->FillNtupleIColumn(index, 4, mNeutronRunData.num_capture);
+        AnalysisManager->FillNtupleIColumn(index, 5, mNeutronRunData.num_fission);
+        AnalysisManager->FillNtupleIColumn(index, 6, mNeutronRunData.num_scatter);
+        AnalysisManager->FillNtupleIColumn(index, 7, mNeutronRunData.num_scatter_out);
+        AnalysisManager->FillNtupleIColumn(index, 8, mNeutronRunData.num_scatter_detector);
+        AnalysisManager->AddNtupleRow(index);
+
+        EndFunctionProfile("FillNeutronRunData");
     }
 
     void EventManager::AddParticleMapsFromTrack(const G4Track* track)
@@ -411,6 +501,42 @@ namespace Artie
             )
         );
         EndFunctionProfile("AddHitInfoFromStep");
+    }
+
+    void EventManager::AddNeutronInfoFromStep(G4Step* step, G4TouchableHistory* history)
+    {
+        StartFunctionProfile();
+        const G4VTouchable* touchable = step->GetPreStepPoint()->GetTouchable();
+        const G4Track* track = step->GetTrack();
+        const G4StepPoint *preStepPoint = step->GetPreStepPoint();
+        const G4StepPoint *postStepPoint = step->GetPostStepPoint();
+
+        const G4VProcess* postProcess = postStepPoint->GetProcessDefinedStep();
+        G4String postProcessName = postProcess->GetProcessName();
+
+        G4LogicalVolume* volume = postStepPoint->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
+        G4String volumeName = volume->GetName();
+
+        G4int           copyNo = touchable->GetCopyNumber();
+        G4double        globalTime = preStepPoint->GetGlobalTime();
+        G4int           trackID = track->GetTrackID();
+        G4int           parentID = track->GetParentID();
+        G4double        localTime = preStepPoint->GetLocalTime();
+        G4ThreeVector   particlePosition = preStepPoint->GetPosition();
+        G4double        energy = preStepPoint->GetTotalEnergy();
+        G4ThreeVector   particleMomentum = preStepPoint->GetMomentum();
+
+        G4bool detected_hit = GetComponent(copyNo)->ProcessHits(step, history);
+
+        mHits.emplace_back(
+            Hit(
+                copyNo, trackID,
+                parentID, localTime, globalTime,
+                particlePosition, particleMomentum,
+                energy, detected_hit
+            )
+        );
+        EndFunctionProfile("AddNeutronInfoFromStep");
     }
 
     void EventManager::EvaluateEvent()

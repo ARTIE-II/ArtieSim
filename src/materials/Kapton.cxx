@@ -10,7 +10,7 @@
 namespace Artie
 {
     Kapton::Kapton(G4String name)
-    : mName(name)
+    : Material(name)
     {
         DefineMaterials();
     }

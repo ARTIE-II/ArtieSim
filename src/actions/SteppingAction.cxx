@@ -24,5 +24,6 @@ namespace Artie
             step->GetTrack()->SetTrackStatus(fStopAndKill);
         }
         auto Manager = EventManager::GetEventManager();
+        Manager->AddNeutronInfoFromStep(step);
     }
 }

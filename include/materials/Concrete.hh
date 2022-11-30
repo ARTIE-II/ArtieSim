@@ -1,5 +1,5 @@
 /**
- * @file Water.hh
+ * @file Concrete.hh
  * @author Nicholas Carrara [nmcarrara@ucdavis.edu]
  * @brief 
  * @version 0.1
@@ -12,19 +12,19 @@
 
 namespace Artie
 {
-    class Water : public Material
+    class Concrete : public Material
     {
     public:
         /**
-         * @brief Construct a new Water object
+         * @brief Construct a new Concrete object
          * 
          */
-        Water(G4String name);
-        ~Water();
+        Concrete(G4String name);
+        ~Concrete();
 
         void DefineMaterials();
 
     private:
-
+    
     };
 }

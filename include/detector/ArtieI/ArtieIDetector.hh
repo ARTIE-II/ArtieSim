@@ -30,6 +30,7 @@
 #include "ArtieIBeamPipeLeftPipe.hh"
 #include "ArtieIBeamPipeRightPipe.hh"
 #include "ArtieITargetDetector.hh"
+#include "ArtieIHall.hh"
 
 namespace Artie
 {
@@ -46,7 +47,10 @@ namespace Artie
             G4double BeamPipeInnerRadius,
             G4double BeamPipeOuterRadius,
             G4double Gap,
+            G4double WorldX,
+            G4double WorldY,
             G4double WorldZ,
+            G4double WallThickness,
             G4double DetectorRadius,
             G4double DetectorLength,
             G4double DetectorEntrance
@@ -63,7 +67,10 @@ namespace Artie
         G4double mBeamPipeInnerRadius = {18.0 * cm};
         G4double mBeamPipeOuterRadius = {20.0 * cm};
         G4double mGap = {2.5 * m};
+        G4double mWorldX = {4 * m};
+        G4double mWorldY = {4 * m};
         G4double mWorldZ = {200 * m};
+        G4double mWallThickness = {1 * m};
         G4double mDetectorRadius = {2.0 * cm};
         G4double mDetectorLength = {20.0 * cm};
         G4double mDetectorEntrance = {69.0 * m};

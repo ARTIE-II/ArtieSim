@@ -30,6 +30,7 @@ namespace Artie
                 "LAr_" + GetName(), 
                 83.0 * kelvin,      /// temperature
                 0.952 * atmosphere, /// pressure
+                kStateLiquid,       /// liquid
                 0.334,              /// ratio of Ar36
                 0.063,              /// ratio of Ar38
                 99.603              /// ratio of Ar40

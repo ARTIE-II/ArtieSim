@@ -97,15 +97,19 @@ namespace Artie
         void SaveParticleMaps(G4bool save)      { sSaveParticleMaps = save; }
         void SavePrimaryInfo(G4bool save)       { sSavePrimaryInfo = save; }
         void SaveHits(G4bool save)              { sSaveHits = save; }
+        void SaveNeutronData(G4bool save)       { sSaveNeutronData = save; }
 
         G4bool SaveParticleMaps()       { return sSaveParticleMaps; }
         G4bool SavePrimaryInfo()        { return sSavePrimaryInfo; }
         G4bool SaveHits()               { return sSaveHits; }
+        G4bool SaveNeutronData()        { return sSaveNeutronData; }
 
         void CreateTuples();
         void FillParticleMaps(G4int EventID = -1);
         void FillPrimaryInfo(G4int EventID = -1);
         void FillHits(G4int EventID = -1);
+        void FillNeutronEventData(G4int EventID = -1);
+        void FillNeutronRunData();
         inline static thread_local void ClearEventData()
         {
             mParticleTrackID.clear();
@@ -115,6 +119,8 @@ namespace Artie
             mParticleAncestorTrackID.clear();
             mPrimaryData.clear();
             mHits.clear();
+            mNeutronEventData.clear();
+            sNeutronRunData.clear();
         }
         //*************************************************************************************************//
 
@@ -180,6 +186,13 @@ namespace Artie
         //*************************************************************************************************//
 
         //*************************************************************************************************//
+        // Neutron level info to keep track of
+        void AddNeutronInfoFromStep(G4Step* step, G4TouchableHistory* history);
+        void AddNeutronInfoFromRun();
+        inline static thread_local const std::vector<NeutronEventData>& GetNeutronEventData() { return mNeutronEventData; }
+        //*************************************************************************************************//
+
+        //*************************************************************************************************//
         // Detector related functions
         static void AddComponent(std::shared_ptr<DetectorComponent> component);
         static std::shared_ptr<DetectorComponent> GetComponent(G4int index)
@@ -238,6 +251,7 @@ namespace Artie
         inline static G4bool sSaveParticleMaps = true;
         inline static G4bool sSavePrimaryInfo = true;
         inline static G4bool sSaveHits = true;
+        inline static G4bool sSaveNeutronData = true;
 
         // Event level maps to keep track of particle ids,
         // parent ids, ancestor ids and pdg codes.
@@ -249,6 +263,8 @@ namespace Artie
 
         inline static thread_local std::vector<PrimaryData>    mPrimaryData;
         inline static thread_local std::vector<Hit> mHits;
+        inline static thread_local std::vector<NeutronEventData> mNeutronEventData;
+        inline static NeutronRunData sNeutronRunData;
 
         // Analysis functions
         std::vector<std::function<void()>> mAnalysisFunctions;

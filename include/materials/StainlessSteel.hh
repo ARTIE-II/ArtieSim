@@ -12,7 +12,7 @@
 
 namespace Artie
 {
-    class StainlessSteel
+    class StainlessSteel : public Material
     {
     public:
         /**
@@ -22,12 +22,9 @@ namespace Artie
         StainlessSteel(G4String name);
         ~StainlessSteel();
 
-        std::shared_ptr<G4Material> GetMaterial() const { return mMaterial; }
-
         void DefineMaterials();
 
     private:
-        G4String mName;
-        std::shared_ptr<G4Material> mMaterial = {nullptr};
+
     };
 }

@@ -22,7 +22,10 @@ namespace Artie
         G4double BeamPipeInnerRadius,
         G4double BeamPipeOuterRadius,
         G4double Gap,
+        G4double WorldX,
+        G4double WorldY,
         G4double WorldZ,
+        G4double WallThickness,
         G4double DetectorRadius,
         G4double DetectorLength,
         G4double DetectorEntrance
@@ -37,7 +40,10 @@ namespace Artie
     , mBeamPipeInnerRadius(BeamPipeInnerRadius)
     , mBeamPipeOuterRadius(BeamPipeOuterRadius)
     , mGap(Gap)
+    , mWorldX(WorldX)
+    , mWorldY(WorldY)
     , mWorldZ(WorldZ)
+    , mWallThickness(WallThickness)
     , mDetectorRadius(DetectorRadius)
     , mDetectorLength(DetectorLength)
     , mDetectorEntrance(DetectorEntrance)
@@ -151,6 +157,16 @@ namespace Artie
             mDetectorEntrance
         );
         AddDetectorComponent(TargetDetector);
+
+        // add the hall
+        std::shared_ptr<ArtieIHall> Hall
+            = std::make_shared<ArtieIHall>(
+            mWorldX,
+            mWorldY,
+            mWorldZ,
+            mWallThickness
+        );
+        AddDetectorComponent(Hall);
 
     }
 

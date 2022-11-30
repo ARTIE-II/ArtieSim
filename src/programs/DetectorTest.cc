@@ -57,6 +57,7 @@ int main(int argc, char** argv)
     G4double WorldX =           4 * m;
     G4double WorldY =           4 * m;
     G4double WorldZ =           200 * m;
+    G4double WallThickness =    1 * m;
     G4double DetectorRadius =   2.0 * cm;
     G4double DetectorLength =   20.0 * cm;
     G4double DetectorEntrance = 69.0 * m;
@@ -72,7 +73,10 @@ int main(int argc, char** argv)
         BeamPipeInnerRadius,
         BeamPipeOuterRadius,
         Gap,
+        WorldX,
+        WorldY,
         WorldZ,
+        WallThickness,
         DetectorRadius,
         DetectorLength,
         DetectorEntrance

@@ -32,6 +32,8 @@
 #include "G4ProcessTable.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4VPhysicsConstructor.hh"
+
+#include "G4PhysListFactory.hh"
 #include "globals.hh"
 
 namespace Artie
@@ -39,21 +41,22 @@ namespace Artie
     class NeutronHPPhysics : public G4VPhysicsConstructor
     {
     public:
-        NeutronHPPhysics(const G4String& name="neutron");
+        NeutronHPPhysics(const G4String& name = "neutronHP", G4bool thermal = true);
         ~NeutronHPPhysics();
 
-        //virtual void ConstructParticle();
+        virtual void ConstructParticle() {};
         virtual void ConstructProcess();
 
         void PrintNeutronPhysicsLists();
         
-    public:
-        virtual void ConstructParticle() {};
-        void SetThermalPhysics(G4bool flag) {fThermal = flag;};  
+        void SetThermalPhysics(G4bool flag) { mThermalNeutrons = flag; }
+        G4bool GetThermalPhysics() const { return mThermalNeutrons; } 
         
     private:
-        G4bool fThermal;
-        std::shared_ptr<G4ProcessManager> fPManager = {nullptr};
-        std::shared_ptr<G4ProcessVector> fProcesses = {nullptr};
+        G4bool mThermalNeutrons;
+        std::shared_ptr<G4ProcessManager> mPhysicsManager = {nullptr};
+        std::shared_ptr<G4ProcessVector> mProcesses = {nullptr};
+
+        std::shared_ptr<G4PhysListFactory> mPhysListFactory;
     };
 }

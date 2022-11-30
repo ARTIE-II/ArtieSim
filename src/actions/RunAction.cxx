@@ -28,6 +28,7 @@ namespace Artie
     void RunAction::EndOfRunAction(const G4Run* run)
     {
         auto Manager = EventManager::GetEventManager();
+        Manager->FillNeutronRunData();
         Manager->CloseOutputFile(run->GetRunID());
     }
 }

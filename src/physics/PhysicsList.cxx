@@ -12,6 +12,12 @@ namespace Artie
     PhysicsList::PhysicsList()
     : G4VModularPhysicsList()
     {   
+        SetVerboseLevel(1);
+
+        new G4UnitDefinition( "millielectronVolt", "meV", "Energy", 1.e-3*eV);   
+        new G4UnitDefinition( "mm2/g",  "mm2/g", "Surface/Mass", mm2/g);
+        new G4UnitDefinition( "um2/mg", "um2/mg","Surface/Mass", um*um/mg);
+        
         // Standard EM Physics
         RegisterPhysics(new G4EmStandardPhysics());
 
@@ -36,15 +42,22 @@ namespace Artie
 
         // Hadron Physics
         RegisterPhysics(new G4HadronPhysicsQGSP_BERT_HP());
+
+        // Stopping Physics
+        RegisterPhysics(new G4StoppingPhysics());
+
+        // Step limiter
         RegisterPhysics(new G4StepLimiterPhysics());
-        RegisterPhysics(new G4FastSimulationPhysics("fastSimPhys"));
+        
+        // fast sim
+        // RegisterPhysics(new G4FastSimulationPhysics("fastSimPhys"));
 
         // Neutron Physics
-        //RegisterPhysics(new NeutronHPPhysics("neutronHP"));
+        // RegisterPhysics(new NeutronHPPhysics("neutronHP"));
 
         // Get the list of physics lists
-        mPhysListFactory = std::make_shared<G4PhysListFactory>();
-        mPhysicsLists = mPhysListFactory->AvailablePhysLists();
+        mPhysicsListFactory = std::make_shared<G4PhysListFactory>();
+        mPhysicsLists = mPhysicsListFactory->AvailablePhysLists();
     }
 
     PhysicsList::~PhysicsList()

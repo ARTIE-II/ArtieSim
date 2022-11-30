@@ -1,29 +1,29 @@
 /**
- * @file Water.cxx
+ * @file Concrete.cxx
  * @author Nicholas Carrara [nmcarrara@ucdavis.edu]
  * @brief 
  * @version 0.1
  * @date 2022-04-30
  */
-#include "Water.hh"
+#include "Concrete.hh"
 
 namespace Artie
 {
-    Water::Water(G4String name)
+    Concrete::Concrete(G4String name)
     : Material(name)
     {
         DefineMaterials();
     }
 
-    Water::~Water()
+    Concrete::~Concrete()
     {
     }
 
 
-    void Water::DefineMaterials()
+    void Concrete::DefineMaterials()
     {
         mMaterial.reset(
-            G4NistManager::Instance()->FindOrBuildMaterial("G4_WATER")
+            G4NistManager::Instance()->FindOrBuildMaterial("G4_CONCRETE")
         );
         mMaterial->SetName(mName);
     }

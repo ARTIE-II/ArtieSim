@@ -10,7 +10,7 @@
 namespace Artie
 {
     StainlessSteel::StainlessSteel(G4String name)
-    : mName(name)
+    : Material(name)
     {
         DefineMaterials();
     }
