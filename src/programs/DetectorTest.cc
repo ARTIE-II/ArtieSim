@@ -20,10 +20,9 @@
 #include "G4VisManager.hh"
 #include "G4ParticleHPManager.hh"
 
-#include "Argon.hh"
 #include "Analysis.hh"
 #include "ActionInitialization.hh"
-#include "ArtieITargetDetector.hh"
+#include "ArtieIDetector.hh"
 #include "DetectorConstruction.hh"
 #include "PhysicsList.hh"
 #include "PrimaryGeneratorAction.hh"
@@ -45,12 +44,45 @@ int main(int argc, char** argv)
     auto PhysicsList = new Artie::PhysicsList();
     RunManager->SetUserInitialization(PhysicsList);
 
+    G4double TargetRadius =     2.5 / 2.0 * cm;
+    G4double TargetLength =     168 * cm;
+    G4double ContainerRadius =  3.49 / 2.0 * cm;
+    G4double InsulationThickness = 10.0 * cm;
+    G4double WindowThickness =  0.00762 * cm;
+    G4double BufferLength =     5.0 * cm;
+    G4double BeamPipeInnerRadius = 18.0 * cm;
+    G4double BeamPipeOuterRadius = 20.0 * cm;
+
+    G4double Gap =              2.5 * m;
+    G4double WorldX =           4 * m;
+    G4double WorldY =           4 * m;
+    G4double WorldZ =           200 * m;
+    G4double DetectorRadius =   2.0 * cm;
+    G4double DetectorLength =   20.0 * cm;
+    G4double DetectorEntrance = 69.0 * m;
+
     // create the argon cube detector
-    auto detector = new Artie::ArtieITargetDetector(
-        2.5 * cm, 168/2.0 * cm, 2.5 * cm, 5.0 * cm, {0.,0.,(168/2.0 + 5.0)*cm}
+    auto detector = new Artie::ArtieIDetector(
+        TargetRadius,
+        TargetLength,
+        ContainerRadius,
+        InsulationThickness,
+        WindowThickness,
+        BufferLength,
+        BeamPipeInnerRadius,
+        BeamPipeOuterRadius,
+        Gap,
+        WorldZ,
+        DetectorRadius,
+        DetectorLength,
+        DetectorEntrance
     );
+
     auto detectorConstruction = new Artie::DetectorConstruction(
-        100 * cm, 100 * cm, 100 * cm, detector
+        WorldX, 
+        WorldY, 
+        WorldZ, 
+        detector
     );
     RunManager->SetUserInitialization(detectorConstruction);
 

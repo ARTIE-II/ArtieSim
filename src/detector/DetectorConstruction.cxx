@@ -82,7 +82,6 @@ namespace Artie
             mDetector->GetDetectorComponent(ii)->GetPhysicalVolume().get()->SetCopyNo(ii);
             Manager->AddComponent(mDetector->GetDetectorComponent(ii));
         }
-
         return mPhysicalExperimentalHall.get();
     }
 

@@ -10,10 +10,12 @@
 namespace Artie
 {
     Argon::Argon(
+        G4String name,
         G4double temperature, G4double pressure,
         G4double Ar36Ratio, G4double Ar38Ratio, G4double Ar40Ratio
     )
-    : mTemperature(temperature)
+    : mName(name)
+    , mTemperature(temperature)
     , mPressure(pressure)
     , mAr36Ratio(Ar36Ratio)
     , mAr38Ratio(Ar38Ratio)
@@ -41,6 +43,7 @@ namespace Artie
         mPressure = pressure;
         DefineMaterials();
     }
+
     void Argon::SetRatios(
         G4double Ar36Ratio, 
         G4double Ar38Ratio, 
@@ -113,17 +116,17 @@ namespace Artie
         mArIsotopes->AddIsotope(mIAr40.get(), mAr40Ratio * perCent);
 
         // need now the definition of LAr with the composition
-        mLAr.reset(
+        mMaterial.reset(
             new G4Material(
-                "LAr",          // name
+                mName,          // name
                 18.0,           // number
                 mAverageMassMol,// # of components
                 mAverageDensity,// density
                 kStateLiquid,   // state
-                mTemperature,   // temperature
-                mPressure       // pressure
+                GetTemperature(),   // temperature
+                GetPressure()       // pressure
             )
-        );    
+        );   
 
         // Set up refractive index with 128nm scintillation photons
         // These data are taken from LArSoft (https://github.com/LArSoft/lardataalg/blob/develop/lardataalg/DetectorInfo/larproperties.fcl)
@@ -239,16 +242,6 @@ namespace Artie
             mRayleighScatteringSpectrum, 
             mRayleighScatteringEnergies.size()
         );
-        mLAr->SetMaterialPropertiesTable(mptLAr);
-    }
-
-    void Argon::PrintProperties()
-    {
-        mLAr->GetMaterialPropertiesTable()->DumpTable();
-        G4cout << "Nuclear interaction length: " << mLAr->GetNuclearInterLength() << G4endl;
-        G4cout << "ElectronDensity: " << mLAr->GetElectronDensity() << G4endl;
-        G4cout << "Radiation lenth: " << mLAr->GetRadlen() << G4endl;
-        G4cout << "Temperature:     " << mLAr->GetTemperature() << G4endl;
-        G4cout << "Pressure:        " << mLAr->GetPressure() << G4endl;
+        mMaterial->SetMaterialPropertiesTable(mptLAr);
     }
 }

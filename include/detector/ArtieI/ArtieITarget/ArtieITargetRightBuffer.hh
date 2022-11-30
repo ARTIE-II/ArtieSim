@@ -1,5 +1,5 @@
 /**
- * @file ArtieITargetActiveVolume.hh
+ * @file ArtieITargetRightBuffer.hh
  * @author Nicholas Carrara [nmcarrara@ucdavis.edu]
  * @brief 
  * @version 0.0
@@ -22,20 +22,24 @@
 
 namespace Artie
 {
-    class ArtieITargetActiveVolume : public DetectorComponent
+    class ArtieITargetRightBuffer : public DetectorComponent
     {
     public:
-        ArtieITargetActiveVolume(
-            G4double TargetR,
-            G4double TargetL
+        ArtieITargetRightBuffer(
+            G4double TargetRadius,
+            G4double TargetLength,
+            G4double WindowThickness,
+            G4double BufferLength
         );
-        ~ArtieITargetActiveVolume();
+        ~ArtieITargetRightBuffer();
 
         void Construct();
 
     private:
-        G4double mTargetR = {.025 * m};
-        G4double mTargetL = {1.68 * m};
+        G4double mTargetRadius = {2.5 / 2.0 * cm};
+        G4double mTargetLength = {168 * cm};
+        G4double mWindowThickness = {0.00762 * cm};
+        G4double mBufferLength = {5.0 * cm};
 
         std::shared_ptr<Argon> mArgon = {nullptr};
 

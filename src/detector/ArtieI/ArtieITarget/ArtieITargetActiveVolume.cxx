@@ -1,5 +1,5 @@
 /**
- * @file ArgonCubeActiveVolume.cxx
+ * @file ArtieITargetActiveVolume.cxx
  * @author Nicholas Carrara [nmcarrara@ucdavis.edu]
  * @brief 
  * @version 0.0
@@ -8,24 +8,21 @@
  *      2022/09/20 - Initial creation of the file.
  * @date 2022-09-23
  */
-#include "ArgonCubeActiveVolume.hh"
+#include "ArtieITargetActiveVolume.hh"
 
 namespace Artie
 {
-    ArgonCubeActiveVolume::ArgonCubeActiveVolume(
-        G4double CubeX, 
-        G4double CubeY, 
-        G4double CubeZ
+    ArtieITargetActiveVolume::ArtieITargetActiveVolume(
+        G4double TargetRadius, 
+        G4double TargetLength
     )
-    : DetectorComponent("ArgonCubeActiveVolume", false)
-    , mCubeX(CubeX)
-    , mCubeY(CubeY)
-    , mCubeZ(CubeZ)
+    : DetectorComponent("ArtieITargetActiveVolume", false)
+    , mTargetRadius(TargetRadius)
+    , mTargetLength(TargetLength)
     {
-        SetElectricField(true);
     }
 
-    void ArgonCubeActiveVolume::Construct()
+    void ArtieITargetActiveVolume::Construct()
     {
         /// create the argon object
         mArgon.reset(
@@ -41,18 +38,20 @@ namespace Artie
 
         // create the argon Cube volume
         SetSolidVolume(
-            new G4Box(
-                "Solid_ArgonCubeActiveVolume", 
-                mCubeX, 
-                mCubeY, 
-                mCubeZ
+            new G4Tubs(
+                "Solid_ArtieITargetActiveVolume", 
+                0,
+                mTargetRadius, 
+                0.5 * mTargetLength, 
+                0,
+                2*M_PI
             )
         );
         SetLogicalVolume(
             new G4LogicalVolume(
                 GetSolidVolumePointer(), 
                 mArgon->GetMaterial().get(), 
-                "Logical_ArgonCubeActiveVolume"
+                "Logical_ArtieITargetActiveVolume"
             )
         );
         SetPhysicalVolume(
@@ -60,7 +59,7 @@ namespace Artie
                 0, 
                 G4ThreeVector(0., 0., 0.), 
                 GetLogicalVolumePointer(), 
-                "Physical_ArgonCubeActiveVolume", 
+                "Physical_ArtieITargetActiveVolume", 
                 GetMotherLogical(), 
                 false, 
                 0, 
@@ -69,8 +68,7 @@ namespace Artie
         );
     }
 
-    ArgonCubeActiveVolume::~ArgonCubeActiveVolume()
+    ArtieITargetActiveVolume::~ArtieITargetActiveVolume()
     {
     }
-
 }

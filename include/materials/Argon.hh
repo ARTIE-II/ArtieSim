@@ -34,6 +34,7 @@ namespace Artie
          * @param Ar40Ratio 
          */
         Argon(
+            G4String name,
             G4double temperature=85.8 * kelvin, 
             G4double pressure   =0.952 * atmosphere,
             G4double Ar36Ratio  =0.334, 
@@ -80,12 +81,13 @@ namespace Artie
         std::vector<G4double> GetRayleighScatteringEnergies() const { return mRayleighScatteringEnergies; }
         std::vector<G4double> GetRayleighScatteringSpectrum() const { return mRayleighScatteringSpectrum; }
 
-        std::shared_ptr<G4Material> GetLAr() const { return mLAr; }
+        std::shared_ptr<G4Material> GetMaterial() const { return mMaterial; }
 
         void DefineMaterials();
         void PrintProperties();
 
     private:
+        G4String mName;
         G4double mTemperature;
         G4double mPressure;
 
@@ -114,6 +116,6 @@ namespace Artie
         std::shared_ptr<G4Isotope> mIAr38 = {nullptr};
         std::shared_ptr<G4Isotope> mIAr40 = {nullptr};
         std::shared_ptr<G4Element> mArIsotopes = {nullptr};
-        std::shared_ptr<G4Material> mLAr = {nullptr};
+        std::shared_ptr<G4Material> mMaterial = {nullptr};
     };
 }

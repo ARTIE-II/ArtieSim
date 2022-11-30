@@ -48,6 +48,7 @@ namespace Artie
         void PrintNeutronPhysicsLists();
         
     public:
+        virtual void ConstructParticle() {};
         void SetThermalPhysics(G4bool flag) {fThermal = flag;};  
         
     private:
