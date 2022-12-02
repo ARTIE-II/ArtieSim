@@ -10,12 +10,13 @@
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
 #include "globals.hh"
-#include "G4int.hh"
 
 namespace Artie
 {
     struct NeutronEventData
     {
+        G4int event = {0};
+        G4int track_id = {0};
         G4double neutron_energy = {0};
         G4double arrival_time = {0};
         G4double arrival_energy = {0};
@@ -31,7 +32,20 @@ namespace Artie
         G4double max_dp = {0};
         G4double max_dE = {0};
 
-        NeutronRunData(
+        NeutronEventData()
+        {}
+
+        NeutronEventData(
+            G4int _event, G4int _track_id,
+            G4double _neutron_energy
+        )
+        : event(_event), track_id(_track_id)
+        , neutron_energy(_neutron_energy)
+        {
+        }
+
+        NeutronEventData(
+            G4int _event, G4int _track_id,
             G4double _neutron_energy, G4double _arrival_time,
             G4double _arrival_energy, G4int _num_elastic, G4int _num_inelastic,
             G4int _num_capture, G4int _num_fission,
@@ -39,7 +53,8 @@ namespace Artie
             G4int _gas_first, G4double _first_scatter_z,
             G4double _max_dphi, G4double _max_dp, G4double _max_dE
         )
-        : neutron_energy(_neutron_energy), arrival_time(_arrival_time)
+        : event(_event), track_id(_track_id)
+        , neutron_energy(_neutron_energy), arrival_time(_arrival_time)
         , arrival_energy(_arrival_energy), num_elastic(_num_elastic), num_inelastic(_num_inelastic)
         , num_capture(_num_capture), num_fission(_num_fission)
         , num_scatter(_num_scatter), num_scatter_out(_num_scatter_out)
@@ -60,6 +75,9 @@ namespace Artie
         G4int num_scatter = {0};
         G4int num_scatter_out = {0};
         G4int num_scatter_detector = {0};
+
+        NeutronRunData()
+        {}
 
         NeutronRunData(
             G4int _num_events, G4int _num_detected,

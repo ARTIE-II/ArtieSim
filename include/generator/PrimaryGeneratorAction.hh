@@ -33,6 +33,7 @@ namespace Artie
         );
 
         void SetPrimaries(std::vector<PrimaryGeneration> primaries);
+        std::vector<PrimaryGeneration> GetPrimaries() { return mPrimaries; }
 
         void SetNumberOfParticles(G4int numberOfParticles);
         void SetParticleName(G4String particleName);

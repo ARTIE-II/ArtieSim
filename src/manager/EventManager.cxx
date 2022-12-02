@@ -217,9 +217,13 @@ namespace Artie
             AnalysisManager->CreateNtupleIColumn("num_scatter_out");
             AnalysisManager->CreateNtupleIColumn("num_scatter_detector");
             AnalysisManager->FinishNtuple(index);
-
-            index = GetIndex("NeutronEventData");
+        }
+        if(SaveNeutronData())
+        {
+            G4int index = GetIndex("NeutronEventData");
             AnalysisManager->CreateNtuple("NeutronEventData", "NeutronEventData");
+            AnalysisManager->CreateNtupleIColumn("event");
+            AnalysisManager->CreateNtupleIColumn("track_id");
             AnalysisManager->CreateNtupleDColumn("neutron_energy");
             AnalysisManager->CreateNtupleDColumn("arrival_time");
             AnalysisManager->CreateNtupleDColumn("arrival_energy");
@@ -338,20 +342,22 @@ namespace Artie
         G4int index = GetIndex("NeutronEventData");
         for(size_t ii = 0; ii < mNeutronEventData.size(); ii++)
         {
-            AnalysisManager->FillNtupleDColumn(index, 0, mNeutronEventData[ii].neutron_energy);
-            AnalysisManager->FillNtupleDColumn(index, 1, mNeutronEventData[ii].arrival_time);
-            AnalysisManager->FillNtupleDColumn(index, 2, mNeutronEventData[ii].arrival_energy);
-            AnalysisManager->FillNtupleIColumn(index, 3, mNeutronEventData[ii].num_elastic);
-            AnalysisManager->FillNtupleIColumn(index, 4, mNeutronEventData[ii].num_inelastic);
-            AnalysisManager->FillNtupleIColumn(index, 5, mNeutronEventData[ii].num_capture);
-            AnalysisManager->FillNtupleIColumn(index, 6, mNeutronEventData[ii].num_fission);
-            AnalysisManager->FillNtupleIColumn(index, 7, mNeutronEventData[ii].num_scatter);
-            AnalysisManager->FillNtupleIColumn(index, 8, mNeutronEventData[ii].num_scatter_out);
-            AnalysisManager->FillNtupleIColumn(index, 9, mNeutronEventData[ii].gas_first);
-            AnalysisManager->FillNtupleDColumn(index, 10,mNeutronEventData[ii].first_scatter_z);
-            AnalysisManager->FillNtupleDColumn(index, 11,mNeutronEventData[ii].max_dphi);
-            AnalysisManager->FillNtupleDColumn(index, 12,mNeutronEventData[ii].max_dp);
-            AnalysisManager->FillNtupleDColumn(index, 13,mNeutronEventData[ii].max_dE);
+            AnalysisManager->FillNtupleIColumn(index, 0, mNeutronEventData[ii].event);
+            AnalysisManager->FillNtupleIColumn(index, 1, mNeutronEventData[ii].track_id);
+            AnalysisManager->FillNtupleDColumn(index, 2, mNeutronEventData[ii].neutron_energy);
+            AnalysisManager->FillNtupleDColumn(index, 3, mNeutronEventData[ii].arrival_time);
+            AnalysisManager->FillNtupleDColumn(index, 4, mNeutronEventData[ii].arrival_energy);
+            AnalysisManager->FillNtupleIColumn(index, 5, mNeutronEventData[ii].num_elastic);
+            AnalysisManager->FillNtupleIColumn(index, 6, mNeutronEventData[ii].num_inelastic);
+            AnalysisManager->FillNtupleIColumn(index, 7, mNeutronEventData[ii].num_capture);
+            AnalysisManager->FillNtupleIColumn(index, 8, mNeutronEventData[ii].num_fission);
+            AnalysisManager->FillNtupleIColumn(index, 9, mNeutronEventData[ii].num_scatter);
+            AnalysisManager->FillNtupleIColumn(index, 10, mNeutronEventData[ii].num_scatter_out);
+            AnalysisManager->FillNtupleIColumn(index, 11, mNeutronEventData[ii].gas_first);
+            AnalysisManager->FillNtupleDColumn(index, 12, mNeutronEventData[ii].first_scatter_z);
+            AnalysisManager->FillNtupleDColumn(index, 13, mNeutronEventData[ii].max_dphi);
+            AnalysisManager->FillNtupleDColumn(index, 14, mNeutronEventData[ii].max_dp);
+            AnalysisManager->FillNtupleDColumn(index, 15, mNeutronEventData[ii].max_dE);
             AnalysisManager->AddNtupleRow(index);
         }
 
@@ -367,15 +373,15 @@ namespace Artie
 
         auto AnalysisManager = G4AnalysisManager::Instance();
         G4int index = GetIndex("NeutronRunData");
-        AnalysisManager->FillNtupleDColumn(index, 0, mNeutronRunData.num_events);
-        AnalysisManager->FillNtupleDColumn(index, 1, mNeutronRunData.num_detected);
-        AnalysisManager->FillNtupleIColumn(index, 2, mNeutronRunData.num_elastic);
-        AnalysisManager->FillNtupleIColumn(index, 3, mNeutronRunData.num_inelastic);
-        AnalysisManager->FillNtupleIColumn(index, 4, mNeutronRunData.num_capture);
-        AnalysisManager->FillNtupleIColumn(index, 5, mNeutronRunData.num_fission);
-        AnalysisManager->FillNtupleIColumn(index, 6, mNeutronRunData.num_scatter);
-        AnalysisManager->FillNtupleIColumn(index, 7, mNeutronRunData.num_scatter_out);
-        AnalysisManager->FillNtupleIColumn(index, 8, mNeutronRunData.num_scatter_detector);
+        AnalysisManager->FillNtupleIColumn(index, 0, sNeutronRunData.num_events);
+        AnalysisManager->FillNtupleIColumn(index, 1, sNeutronRunData.num_detected);
+        AnalysisManager->FillNtupleIColumn(index, 2, sNeutronRunData.num_elastic);
+        AnalysisManager->FillNtupleIColumn(index, 3, sNeutronRunData.num_inelastic);
+        AnalysisManager->FillNtupleIColumn(index, 4, sNeutronRunData.num_capture);
+        AnalysisManager->FillNtupleIColumn(index, 5, sNeutronRunData.num_fission);
+        AnalysisManager->FillNtupleIColumn(index, 6, sNeutronRunData.num_scatter);
+        AnalysisManager->FillNtupleIColumn(index, 7, sNeutronRunData.num_scatter_out);
+        AnalysisManager->FillNtupleIColumn(index, 8, sNeutronRunData.num_scatter_detector);
         AnalysisManager->AddNtupleRow(index);
 
         EndFunctionProfile("FillNeutronRunData");
@@ -503,39 +509,129 @@ namespace Artie
         EndFunctionProfile("AddHitInfoFromStep");
     }
 
-    void EventManager::AddNeutronInfoFromStep(G4Step* step, G4TouchableHistory* history)
+    void EventManager::AddNeutronInfoFromTrackBegin(const G4Track* track)
     {
+        if(track->GetParticleDefinition()->GetParticleName() != "neutron") {
+            return;
+        }
+        if(track->GetParentID() == 0)
+        {
+            mNeutronEventData.emplace_back(
+                NeutronEventData(
+                    G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID(),
+                    track->GetTrackID(),
+                    track->GetKineticEnergy()
+                )
+            );
+            AddNeutronEventDataMapTrackID(track->GetTrackID(), mNeutronEventData.size() - 1);
+        }
+
+    }
+    void EventManager::AddNeutronInfoFromTrackEnd(const G4Track* track)
+    {
+        if(track->GetParticleDefinition()->GetParticleName() != "neutron") {
+            return;
+        }
+    }
+
+    void EventManager::AddNeutronInfoFromStep(const G4Step* step)
+    {
+        if(step->GetTrack()->GetParticleDefinition()->GetParticleName() != "neutron") {
+            return;
+        }
+
         StartFunctionProfile();
-        const G4VTouchable* touchable = step->GetPreStepPoint()->GetTouchable();
         const G4Track* track = step->GetTrack();
         const G4StepPoint *preStepPoint = step->GetPreStepPoint();
         const G4StepPoint *postStepPoint = step->GetPostStepPoint();
 
-        const G4VProcess* postProcess = postStepPoint->GetProcessDefinedStep();
-        G4String postProcessName = postProcess->GetProcessName();
+        G4String volumeName = GetVolumeName(step);
+        G4String postProcessName = GetPostProcessName(step);
 
-        G4LogicalVolume* volume = postStepPoint->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
-        G4String volumeName = volume->GetName();
-
-        G4int           copyNo = touchable->GetCopyNumber();
         G4double        globalTime = preStepPoint->GetGlobalTime();
         G4int           trackID = track->GetTrackID();
         G4int           parentID = track->GetParentID();
         G4double        localTime = preStepPoint->GetLocalTime();
-        G4ThreeVector   particlePosition = preStepPoint->GetPosition();
+        G4ThreeVector   position = track->GetPosition();
         G4double        energy = preStepPoint->GetTotalEnergy();
-        G4ThreeVector   particleMomentum = preStepPoint->GetMomentum();
+        G4ThreeVector   momentum = track->GetMomentum();
 
-        G4bool detected_hit = GetComponent(copyNo)->ProcessHits(step, history);
+        G4int neutron_index = GetNeutronEventDataIndex(trackID);
+        
+        // check if neutron has arrived at the detector
+        if(mNeutronEventData[neutron_index].arrival_time == 0)
+        {   
+            // calculate delta phi, delta energy, and delta momentum.
+            G4ThreeVector preMomentumDirection = preStepPoint->GetMomentumDirection();
+            G4ThreeVector postMomentumDirection = postStepPoint->GetMomentumDirection();
+            double dphi = preMomentumDirection.angle(postMomentumDirection);
+            double dp   = (preMomentumDirection - postMomentumDirection).mag();
+            double dE   = fabs(
+                postStepPoint->GetKineticEnergy() - preStepPoint->GetKineticEnergy()
+            );
 
-        mHits.emplace_back(
-            Hit(
-                copyNo, trackID,
-                parentID, localTime, globalTime,
-                particlePosition, particleMomentum,
-                energy, detected_hit
-            )
-        );
+            // Keep track of how often each process occurs.
+            if(postProcessName == "hadElastic") {
+                mNeutronEventData[neutron_index].num_elastic += 1;
+            }
+            else if(postProcessName == "neutronInelastic") {
+                mNeutronEventData[neutron_index].num_inelastic += 1;
+            }
+            else if(postProcessName == "nCapture") {
+                mNeutronEventData[neutron_index].num_capture += 1;
+            }
+            else if(postProcessName == "nFission") {
+                mNeutronEventData[neutron_index].num_fission += 1;
+            }
+
+            // If we have just reached the detector, 
+            // record the time and energy
+            if(volumeName == "Logical_ArtieITargetDetector")
+            {
+                mNeutronEventData[neutron_index].arrival_time = track->GetLocalTime();
+                mNeutronEventData[neutron_index].arrival_energy = postStepPoint->GetKineticEnergy();
+            }
+
+            // Quantify scattering
+            if (dp > 0)
+            {
+                if (volumeName == "Logical_ArtieITargetActiveVolume")
+                {
+                    mNeutronEventData[neutron_index].num_scatter += 1;
+                    if (
+                        mNeutronEventData[neutron_index].num_scatter == 1 &&
+                        mNeutronEventData[neutron_index].num_scatter_out == 0
+                    )
+                    {
+                            mNeutronEventData[neutron_index].first_scatter_z = position.z();
+                            mNeutronEventData[neutron_index].gas_first = 1;
+                    }
+                } 
+                else 
+                {
+                    mNeutronEventData[neutron_index].num_scatter_out += 1;    
+                    if (
+                        mNeutronEventData[neutron_index].num_scatter == 0 &&
+                        mNeutronEventData[neutron_index].num_scatter_out == 1
+                    ) 
+                    {
+                        mNeutronEventData[neutron_index].first_scatter_z = position.z();
+                    }
+                }    
+            }
+            if (volumeName != "Logical_ArtieITargetDetector"){  
+                if (dp > mNeutronEventData[neutron_index].max_dp) {
+                    mNeutronEventData[neutron_index].max_dp = dp;
+                }
+                if (dE > mNeutronEventData[neutron_index].max_dE) {
+                    mNeutronEventData[neutron_index].max_dE = dE;
+                }
+                if (dphi > mNeutronEventData[neutron_index].max_dphi) {
+                    mNeutronEventData[neutron_index].max_dphi = dphi;
+                }   
+            }
+        }
+
         EndFunctionProfile("AddNeutronInfoFromStep");
     }
 

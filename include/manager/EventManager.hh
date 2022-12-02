@@ -28,6 +28,7 @@
 #include "Detector.hh"
 #include "DetectorComponent.hh"
 #include "Hit.hh"
+#include "Neutron.hh"
 
 class PhysicsList;
 
@@ -41,7 +42,7 @@ namespace Artie
         : name(n), index(i)
         {}
     };
-#ifdef LARGEANT_PROFILING
+#ifdef ARTIE_PROFILING
     struct Profile
     {
         G4int calls = 0;
@@ -120,7 +121,7 @@ namespace Artie
             mPrimaryData.clear();
             mHits.clear();
             mNeutronEventData.clear();
-            sNeutronRunData.clear();
+            mNeutronEventDataMap.clear();
         }
         //*************************************************************************************************//
 
@@ -153,6 +154,11 @@ namespace Artie
         inline static thread_local const std::map<G4int, G4int>&    GetParticlePDGMap()            { return mParticlePDG; }
         inline static thread_local const std::map<G4int, G4int>&    GetParticleParentTrackIDMap()  { return mParticleParentTrackID; }
         inline static thread_local const std::map<G4int, G4int>&    GetParticleAncestorTrackIDMap(){ return mParticleAncestorTrackID; }
+
+        // Neutron event data map
+        inline static thread_local void AddNeutronEventDataMapTrackID(G4int track_id, G4int index)
+        { mNeutronEventDataMap[track_id] = index; }
+        inline static thread_local const G4int& GetNeutronEventDataIndex(G4int track_id) { return mNeutronEventDataMap[track_id]; }
         //*************************************************************************************************//
 
         //*************************************************************************************************//
@@ -187,7 +193,9 @@ namespace Artie
 
         //*************************************************************************************************//
         // Neutron level info to keep track of
-        void AddNeutronInfoFromStep(G4Step* step, G4TouchableHistory* history);
+        void AddNeutronInfoFromTrackBegin(const G4Track* track);
+        void AddNeutronInfoFromTrackEnd(const G4Track* track);
+        void AddNeutronInfoFromStep(const G4Step* step);
         void AddNeutronInfoFromRun();
         inline static thread_local const std::vector<NeutronEventData>& GetNeutronEventData() { return mNeutronEventData; }
         //*************************************************************************************************//
@@ -213,7 +221,7 @@ namespace Artie
         void AddAnalysisFunction(std::function<void()> func) { mAnalysisFunctions.emplace_back(func); }
         //*************************************************************************************************//
 
-#ifdef LARGEANT_PROFILING
+#ifdef ARTIE_PROFILING
         std::map<G4String, Profile> GetFunctionProfiles()     { return sFunctionProfiles; }
         inline void EndFunctionProfile(G4String func)   { 
             sFunctionProfiles[func].calls += 1; 
@@ -264,12 +272,13 @@ namespace Artie
         inline static thread_local std::vector<PrimaryData>    mPrimaryData;
         inline static thread_local std::vector<Hit> mHits;
         inline static thread_local std::vector<NeutronEventData> mNeutronEventData;
+        inline static thread_local std::map<G4int, G4int> mNeutronEventDataMap;
         inline static NeutronRunData sNeutronRunData;
 
         // Analysis functions
         std::vector<std::function<void()>> mAnalysisFunctions;
 
-#ifdef LARGEANT_PROFILING
+#ifdef ARTIE_PROFILING
         inline static thread_local std::map<G4String, Profile> sFunctionProfiles = {};
         inline static thread_local std::vector<G4int> sProfilingTime = {};
 #endif

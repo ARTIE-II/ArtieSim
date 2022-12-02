@@ -19,6 +19,10 @@
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4IonTable.hh"
+#include "G4Step.hh"
+#include "G4LogicalVolume.hh"
+#include "G4VPhysicalVolume.hh"
+#include "G4VProcess.hh"
 
 namespace Artie
 {
@@ -136,4 +140,7 @@ namespace Artie
             final_energy = _final_energy;
         }
     };
+
+    G4String GetVolumeName(const G4Step* step);
+    G4String GetPostProcessName(const G4Step* step);
 }

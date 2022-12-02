@@ -33,7 +33,6 @@ namespace Artie
         auto Manager = EventManager::GetEventManager();
         auto primaries = Manager->GeneratePrimaryList();
         Manager->ClearEventData();
-        Manager->AddNeutronDataFromEventBegin();
 
         auto RunManager = G4RunManager::GetRunManager();
         auto Generator = (PrimaryGeneratorAction*)RunManager->GetUserPrimaryGeneratorAction();
@@ -43,7 +42,6 @@ namespace Artie
     void EventAction::EndOfEventAction(const G4Event* event)
     {
         auto Manager = EventManager::GetEventManager();
-        auto AnalysisManager = G4AnalysisManager::Instance();
         Manager->FillParticleMaps(event->GetEventID());
         Manager->FillPrimaryInfo(event->GetEventID());
         Manager->FillHits(event->GetEventID());
