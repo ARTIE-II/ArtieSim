@@ -12,7 +12,7 @@ namespace Artie
     PhysicsList::PhysicsList()
     : G4VModularPhysicsList()
     {   
-        SetVerboseLevel(1);
+        SetVerboseLevel(0);
 
         new G4UnitDefinition( "millielectronVolt", "meV", "Energy", 1.e-3*eV);   
         new G4UnitDefinition( "mm2/g",  "mm2/g", "Surface/Mass", mm2/g);

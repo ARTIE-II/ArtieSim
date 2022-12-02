@@ -70,7 +70,7 @@ namespace Artie
             PrimaryGeneration(
                 "neutron",
                 0,
-                {0., 0., -99*cm},
+                {0., 0., -50. * m},
                 {57 * keV},
                 {0., 0., 1.}
             )
