@@ -69,4 +69,21 @@ namespace Artie
         }
         return name;
     }
+
+#ifdef ARTIE_YAML
+    ConfigParser::ConfigParser(G4String configurationFile)
+    : mConfigurationFile(configurationFile)
+    {
+        mConfig = YAML::LoadFile(mConfigurationFile);
+        for(YAML::const_iterator it=mConfig["detector"].begin(); it!=mConfig["detector"].end(); ++it) 
+        {
+            G4cout << "Categories: " << it->first.as<std::string>() << G4endl;
+        }
+    }
+
+    ConfigParser::~ConfigParser()
+    {
+    }
+#endif 
+
 }

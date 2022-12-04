@@ -23,7 +23,12 @@
 #include "G4VUserDetectorConstruction.hh"
 #include "G4VModularPhysicsList.hh"
 
+#ifdef ARTIE_YAML
+#include "yaml-cpp/yaml.h"
+#endif
+
 #include "PhysicsList.hh"
+#include "Generator.hh"
 #include "Core.hh"
 #include "Detector.hh"
 #include "DetectorComponent.hh"
@@ -66,7 +71,11 @@ namespace Artie
 
         // setters for various objects
         static void SetPhysicsList(PhysicsList*);
+        static void SetGenerator(Generator*);
 		static void SetParticle(G4String);
+#ifdef ARTIE_YAML
+        static void SetConfig(YAML::Node config);
+#endif
 
         // get the event manager
         static std::shared_ptr<EventManager>& GetEventManager() 
@@ -248,6 +257,8 @@ namespace Artie
         inline static std::shared_ptr<PhysicsList> sPhysicsList = {nullptr};
         inline static G4double sEventMaxTime = 2.e19 * ns;
 
+        inline static std::shared_ptr<Generator> mGenerator = {nullptr};
+
         inline static thread_local std::map<G4int, G4int> sComponentCopyNumber;
         inline static std::vector<std::shared_ptr<DetectorComponent>> sDetectorComponents = {};
 
@@ -282,6 +293,10 @@ namespace Artie
         inline static thread_local std::map<G4String, Profile> sFunctionProfiles = {};
         inline static thread_local std::vector<G4int> sProfilingTime = {};
 #endif
-        
+
+#ifdef ARTIE_YAML
+        inline static G4bool mSavedParameters = {false};
+        inline static YAML::Node mConfig;
+#endif     
     };
 }

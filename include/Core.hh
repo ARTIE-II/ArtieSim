@@ -24,6 +24,10 @@
 #include "G4VPhysicalVolume.hh"
 #include "G4VProcess.hh"
 
+#ifdef ARTIE_YAML
+#include "yaml-cpp/yaml.h"
+#endif
+
 namespace Artie
 {
 
@@ -143,4 +147,20 @@ namespace Artie
 
     G4String GetVolumeName(const G4Step* step);
     G4String GetPostProcessName(const G4Step* step);
+
+#ifdef ARTIE_YAML
+    class ConfigParser
+    {
+    public:
+        ConfigParser(G4String configurationFile);
+        ~ConfigParser();
+
+        YAML::Node GetConfig() const { return mConfig; }
+
+    private:
+        G4String mConfigurationFile = {""};
+        YAML::Node mConfig;
+    };
+#endif 
+
 }

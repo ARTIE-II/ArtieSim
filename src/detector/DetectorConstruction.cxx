@@ -25,10 +25,6 @@ namespace Artie
     {
         mDetector.reset(detector);
         DefineMaterials();
-
-        mDetectorDirectory = new G4UIdirectory(mDirectory, mBroadcast);
-        mDetectorDirectory->SetGuidance("Detector Construction Commands");
-        ConstructDetectorMessengers();
     }
 
     void DetectorConstruction::DefineMaterials()
@@ -89,11 +85,6 @@ namespace Artie
         return mPhysicalExperimentalHall.get();
     }
 
-    void DetectorConstruction::SetNewValue(G4UIcommand*, G4String)
-    {
-        
-    }
-
     void DetectorConstruction::ConstructSDandField()
     {
         SensitiveDetector* Sensitive = new SensitiveDetector("SensitiveDetector");
@@ -104,10 +95,5 @@ namespace Artie
                 SetSensitiveDetector(mDetector->GetDetectorComponent(ii)->GetLogicalVolume().get(), Sensitive); 
             }
         }
-    }
-
-    void DetectorConstruction::ConstructDetectorMessengers()
-    {
-        
     }
 }

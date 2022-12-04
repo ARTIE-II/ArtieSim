@@ -6,6 +6,7 @@
  * @date 2022-04-27
  */
 #pragma once
+#include <memory>
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4ParticleTable.hh"
@@ -70,5 +71,6 @@ namespace Artie
         G4ThreeVector mParticleMomentumDirection;
         
         std::vector<PrimaryGeneration> mPrimaries;
+
     };
 }

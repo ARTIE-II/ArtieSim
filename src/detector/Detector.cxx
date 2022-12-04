@@ -13,12 +13,22 @@
 namespace Artie
 {
     Detector::Detector()
+    : G4UImessenger()
     {
+        auto DetectorDirectory = new G4UIdirectory(mUIDirectory, mBroadcast);
+        DetectorDirectory->SetGuidance("ARTIE Detector Construction Commands");
     }
 
     Detector::~Detector()
     {
     }
+
+#ifdef ARTIE_YAML
+    Detector::Detector(YAML::Node config)
+    : mConfig(config)
+    {
+    }
+#endif
 
     std::shared_ptr<DetectorComponent> Detector::GetDetectorComponent(G4int ii)
     {

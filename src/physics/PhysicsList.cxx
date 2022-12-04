@@ -48,12 +48,6 @@ namespace Artie
 
         // Step limiter
         RegisterPhysics(new G4StepLimiterPhysics());
-        
-        // fast sim
-        // RegisterPhysics(new G4FastSimulationPhysics("fastSimPhys"));
-
-        // Neutron Physics
-        // RegisterPhysics(new NeutronHPPhysics("neutronHP"));
 
         // Get the list of physics lists
         mPhysicsListFactory = std::make_shared<G4PhysListFactory>();

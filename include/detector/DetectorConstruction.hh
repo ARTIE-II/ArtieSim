@@ -40,7 +40,7 @@
 
 namespace Artie
 {
-    class DetectorConstruction : public G4VUserDetectorConstruction, public G4UImessenger
+    class DetectorConstruction : public G4VUserDetectorConstruction
     {
     public:
         DetectorConstruction(
@@ -53,14 +53,9 @@ namespace Artie
 
         void DefineMaterials();
 
-        void ConstructDetectorMessengers();
-
         void SetDetector(Detector*);
 
         virtual G4VPhysicalVolume* Construct();
-
-        // UI Messenger Interface (for setting parameters):
-        virtual void SetNewValue(G4UIcommand*, G4String);
     
     private:
         virtual void ConstructSDandField();
@@ -77,10 +72,6 @@ namespace Artie
         std::shared_ptr<G4Material> mExperimentalHallMaterial = {nullptr};
 
         std::shared_ptr<Detector> mDetector = {nullptr};
-
-        G4bool mBroadcast = {false};
-        G4String mDirectory = {"/artie/detector/"};
-        G4UIdirectory* mDetectorDirectory;
 
     };
 }

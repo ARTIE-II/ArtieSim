@@ -33,48 +33,21 @@ namespace Artie
         sPhysicsList.reset(physicsList);
     }
 
+    void EventManager::SetGenerator(Generator* generator)
+    {
+        mGenerator.reset(generator);
+    }
+#ifdef ARTIE_YAML
+    void EventManager::SetConfig(YAML::Node config)
+    {
+        mConfig = config;
+    }
+#endif
+
     std::vector<PrimaryGeneration> EventManager::GeneratePrimaryList()
     {
         StartFunctionProfile();
-        std::vector<PrimaryGeneration> primaries;
-        // primaries.emplace_back(
-        //     PrimaryGeneration(
-        //         "Am241",
-        //         95, 241,
-        //         0.0 * eplus,
-        //         0.,
-        //         {0., 0., 0.},
-        //         0.0 * keV,
-        //         {0., 0., 1.}
-        //     )
-        // );
-        // primaries.emplace_back(
-        //     PrimaryGeneration(
-        //         "alpha",
-        //         0,
-        //         {0., 0., 0.},
-        //         {5.486 * MeV},
-        //         {0., 0., 1.}
-        //     )
-        // );
-        // primaries.emplace_back(
-        //     PrimaryGeneration(
-        //         "mu-",
-        //         1 * s,
-        //         {0., 0., 1.},
-        //         {5 * MeV},
-        //         {0., 1., 0.}
-        //     )
-        // );
-        primaries.emplace_back(
-            PrimaryGeneration(
-                "neutron",
-                0,
-                {0., 0., -50. * m},
-                {57 * keV},
-                {0., 0., 1.}
-            )
-        );
+        std::vector<PrimaryGeneration> primaries = mGenerator->GeneratePrimaryList();
         EndFunctionProfile("GeneratePrimaryList");
         return primaries;
     }
@@ -109,6 +82,23 @@ namespace Artie
     void EventManager::CloseOutputFile(G4int RunID)
     {
         auto AnalysisManager = G4AnalysisManager::Instance();
+#ifdef ARTIE_YAML
+        if(mSavedParameters == false)
+        {
+            G4int index = GetIndex("Configuration");
+            for(YAML::const_iterator it = mConfig.begin(); it != mConfig.end(); it++)
+            {
+                for(YAML::const_iterator iit = it->second.begin(); iit != it->second.end(); iit++)
+                {
+                    AnalysisManager->FillNtupleSColumn(index, 0, it->first.as<std::string>());
+                    AnalysisManager->FillNtupleSColumn(index, 1, iit->first.as<std::string>());
+                    AnalysisManager->FillNtupleSColumn(index, 2, iit->second.as<std::string>());
+                    AnalysisManager->AddNtupleRow(index);
+                }
+            }
+            mSavedParameters = true;
+        }
+#endif
         AnalysisManager->Write();
         AnalysisManager->CloseFile();
 
@@ -144,6 +134,15 @@ namespace Artie
         AnalysisManager->SetVerboseLevel(0);
         AnalysisManager->SetNtupleMerging(true);
 
+#ifdef ARTIE_YAML
+        G4int index = GetIndex("Configuration");
+        AnalysisManager->CreateNtuple("Configuration", "Configuration");
+        AnalysisManager->CreateNtupleSColumn("category");
+        AnalysisManager->CreateNtupleSColumn("parameter");
+        AnalysisManager->CreateNtupleSColumn("value");
+        AnalysisManager->FinishNtuple(index);
+        mSavedParameters = false;
+#endif
         if(SaveParticleMaps())
         {
             G4int index = GetIndex("ParticleMaps");
@@ -427,10 +426,8 @@ namespace Artie
         G4int particle_pdg = track->GetParticleDefinition()->GetPDGEncoding();
         G4ThreeVector particle_position = track->GetVertexPosition();
 
-        G4double local_time = track->GetLocalTime();
         G4double global_time = track->GetGlobalTime();
         G4double kinetic_energy = track->GetKineticEnergy();
-        G4int track_status = (int)track->GetTrackStatus();
         G4int track_id = track->GetTrackID();
         G4int parent_track_id = track->GetParentID();
 
@@ -548,13 +545,8 @@ namespace Artie
         G4String volumeName = GetVolumeName(step);
         G4String postProcessName = GetPostProcessName(step);
 
-        G4double        globalTime = preStepPoint->GetGlobalTime();
         G4int           trackID = track->GetTrackID();
-        G4int           parentID = track->GetParentID();
-        G4double        localTime = preStepPoint->GetLocalTime();
         G4ThreeVector   position = track->GetPosition();
-        G4double        energy = preStepPoint->GetTotalEnergy();
-        G4ThreeVector   momentum = track->GetMomentum();
 
         G4int neutron_index = GetNeutronEventDataIndex(trackID);
         

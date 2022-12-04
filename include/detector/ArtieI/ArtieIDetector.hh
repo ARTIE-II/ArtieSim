@@ -17,6 +17,10 @@
 #include "G4VPhysicalVolume.hh"
 #include "G4LogicalVolume.hh"
 
+#ifdef ARTIE_YAML
+#include "yaml-cpp/yaml.h"
+#endif
+
 #include "Detector.hh"
 #include "ArtieITargetActiveVolume.hh"
 #include "ArtieITargetContainer.hh"
@@ -57,31 +61,72 @@ namespace Artie
         );
         ~ArtieIDetector();
 
+#ifdef ARTIE_YAML
+        ArtieIDetector(YAML::Node config);
+#endif
+
+        void ConstructDetector();
+        void ConstructMessengers();
+        void SetNewValue(G4UIcommand* command, G4String arg);
+
     private:
+        // Artie-I target
         G4double mTargetRadius = {2.5 / 2.0 * cm};
         G4double mTargetLength = {168 * cm};
+
+        // Container
+        G4bool mConstructContainer = {true};
         G4double mContainerRadius = {3.49 / 2.0 * cm};
         G4double mInsulationThickness = {10.0 * cm};
         G4double mWindowThickness = {0.00762 * cm};
         G4double mBufferLength = {5.0 * cm};
+
+        // Beam pipes
         G4double mBeamPipeInnerRadius = {18.0 * cm};
         G4double mBeamPipeOuterRadius = {20.0 * cm};
-        G4double mGap = {2.5 * m};
-        G4double mWorldX = {4 * m};
-        G4double mWorldY = {4 * m};
-        G4double mWorldZ = {200 * m};
-        G4double mWallThickness = {1 * m};
-        G4double mDetectorRadius = {2.0 * cm};
-        G4double mDetectorLength = {20.0 * cm};
-        G4double mDetectorEntrance = {69.0 * m};
-        
         G4double mBeamPipeLeftHalfLength = 0.;
         G4double mBeamPipeRightHalfLength = 0.;
         G4ThreeVector mBeamPipeLeftPosition = {0., 0., 0.};
         G4ThreeVector mBeamPipeRightPosition = {0., 0., 0.};
+        G4double mGap = {2.5 * m};
 
-        G4double mCapR = {.025 * m};
-        G4double mCapL = {.050 * m};
-        G4ThreeVector mCapPosition = {0.,0.,(1.68/2 + 0.025) * m};
+        // Hall
+        G4double mWorldX = {4 * m};
+        G4double mWorldY = {4 * m};
+        G4double mWorldZ = {200 * m};
+        G4double mWallThickness = {1 * m};
+
+        // Detector
+        G4double mDetectorRadius = {2.0 * cm};
+        G4double mDetectorLength = {20.0 * cm};
+        G4double mDetectorEntrance = {69.0 * m};
+
+        // messengers
+        std::shared_ptr<G4UIcmdWithADouble> mTargetRadiusMessenger;
+        std::shared_ptr<G4UIcmdWithADouble> mTargetLengthMessenger;
+        
+        std::shared_ptr<G4UIcmdWithABool> mConstructContainerMessenger;
+        std::shared_ptr<G4UIcmdWithADouble> mContainerRadiusMessenger;
+        std::shared_ptr<G4UIcmdWithADouble> mInsulationThicknessMessenger;
+        std::shared_ptr<G4UIcmdWithADouble> mWindowThicknessMessenger;
+        std::shared_ptr<G4UIcmdWithADouble> mBufferLengthMessenger;
+
+        std::shared_ptr<G4UIcmdWithADouble> mBeamPipeInnerRadiusMessenger;
+        std::shared_ptr<G4UIcmdWithADouble> mBeamPipeOuterRadiusMessenger;
+        std::shared_ptr<G4UIcmdWithADouble> mBeamPipeLeftHalfLengthMessenger;
+        std::shared_ptr<G4UIcmdWithADouble> mBeamPipeRightHalfLengthMessenger;
+        std::shared_ptr<G4UIcmdWith3Vector> mBeamPipeLeftPositionMessenger;
+        std::shared_ptr<G4UIcmdWith3Vector> mBeamPipeRightPositionMessenger;
+        std::shared_ptr<G4UIcmdWithADouble> mGapMessenger;
+
+        std::shared_ptr<G4UIcmdWithADouble> mWorldXMessenger;
+        std::shared_ptr<G4UIcmdWithADouble> mWorldYMessenger;
+        std::shared_ptr<G4UIcmdWithADouble> mWorldZMessenger;
+        std::shared_ptr<G4UIcmdWithADouble> mWallThicknessMessenger;
+
+        std::shared_ptr<G4UIcmdWithADouble> mDetectorRadiusMessenger;
+        std::shared_ptr<G4UIcmdWithADouble> mDetectorLengthMessenger;
+        std::shared_ptr<G4UIcmdWithADouble> mDetectorEntranceMessenger;
+
     };
 }

@@ -21,17 +21,19 @@
 #include "G4ParticleHPManager.hh"
 
 #include "Analysis.hh"
+#include "Core.hh"
 #include "ActionInitialization.hh"
 #include "ArtieIDetector.hh"
 #include "DetectorConstruction.hh"
+#include "ArtieIGenerator.hh"
 #include "PhysicsList.hh"
 #include "PrimaryGeneratorAction.hh"
+#include "EventManager.hh"
 
 int main(int argc, char** argv)
 {
     G4UIExecutive* UIExecutive = 0;
     
-
     // create the run manager
 #ifdef ARTIE_MULTITHREADED
     G4MTRunManager* RunManager = new G4MTRunManager();
@@ -40,53 +42,28 @@ int main(int argc, char** argv)
     G4RunManager* RunManager = new G4RunManager();
 #endif
 
+    // load in the config file
+    auto Config = Artie::ConfigParser("artieI_example.yaml");
+    Artie::EventManager::GetEventManager()->SetConfig(Config.GetConfig());
+
     // create the physics list
     auto PhysicsList = new Artie::PhysicsList();
     RunManager->SetUserInitialization(PhysicsList);
 
-    G4double TargetRadius =     2.5 / 2.0 * cm;
-    G4double TargetLength =     168 * cm;
-    G4double ContainerRadius =  3.49 / 2.0 * cm;
-    G4double InsulationThickness = 10.0 * cm;
-    G4double WindowThickness =  0.00762 * cm;
-    G4double BufferLength =     5.0 * cm;
-    G4double BeamPipeInnerRadius = 18.0 * cm;
-    G4double BeamPipeOuterRadius = 20.0 * cm;
-
-    G4double Gap =              2.5 * m;
     G4double WorldX =           4 * m;
     G4double WorldY =           4 * m;
     G4double WorldZ =           200 * m;
-    G4double WallThickness =    1 * m;
-    G4double DetectorRadius =   2.0 * cm;
-    G4double DetectorLength =   20.0 * cm;
-    G4double DetectorEntrance = 69.0 * m;
 
-    // create the argon cube detector
-    auto detector = new Artie::ArtieIDetector(
-        TargetRadius,
-        TargetLength,
-        ContainerRadius,
-        InsulationThickness,
-        WindowThickness,
-        BufferLength,
-        BeamPipeInnerRadius,
-        BeamPipeOuterRadius,
-        Gap,
-        WorldX,
-        WorldY,
-        WorldZ,
-        WallThickness,
-        DetectorRadius,
-        DetectorLength,
-        DetectorEntrance
+    // create the detector
+    auto Detector = new Artie::ArtieIDetector(
+        Config.GetConfig()["detector"]
     );
 
     auto detectorConstruction = new Artie::DetectorConstruction(
         WorldX, 
         WorldY, 
         WorldZ, 
-        detector
+        Detector
     );
     RunManager->SetUserInitialization(detectorConstruction);
 
@@ -95,8 +72,14 @@ int main(int argc, char** argv)
     auto ActionInitialization = new Artie::ActionInitialization(PrimaryGeneratorAction);
     RunManager->SetUserInitialization(ActionInitialization);
 
+    // create the generator
+    auto Generator = new Artie::ArtieIGenerator(
+        Config.GetConfig()["generator"]
+    );
+    Artie::EventManager::GetEventManager()->SetGenerator(Generator);
+
     // add analysis functions
-    Artie::EventManager::GetEventManager()->AddAnalysisFunction(Artie::ExampleAnalysisFunction);
+    //Artie::EventManager::GetEventManager()->AddAnalysisFunction(Artie::ExampleAnalysisFunction);
 
     // start the session
     if (argc == 1)
