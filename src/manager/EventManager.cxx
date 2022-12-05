@@ -41,6 +41,14 @@ namespace Artie
     void EventManager::SetConfig(YAML::Node config)
     {
         mConfig = config;
+        if(mConfig["manager"])
+        {
+            if(mConfig["manager"]["number_of_threads"]) { sNumberOfThreads = mConfig["manager"]["number_of_threads"].as<G4int>(); }
+            if(mConfig["manager"]["number_of_runs"])    { sNumberOfRuns = mConfig["manager"]["number_of_runs"].as<G4int>(); }
+            if(mConfig["manager"]["number_of_events"])  { sNumberOfEvents = mConfig["manager"]["number_of_events"].as<G4int>(); }
+            if(mConfig["manager"]["mode"])              { sMode = mConfig["manager"]["mode"].as<std::string>(); }
+            if(mConfig["manager"]["output_filename"])   { sOutputFileName = mConfig["manager"]["output_filename"].as<std::string>(); }
+        }
     }
 #endif
 

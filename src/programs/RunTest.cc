@@ -1,5 +1,5 @@
 /**
- * @file ArgonSphere.cc
+ * @file RunTest.cc
  * @author Nicholas Carrara [nmcarrara@ucdavis.edu]
  * @brief   
  * @version 0.0
@@ -61,6 +61,7 @@ int main(int argc, char** argv)
     );
     RunManager->SetUserInitialization(detectorConstruction);
 
+
     // create the action initialization
     auto PrimaryGeneratorAction = new Artie::PrimaryGeneratorAction();
     auto ActionInitialization = new Artie::ActionInitialization(PrimaryGeneratorAction);
@@ -74,25 +75,16 @@ int main(int argc, char** argv)
 
     // add analysis functions
     //Artie::EventManager::GetEventManager()->AddAnalysisFunction(Artie::ExampleAnalysisFunction);
-
-    // start the session
-    if (argc == 1)
-    {
-        UIExecutive = new G4UIExecutive(argc, argv);
-    }
     
-#ifdef ARTIE_USE_VIS
-    auto VisManager = std::make_shared<G4VisExecutive>();
-    VisManager->Initialize();
-#endif
-    RunManager->Initialize();
-
-#ifdef ARTIE_USE_UI
-    G4UImanager* UIManager = G4UImanager::GetUIpointer();
-
     // start the session
-    if (argc == 1)
+    UIExecutive = new G4UIExecutive(argc, argv);
+    
+    if(Artie::EventManager::GetEventManager()->Mode() == "interactive")
     {
+        auto VisManager = std::make_shared<G4VisExecutive>();
+        VisManager->Initialize();
+        RunManager->Initialize();
+        G4UImanager* UIManager = G4UImanager::GetUIpointer();
         UIManager->ApplyCommand("/control/execute vis.mac");
         UIManager->ApplyCommand("/run/verbose 1");
         UIManager->ApplyCommand("/event/verbose 0");
@@ -100,20 +92,18 @@ int main(int argc, char** argv)
     }
     else
     {
+        RunManager->Initialize();
+        G4UImanager* UIManager = G4UImanager::GetUIpointer();
         UIManager->ApplyCommand("/run/verbose 1");
         UIManager->ApplyCommand("/event/verbose 0");
-        G4String command = "/control/execute ";
-        G4String fileName = argv[1];
-        UIManager->ApplyCommand(command+fileName);
+        G4String command = "/run/beamOn ";
+        for(G4int run = 0; run < Artie::EventManager::GetEventManager()->NumberOfRuns(); run++)
+        {
+            UIManager->ApplyCommand(
+                command + std::to_string(Artie::EventManager::GetEventManager()->NumberOfEvents())
+            );
+        }
     }
-#endif
-
-#ifdef ARTIE_USE_UI_TCSH
-        auto UITerminal = std::make_shared<G4UIterminal>(new G4UItcsh);
-#else   
-        auto UITerminal = std::make_shared<G4UIterminal>();
-#endif
-        UITerminal->SessionStart();
-
+    delete RunManager;
     return 0;
 }

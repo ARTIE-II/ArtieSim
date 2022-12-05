@@ -49,6 +49,9 @@ namespace Artie
             G4double ExperimentalHallZ = 500 * m,
             Detector* detector = nullptr
         );
+        DetectorConstruction(
+            Detector* detector = nullptr
+        );
         ~DetectorConstruction();
 
         void DefineMaterials();

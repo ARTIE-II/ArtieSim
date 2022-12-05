@@ -63,7 +63,7 @@ namespace Artie
         if(Config()["insulation_thickness"]) { mInsulationThickness = Config()["insulation_thickness"].as<G4double>() * cm; }
         if(Config()["window_thickness"])     { mWindowThickness = Config()["window_thickness"].as<G4double>() * cm; }
         if(Config()["buffer_length"])        { mBufferLength = Config()["buffer_length"].as<G4double>() * cm; }
-        if(Config()["gap"])     { mGap = Config()["gap"].as<G4double>() * cm; }
+        if(Config()["gap"])     { mGap = Config()["gap"].as<G4double>() * m; }
         if(Config()["world_x"]) { mWorldX = Config()["world_x"].as<G4double>() * m; }
         if(Config()["world_y"]) { mWorldY = Config()["world_y"].as<G4double>() * m; }
         if(Config()["world_z"]) { mWorldZ = Config()["world_z"].as<G4double>() * m; }

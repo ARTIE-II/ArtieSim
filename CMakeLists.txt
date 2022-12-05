@@ -148,6 +148,12 @@ add_executable(detector_test
     src/programs/DetectorTest.cc 
 )
 target_link_libraries(detector_test artie)
+
+# run test
+add_executable(run_test 
+    src/programs/RunTest.cc 
+)
+target_link_libraries(run_test artie)
 ##############################################################
 
 ##############################################################

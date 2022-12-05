@@ -27,6 +27,20 @@ namespace Artie
         DefineMaterials();
     }
 
+    DetectorConstruction::DetectorConstruction(
+        Detector* detector
+    )
+    : G4VUserDetectorConstruction()
+    {
+        mDetector.reset(detector);
+#ifdef ARTIE_YAML
+        if(mDetector->Config()["world_x"]) { mExperimentalHallX = mDetector->Config()["world_x"].as<G4double>() * m; }
+        if(mDetector->Config()["world_y"]) { mExperimentalHallY = mDetector->Config()["world_y"].as<G4double>() * m; }
+        if(mDetector->Config()["world_z"]) { mExperimentalHallZ = mDetector->Config()["world_z"].as<G4double>() * m; }
+#endif
+        DefineMaterials();
+    }
+
     void DetectorConstruction::DefineMaterials()
     {
         G4cout << "Constructing Experimental Hall with G4_AIR" << G4endl;

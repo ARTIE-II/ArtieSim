@@ -89,6 +89,22 @@ namespace Artie
 		}
         inline static thread_local G4int EventID() { return G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID(); }
 
+        // Number of threads
+        G4int NumberOfThreads()             { return sNumberOfThreads; }
+        void NumberOfThreads(G4int threads) { sNumberOfThreads = threads;}
+
+        // Number of runs
+        G4int NumberOfRuns()             { return sNumberOfRuns; }
+        void NumberOfRuns(G4int Runs) { sNumberOfRuns = Runs;}
+
+        // Number of events
+        G4int NumberOfEvents()             { return sNumberOfEvents; }
+        void NumberOfEvents(G4int Events) { sNumberOfEvents = Events;}
+
+        // Run mode
+        G4String Mode()             { return sMode; }
+        void Mode(G4String mode)    { sMode = mode;}
+
         // Tuple related functions
         G4String OutputFileName()           { return sOutputFileName; }
         void OutputFileName(G4String name)  { sOutputFileName = name; }
@@ -251,19 +267,24 @@ namespace Artie
 #endif
 
     private:
+        inline static G4int sNumberOfThreads =  {1};
+        inline static G4int sNumberOfRuns =     {1};
+        inline static G4int sNumberOfEvents =   {1};
+        inline static G4String sMode =          {"interactive"};
+
         static std::shared_ptr<EventManager> sInstance;
         static std::mutex sMutex;
 
         inline static std::shared_ptr<PhysicsList> sPhysicsList = {nullptr};
-        inline static G4double sEventMaxTime = 2.e19 * ns;
+        inline static G4double sEventMaxTime = {2.e19 * ns};
 
         inline static std::shared_ptr<Generator> mGenerator = {nullptr};
 
         inline static thread_local std::map<G4int, G4int> sComponentCopyNumber;
         inline static std::vector<std::shared_ptr<DetectorComponent>> sDetectorComponents = {};
 
-        inline static G4String sOutputFileName = "default";
-        inline static G4int sCurrentTupleIndex = 0;
+        inline static G4String sOutputFileName = {"default"};
+        inline static G4int sCurrentTupleIndex = {0};
 
         // Options to save various data to root files.
         inline static std::vector<Tuple> sTuples;
