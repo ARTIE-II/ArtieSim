@@ -19,16 +19,13 @@ namespace Artie
     class ActionInitialization : public G4VUserActionInitialization
     {
     public:
-        ActionInitialization(
-            PrimaryGeneratorAction* PrimaryGeneratorAction
-        );
+        ActionInitialization();
         ~ActionInitialization();
 
         virtual void Build() const;
         virtual void BuildForMaster() const;
 
     private:
-        std::shared_ptr<PrimaryGeneratorAction> mGenerator;
 
     };
 }

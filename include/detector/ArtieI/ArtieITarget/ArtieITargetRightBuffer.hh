@@ -41,7 +41,7 @@ namespace Artie
         G4double mWindowThickness = {0.00762 * cm};
         G4double mBufferLength = {5.0 * cm};
 
-        std::shared_ptr<Argon> mArgon = {nullptr};
+        std::shared_ptr<Material> mMaterial = {nullptr};
 
     };
 }

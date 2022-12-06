@@ -27,8 +27,8 @@ namespace Artie
     void ArtieITargetRightWindow::Construct()
     {
         /// create the kapton
-        mKapton.reset(
-            new Kapton("Kapton_" + GetName())
+        mMaterial.reset(
+            CreateMaterial("kapton", GetName())
         );
 
         // create the argon Cube volume
@@ -45,7 +45,7 @@ namespace Artie
         SetLogicalVolume(
             new G4LogicalVolume(
                 GetSolidVolumePointer(), 
-                mKapton->GetMaterial().get(), 
+                mMaterial->GetMaterial().get(), 
                 "Logical_ArtieITargetRightWindow"
             )
         );

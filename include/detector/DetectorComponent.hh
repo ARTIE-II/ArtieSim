@@ -21,6 +21,8 @@
 #include "G4LogicalVolume.hh"
 #include "Randomize.hh"
 
+#include "MaterialFactory.hh"
+
 namespace Artie
 {
     class DetectorComponent

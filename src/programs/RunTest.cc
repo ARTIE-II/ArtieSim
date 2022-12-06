@@ -33,7 +33,7 @@
 int main(int argc, char** argv)
 {
     // load in the config file
-    auto Config = Artie::ConfigParser("artieI_example.yaml");
+    auto Config = Artie::ConfigParser("artieI_ideal.yaml");
     Artie::EventManager::GetEventManager()->SetConfig(Config.GetConfig());
 
     G4UIExecutive* UIExecutive = 0;
@@ -63,8 +63,7 @@ int main(int argc, char** argv)
 
 
     // create the action initialization
-    auto PrimaryGeneratorAction = new Artie::PrimaryGeneratorAction();
-    auto ActionInitialization = new Artie::ActionInitialization(PrimaryGeneratorAction);
+    auto ActionInitialization = new Artie::ActionInitialization();
     RunManager->SetUserInitialization(ActionInitialization);
 
     // create the generator

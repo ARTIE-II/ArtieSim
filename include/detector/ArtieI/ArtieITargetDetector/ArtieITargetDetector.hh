@@ -39,7 +39,7 @@ namespace Artie
         G4double mDetectorLength = {20.0 * cm};
         G4double mDetectorEntrance = {69.0 * m};
 
-        std::shared_ptr<Water> mWater = {nullptr};
+        std::shared_ptr<Material> mMaterial = {nullptr};
 
     };
 }

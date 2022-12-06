@@ -31,14 +31,13 @@ namespace Artie
     class EventAction : public G4UserEventAction
     {
     public:
-        EventAction(std::shared_ptr<RunAction> RunAction);
+        EventAction();
         ~EventAction();
         
         virtual void BeginOfEventAction(const G4Event*);
         virtual void EndOfEventAction(const G4Event*);
 
     private:
-        std::shared_ptr<RunAction> mRunAction;
 
     };
 }

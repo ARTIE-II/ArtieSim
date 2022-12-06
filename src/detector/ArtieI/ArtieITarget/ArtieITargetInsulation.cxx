@@ -27,8 +27,8 @@ namespace Artie
     void ArtieITargetInsulation::Construct()
     {
         /// create the polyurethane
-        mPolyurethane.reset(
-            new Polyurethane("Polyurethane_" + GetName())
+        mMaterial.reset(
+             CreateMaterial("polyurethane", GetName())
         );
 
         // create the argon Cube volume
@@ -45,7 +45,7 @@ namespace Artie
         SetLogicalVolume(
             new G4LogicalVolume(
                 GetSolidVolumePointer(), 
-                mPolyurethane->GetMaterial().get(), 
+                mMaterial->GetMaterial().get(), 
                 "Logical_ArtieITargetInsulation"
             )
         );

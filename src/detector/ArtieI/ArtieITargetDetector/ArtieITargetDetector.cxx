@@ -28,8 +28,8 @@ namespace Artie
     void ArtieITargetDetector::Construct()
     {
         /// create the Water
-        mWater.reset(
-            new Water("Water_" + GetName())
+        mMaterial.reset(
+            CreateMaterial("water", GetName())
         );
 
         // create the argon Cube volume
@@ -46,7 +46,7 @@ namespace Artie
         SetLogicalVolume(
             new G4LogicalVolume(
                 GetSolidVolumePointer(), 
-                mWater->GetMaterial().get(), 
+                mMaterial->GetMaterial().get(), 
                 "Logical_ArtieITargetDetector"
             )
         );

@@ -39,7 +39,7 @@ namespace Artie
         G4double mTargetLength = {168 * cm};
         G4double mContainerRadius = {3.49 / 2.0 * cm};
 
-        std::shared_ptr<StainlessSteel> mStainlessSteel = {nullptr};
+        std::shared_ptr<Material> mMaterial = {nullptr};
 
     };
 }

@@ -29,8 +29,8 @@ namespace Artie
     void ArtieIHall::Construct()
     {
         /// create the argon object
-        mConcrete.reset(
-            new Concrete("Concrete_" + GetName())
+        mMaterial.reset(
+            CreateMaterial("concrete", GetName())
         );
 
         // create the argon Cube volume
@@ -56,7 +56,7 @@ namespace Artie
         SetLogicalVolume(
             new G4LogicalVolume(
                 GetSolidVolumePointer(), 
-                mConcrete->GetMaterial().get(), 
+                mMaterial->GetMaterial().get(), 
                 "Logical_ArtieIHall"
             )
         );

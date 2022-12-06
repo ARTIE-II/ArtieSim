@@ -9,10 +9,9 @@
 
 namespace Artie
 {
-    TrackingAction::TrackingAction(std::shared_ptr<EventAction> eventAction)
+    TrackingAction::TrackingAction()
     : G4UserTrackingAction()
     {
-        mEventAction = eventAction;
     }
 
     TrackingAction::~TrackingAction()

@@ -9,11 +9,9 @@
 
 namespace Artie
 {
-    EventAction::EventAction(std::shared_ptr<RunAction> runAction)
+    EventAction::EventAction()
     : G4UserEventAction()
     {
-        mRunAction = runAction;
-
         // generate list of primaries
         auto Manager = EventManager::GetEventManager();
         auto primaries = Manager->GeneratePrimaryList();

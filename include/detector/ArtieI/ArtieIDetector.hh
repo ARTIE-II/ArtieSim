@@ -71,6 +71,7 @@ namespace Artie
 
     private:
         // Artie-I target
+        G4String mActiveVolumeMaterial = {"liquid_argon"};
         G4double mTargetRadius = {2.5 / 2.0 * cm};
         G4double mTargetLength = {168 * cm};
 

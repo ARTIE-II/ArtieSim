@@ -21,13 +21,12 @@ namespace Artie
     class SteppingAction : public G4UserSteppingAction
     {
     public:
-        SteppingAction(std::shared_ptr<EventAction> EventAction);
+        SteppingAction();
         ~SteppingAction();
         
         virtual void UserSteppingAction(const G4Step*);
         
     private:
-        std::shared_ptr<EventAction> mEventAction;
 
     };
 }

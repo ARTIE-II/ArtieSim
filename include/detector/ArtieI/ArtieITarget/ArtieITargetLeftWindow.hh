@@ -39,7 +39,7 @@ namespace Artie
         G4double mContainerRadius = {3.49 / 2.0 * cm};
         G4double mWindowThickness = {0.00762 * cm};
 
-        std::shared_ptr<Kapton> mKapton = {nullptr};
+        std::shared_ptr<Material> mMaterial = {nullptr};
 
     };
 }

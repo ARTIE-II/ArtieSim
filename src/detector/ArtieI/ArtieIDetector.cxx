@@ -56,6 +56,7 @@ namespace Artie
     ArtieIDetector::ArtieIDetector(YAML::Node config)
     :Detector(config)
     {
+        if(Config()["active_volume_material"]) { mActiveVolumeMaterial = Config()["active_volume_material"].as<std::string>(); }
         if(Config()["target_radius"]) { mTargetRadius = Config()["target_radius"].as<G4double>() * cm; }
         if(Config()["target_length"]) { mTargetLength = Config()["target_length"].as<G4double>() * cm; }
         if(Config()["construct_container"])  { mConstructContainer = Config()["construct_container"].as<G4bool>(); }
@@ -81,6 +82,7 @@ namespace Artie
         // create the target
         std::shared_ptr<ArtieITargetActiveVolume> ActiveVolume 
             = std::make_shared<ArtieITargetActiveVolume>(
+            mActiveVolumeMaterial,
             mTargetRadius, 
             mTargetLength
         );

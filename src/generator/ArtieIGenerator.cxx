@@ -66,6 +66,9 @@ namespace Artie
 
     ArtieIGenerator::~ArtieIGenerator()
     {
+#ifdef ARTIE_ROOT
+        mLANLDistributionFile->Close();
+#endif
     }
 
     ArtieIGenerator::ArtieIGenerator(G4double energyCutLow, G4double energyCutHigh)

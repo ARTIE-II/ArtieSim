@@ -9,10 +9,9 @@
 
 namespace Artie
 {
-    SteppingAction::SteppingAction(std::shared_ptr<EventAction> eventAction)
+    SteppingAction::SteppingAction()
     : G4UserSteppingAction()
     {
-        mEventAction = eventAction;
     }
 
     SteppingAction::~SteppingAction()

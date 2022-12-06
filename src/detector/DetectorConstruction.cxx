@@ -34,6 +34,7 @@ namespace Artie
     {
         mDetector.reset(detector);
 #ifdef ARTIE_YAML
+        if(mDetector->Config()["world_material"]) { mWorldMaterial = mDetector->Config()["world_material"].as<std::string>(); }
         if(mDetector->Config()["world_x"]) { mExperimentalHallX = mDetector->Config()["world_x"].as<G4double>() * m; }
         if(mDetector->Config()["world_y"]) { mExperimentalHallY = mDetector->Config()["world_y"].as<G4double>() * m; }
         if(mDetector->Config()["world_z"]) { mExperimentalHallZ = mDetector->Config()["world_z"].as<G4double>() * m; }
@@ -43,9 +44,9 @@ namespace Artie
 
     void DetectorConstruction::DefineMaterials()
     {
-        G4cout << "Constructing Experimental Hall with G4_AIR" << G4endl;
-        G4NistManager *nist = G4NistManager::Instance();
-        mExperimentalHallMaterial.reset(nist->FindOrBuildMaterial("G4_AIR"));
+        mMaterial.reset(
+            CreateMaterial(mWorldMaterial, "ExperimentalHall")
+        );
     }
 
     DetectorConstruction::~DetectorConstruction()
@@ -72,7 +73,7 @@ namespace Artie
         mLogicalExperimentalHall.reset(
             new G4LogicalVolume(
                 mSolidExperimentalHall.get(), 
-                mExperimentalHallMaterial.get(), 
+                mMaterial->GetMaterial().get(), 
                 "Logical_ExperimentalHall"
             )
         );

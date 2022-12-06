@@ -42,7 +42,7 @@ namespace Artie
         G4double mWallOuterZ = {200 * m};
         G4double mWallThickness = {1 * m};
 
-        std::shared_ptr<Concrete> mConcrete = {nullptr};
+        std::shared_ptr<Material> mMaterial = {nullptr};
 
     };
 }

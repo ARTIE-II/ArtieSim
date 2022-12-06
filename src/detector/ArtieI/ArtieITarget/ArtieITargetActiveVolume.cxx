@@ -13,10 +13,12 @@
 namespace Artie
 {
     ArtieITargetActiveVolume::ArtieITargetActiveVolume(
+        G4String ActiveVolumeMaterial,
         G4double TargetRadius, 
         G4double TargetLength
     )
     : DetectorComponent("ArtieITargetActiveVolume", false)
+    , mActiveVolumeMaterial(ActiveVolumeMaterial)
     , mTargetRadius(TargetRadius)
     , mTargetLength(TargetLength)
     {
@@ -25,16 +27,8 @@ namespace Artie
     void ArtieITargetActiveVolume::Construct()
     {
         /// create the argon object
-        mArgon.reset(
-            new Argon(
-                "LAr_" + GetName(), 
-                83.0 * kelvin,      /// temperature
-                0.952 * atmosphere, /// pressure
-                kStateLiquid,       /// liquid
-                0.334,              /// ratio of Ar36
-                0.063,              /// ratio of Ar38
-                99.603              /// ratio of Ar40
-            )
+        mMaterial.reset(
+            CreateMaterial(mActiveVolumeMaterial, GetName())
         );
 
         // create the argon Cube volume
@@ -51,7 +45,7 @@ namespace Artie
         SetLogicalVolume(
             new G4LogicalVolume(
                 GetSolidVolumePointer(), 
-                mArgon->GetMaterial().get(), 
+                mMaterial->GetMaterial().get(), 
                 "Logical_ArtieITargetActiveVolume"
             )
         );

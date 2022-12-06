@@ -56,8 +56,7 @@ int main(int argc, char** argv)
     RunManager->SetUserInitialization(detectorConstruction);
 
     // create the action initialization
-    auto PrimaryGeneratorAction = new Artie::PrimaryGeneratorAction();
-    auto ActionInitialization = new Artie::ActionInitialization(PrimaryGeneratorAction);
+    auto ActionInitialization = new Artie::ActionInitialization();
     RunManager->SetUserInitialization(ActionInitialization);
 
     // add analysis functions

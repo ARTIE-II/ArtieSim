@@ -27,8 +27,8 @@ namespace Artie
     void ArtieITargetContainer::Construct()
     {
         /// create the StainlessSteel
-        mStainlessSteel.reset(
-            new StainlessSteel("StainlessSteel_" + GetName())
+        mMaterial.reset(
+             CreateMaterial("stainless_steel", GetName())
         );
 
         // create the argon Cube volume
@@ -45,7 +45,7 @@ namespace Artie
         SetLogicalVolume(
             new G4LogicalVolume(
                 GetSolidVolumePointer(), 
-                mStainlessSteel->GetMaterial().get(), 
+                mMaterial->GetMaterial().get(), 
                 "Logical_ArtieITargetContainer"
             )
         );

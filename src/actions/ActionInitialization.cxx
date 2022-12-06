@@ -9,11 +9,8 @@
 
 namespace Artie
 {
-    ActionInitialization::ActionInitialization(
-        PrimaryGeneratorAction* primaryGeneratorAction
-    )
+    ActionInitialization::ActionInitialization()
     {
-        mGenerator = std::make_shared<PrimaryGeneratorAction>(*primaryGeneratorAction);
     }
 
     ActionInitialization::~ActionInitialization()
@@ -22,16 +19,11 @@ namespace Artie
 
     void ActionInitialization::Build() const
     {
-        SetUserAction(mGenerator.get());
-        
-        auto runAction = std::make_shared<RunAction>();
-        SetUserAction(runAction.get());
-
-        auto eventAction = std::make_shared<EventAction>(runAction);
-        SetUserAction(eventAction.get());
-
-        SetUserAction(new SteppingAction(eventAction));
-        SetUserAction(new TrackingAction(eventAction));
+        SetUserAction(new PrimaryGeneratorAction());
+        SetUserAction(new RunAction());
+        SetUserAction(new EventAction());
+        SetUserAction(new SteppingAction());
+        SetUserAction(new TrackingAction());
     }
 
     void ActionInitialization::BuildForMaster() const

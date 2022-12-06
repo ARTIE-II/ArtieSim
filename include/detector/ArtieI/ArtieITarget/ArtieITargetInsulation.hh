@@ -39,7 +39,7 @@ namespace Artie
         G4double mContainerRadius = {3.49 / 2.0 * cm};
         G4double mInsulationThickness = {10.0 * cm};
 
-        std::shared_ptr<Polyurethane> mPolyurethane = {nullptr};
+        std::shared_ptr<Material> mMaterial = {nullptr};
 
     };
 }

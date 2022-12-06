@@ -27,8 +27,8 @@ namespace Artie
     void ArtieIBeamPipeRightBeam::Construct()
     {
         /// create the argon object
-        mVacuum.reset(
-            new Vacuum("Vacuum_" + GetName(), 1.0E-11)
+        mMaterial.reset(
+            CreateMaterial("high_vacuum", GetName())
         );
 
         // create the argon Cube volume
@@ -45,7 +45,7 @@ namespace Artie
         SetLogicalVolume(
             new G4LogicalVolume(
                 GetSolidVolumePointer(), 
-                mVacuum->GetMaterial().get(), 
+                mMaterial->GetMaterial().get(), 
                 "Logical_ArtieIBeamPipeRightBeam"
             )
         );

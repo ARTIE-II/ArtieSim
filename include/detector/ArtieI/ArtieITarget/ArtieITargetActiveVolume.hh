@@ -17,7 +17,9 @@
 #include "G4VPhysicalVolume.hh"
 #include "G4LogicalVolume.hh"
 
+#include "Material.hh"
 #include "Argon.hh"
+#include "Vacuum.hh"
 #include "DetectorComponent.hh"
 
 namespace Artie
@@ -26,6 +28,7 @@ namespace Artie
     {
     public:
         ArtieITargetActiveVolume(
+            G4String ActiveVolumeMaterial,
             G4double TargetRadius,
             G4double TargetLength
         );
@@ -34,10 +37,11 @@ namespace Artie
         void Construct();
 
     private:
+        G4String mActiveVolumeMaterial = {"liquid_argon"};
         G4double mTargetRadius = {2.5 / 2.0 * cm};
         G4double mTargetLength = {168 * cm};
 
-        std::shared_ptr<Argon> mArgon = {nullptr};
+        std::shared_ptr<Material> mMaterial = {nullptr};
 
     };
 }

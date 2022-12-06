@@ -29,16 +29,8 @@ namespace Artie
     void ArtieITargetLeftBuffer::Construct()
     {
         /// create the argon object
-        mArgon.reset(
-            new Argon(
-                "LAr_" + GetName(), 
-                83.0 * kelvin,      /// temperature
-                0.952 * atmosphere, /// pressure
-                kStateGas,          /// gas
-                0.334,              /// ratio of Ar36
-                0.063,              /// ratio of Ar38
-                99.603              /// ratio of Ar40
-            )
+        mMaterial.reset(
+             CreateMaterial("gaseous_argon", GetName())
         );
 
         // create the argon Cube volume
@@ -55,7 +47,7 @@ namespace Artie
         SetLogicalVolume(
             new G4LogicalVolume(
                 GetSolidVolumePointer(), 
-                mArgon->GetMaterial().get(), 
+                mMaterial->GetMaterial().get(), 
                 "Logical_ArtieITargetLeftBuffer"
             )
         );

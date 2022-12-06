@@ -17,7 +17,7 @@
 #include "G4VPhysicalVolume.hh"
 #include "G4LogicalVolume.hh"
 
-#include "Vacuum.hh"
+#include "Material.hh"
 #include "DetectorComponent.hh"
 
 namespace Artie
@@ -41,7 +41,7 @@ namespace Artie
         G4double mBeamPipeRightHalfLength = {1.68 * m};
         G4ThreeVector mBeamPipeRightPosition = {0.,0.,0.};
 
-        std::shared_ptr<Vacuum> mVacuum = {nullptr};
+        std::shared_ptr<Material> mMaterial = {nullptr};
 
     };
 }

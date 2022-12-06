@@ -35,6 +35,8 @@
 #include "G4UIcmdWithABool.hh"
 
 #include "Detector.hh"
+#include "Material.hh"
+#include "MaterialFactory.hh"
 #include "SensitiveDetector.hh"
 #include "EventManager.hh"
 
@@ -64,6 +66,7 @@ namespace Artie
         virtual void ConstructSDandField();
 
     private:
+        G4String mWorldMaterial = {"air"};
         G4double mExperimentalHallX = {500 * m};
         G4double mExperimentalHallY = {500 * m};
         G4double mExperimentalHallZ = {500 * m};
@@ -72,7 +75,7 @@ namespace Artie
         std::shared_ptr<G4LogicalVolume> mLogicalExperimentalHall = {nullptr};
         std::shared_ptr<G4VPhysicalVolume> mPhysicalExperimentalHall = {nullptr};
 
-        std::shared_ptr<G4Material> mExperimentalHallMaterial = {nullptr};
+        std::shared_ptr<Material> mMaterial = {nullptr};
 
         std::shared_ptr<Detector> mDetector = {nullptr};
 
