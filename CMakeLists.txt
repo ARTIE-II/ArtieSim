@@ -126,13 +126,25 @@ file(GLOB_RECURSE headers
 ##############################################################
 # Create library
 add_library(artie SHARED ${sources} ${headers})
-target_link_libraries(
-    artie PUBLIC 
-    ${Geant4_LIBRARIES} 
-    ROOT::Core 
-    ${ROOT_LIBRARIES}
-    ${YAML_LIBS}
-)
+target_link_libraries(artie PUBLIC ${Geant4_LIBRARIES})
+
+if(USE_ROOT)
+    target_link_libraries(
+        artie PUBLIC ROOT::Core ${ROOT_LIBRARIES}
+    )
+endif()
+if(USE_YAML)
+    target_link_libraries(
+        artie PUBLIC ${YAML_LIBS}
+    )
+endif()
+# target_link_libraries(
+#     artie PUBLIC 
+#     ${Geant4_LIBRARIES} 
+#     ROOT::Core 
+#     ${ROOT_LIBRARIES}
+#     ${YAML_LIBS}
+# )
 ##############################################################
 
 ##############################################################

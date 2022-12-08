@@ -20,8 +20,10 @@ namespace Artie
     : Generator(config)
     {
         if(Config()["use_lanl_distribution"])       { mUseLANLDistribution = Config()["use_lanl_distribution"].as<G4bool>(); }
+#ifdef ARTIE_ROOT
         if(Config()["lanl_distribution_filename"])  { mLANLDistributionFileName = Config()["lanl_distribution_filename"].as<std::string>(); }
         if(Config()["lanl_distribution_name"])      { mLANLDistributionName = Config()["lanl_distribution_name"].as<std::string>(); }
+#endif
         if(Config()["t_zero_location"]) { mTZeroLocation = Config()["t_zero_location"].as<G4double>() * m; }
         if(Config()["energy_cut_low"])  { mEnergyCutLow = Config()["energy_cut_low"].as<G4double>() * keV; }
         if(Config()["energy_cut_high"]) { mEnergyCutHigh = Config()["energy_cut_high"].as<G4double>() * keV; }

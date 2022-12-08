@@ -33,8 +33,20 @@
 int main(int argc, char** argv)
 {
     // load in the config file
-    
-    auto Config = Artie::ConfigParser("artieI_argon.yaml");
+    G4String ConfigFile = "";
+    if(argc == 2) {
+        ConfigFile = argv[1];
+    }
+    else if(argc == 1) {
+        ConfigFile = "artieI_argon.yaml";
+    }
+    else {
+        std::cout << "ERROR! This program takes only one";
+        std::cout << " command line argument for now.";
+        std::cout << "  Must pass in a config file!" << std::endl;
+        exit(0);
+    }
+    auto Config = Artie::ConfigParser(ConfigFile);
     Artie::EventManager::GetEventManager()->SetConfig(Config.GetConfig());
 
     G4UIExecutive* UIExecutive = 0;

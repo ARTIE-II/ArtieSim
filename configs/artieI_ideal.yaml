@@ -4,6 +4,7 @@ manager:
     number_of_runs:     1
     number_of_events:   1000000
     mode:               "run"   # interactive/run
+    detector:           "artieI"
     output_filename:    "artieI_ideal"
     save_particle_maps: true
     save_primary_info:  true

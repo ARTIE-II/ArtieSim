@@ -59,8 +59,9 @@ namespace Artie
         G4double mEnergyCutLow = { 40 * keV };
         G4double mEnergyCutHigh = { 70 * keV };
 
+        G4bool mUseLANLDistribution = { false };
+
 #ifdef ARTIE_ROOT
-        G4bool mUseLANLDistribution = { true };
         G4String mLANLDistributionFileName = {"resolution13a.root"};
         G4String mLANLDistributionName = {"tally5"};
         TFile* mLANLDistributionFile = {0};

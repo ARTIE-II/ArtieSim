@@ -7,14 +7,26 @@ from matplotlib import pyplot as plt
 class ArtieIAnalysis:
 
     def __init__(self,
-        input_file:     str="artieI_0.root",
+        ideal_file:     str="artieI_ideal_0.root",
+        vacuum_file:    str="artieI_vacuum_0.root",
+        argon_file:     str="artieI_argon_0.root",
         flight_path:    float=70,    # m
         resolution:     float=0.125  # us
     ):
-        self.input_file = uproot.open(input_file)
-        self.neutron_data = self.input_file["NeutronEventData"].arrays(library="np")
-        self.energy = self.neutron_data["neutron_energy"] * 10e5        # keV
-        self.arrival_time = self.neutron_data["arrival_time"] / 1000.0  # us
+        self.ideal_file = uproot.open(ideal_file)
+        self.ideal_neutron_data = self.ideal_file["NeutronEventData"].arrays(library="np")
+        self.ideal_energy = self.ideal_neutron_data["neutron_energy"] * 10e5        # keV
+        self.ideal_arrival_time = self.ideal_neutron_data["arrival_time"] / 1000.0  # us
+
+        self.vacuum_file = uproot.open(vacuum_file)
+        self.vacuum_neutron_data = self.vacuum_file["NeutronEventData"].arrays(library="np")
+        self.vacuum_energy = self.vacuum_neutron_data["neutron_energy"] * 10e5        # keV
+        self.vacuum_arrival_time = self.vacuum_neutron_data["arrival_time"] / 1000.0  # us
+
+        self.argon_file = uproot.open(argon_file)
+        self.argon_neutron_data = self.argon_file["NeutronEventData"].arrays(library="np")
+        self.argon_energy = self.argon_neutron_data["neutron_energy"] * 10e5        # keV
+        self.argon_arrival_time = self.argon_neutron_data["arrival_time"] / 1000.0  # us
 
         self.neutron_mass = 939.5654133*1000.0  # keV 
         self.speed_of_light  = 2.99792458*100.0    # m / mus
@@ -39,9 +51,14 @@ class ArtieIAnalysis:
         return t
 
     def simulate_data_from_mc(self,
-        filename
+        simulation: str="ideal"
     ):
-        t = np.array(self.neutron_data["arrival_time"]/1000.0)
+        if simulation == "ideal":
+            t = np.array(self.ideal_neutron_data["arrival_time"]/1000.0)
+        elif simulation == "vacuum":
+            t = np.array(self.vacuum_neutron_data["arrival_time"]/1000.0)
+        else:
+            t = np.array(self.argon_neutron_data["arrival_time"]/1000.0)
         t = t[(t > 0)]
         t = self.smear_time(t)
         e = self.energy_from_tof(t)
@@ -51,26 +68,44 @@ class ArtieIAnalysis:
         number_of_bins: int=200,
         energy_min:     float=40,
         energy_max:     float=70,
-        name:           str="Ideal Neutrons",
+        name:           str="Neutrons",
         save:   str='',
         show:   bool=False
     ):
-        detected_time = self.arrival_time[(self.arrival_time>0)]
-        energy_detected = self.energy[(self.arrival_time>0)]
-        energy_tof = self.energy_from_tof(detected_time)
+        ideal_detected_time = self.ideal_arrival_time[(self.ideal_arrival_time>0)]
+        ideal_energy_detected = self.ideal_energy[(self.ideal_arrival_time>0)]
+        ideal_energy_tof = self.energy_from_tof(ideal_detected_time)
+
+        vacuum_detected_time = self.vacuum_arrival_time[(self.vacuum_arrival_time>0)]
+        vacuum_energy_detected = self.vacuum_energy[(self.vacuum_arrival_time>0)]
+        vacuum_energy_tof = self.energy_from_tof(vacuum_detected_time)
+
+        argon_detected_time = self.argon_arrival_time[(self.argon_arrival_time>0)]
+        argon_energy_detected = self.argon_energy[(self.argon_arrival_time>0)]
+        argon_energy_tof = self.energy_from_tof(argon_detected_time)
 
         tfin  = np.linspace(15,30,150)
         efin = self.energy_from_tof(tfin)
 
         fig, axs = plt.subplots()
         axs.plot(
-            energy_detected, detected_time,
+            ideal_energy_detected, ideal_detected_time,
             linestyle="-.", color="b",
-            label="Geant4"
+            label="ideal"
+        )
+        axs.plot(
+            argon_energy_detected, argon_detected_time,
+            linestyle="-.", color="r",
+            label="argon"
+        )
+        axs.plot(
+            vacuum_energy_detected, vacuum_detected_time,
+            linestyle="-.", color="k",
+            label="vacuum"
         )
         axs.plot(
             efin, tfin,
-            linestyle='--', color='r',
+            linestyle='--', color='g',
             label="Einstein"
         )
         axs.set_xlim(xmin=energy_min, xmax=energy_max)
@@ -82,21 +117,46 @@ class ArtieIAnalysis:
         if(save != ''):
             plt.savefig(f"{save}_neutron_time_of_flight.png")
         
-        fig, axs = plt.subplots()
-        delta = energy_tof - energy_detected
-        print("mean time difference:  ", np.mean(delta))
-        print("variance:              ", np.var(delta))
-        hist_delta, edges_delta = np.histogram(
-            delta, 
+        ideal_delta = ideal_energy_tof - ideal_energy_detected
+        vacuum_delta = vacuum_energy_tof - vacuum_energy_detected
+        argon_delta = argon_energy_tof - argon_energy_detected
+
+        ideal_hist_delta, ideal_edges_delta = np.histogram(
+            ideal_delta, 
             bins=number_of_bins,
             range=[-10.0,10.0]
         )
-        cbins = (edges_delta[:-1] + edges_delta[1:])/2.0
+        vacuum_hist_delta, vacuum_edges_delta = np.histogram(
+            vacuum_delta, 
+            bins=number_of_bins,
+            range=[-10.0,10.0]
+        )
+        argon_hist_delta, argon_edges_delta = np.histogram(
+            argon_delta, 
+            bins=number_of_bins,
+            range=[-10.0,10.0]
+        )
+
+        cbins = (ideal_edges_delta[:-1] + ideal_edges_delta[1:])/2.0
+
+        fig, axs = plt.subplots()
         axs.plot(
-            cbins, hist_delta,
+            cbins, ideal_hist_delta,
             linestyle='-',
             color="b",
-            label=r"$\mu$" + f" = {np.mean(delta):.2e}\n" + r"$\sigma$" + f" = {np.std(delta):.2e}"
+            label=r"ideal $\mu$" + f" = {np.mean(ideal_delta):.2e}\n" + r"$\sigma$" + f" = {np.std(ideal_delta):.2e}"
+        )
+        axs.plot(
+            cbins, vacuum_hist_delta,
+            linestyle='-',
+            color="k",
+            label=r"$vacuum \mu$" + f" = {np.mean(vacuum_delta):.2e}\n" + r"$\sigma$" + f" = {np.std(vacuum_delta):.2e}"
+        )
+        axs.plot(
+            cbins, argon_hist_delta,
+            linestyle='-',
+            color="r",
+            label=r"argon $\mu$" + f" = {np.mean(argon_delta):.2e}\n" + r"$\sigma$" + f" = {np.std(argon_delta):.2e}"
         )
         axs.set_xlabel("Kinetic Energy (measured - actual) [keV]")
         plt.legend()
@@ -111,23 +171,69 @@ class ArtieIAnalysis:
         number_of_bins: int=200,
         energy_min:     float=40,
         energy_max:     float=70,
-        name:           str="Ideal Neutrons",
+        name:           str="Neutrons",
         save:   str='',
         show:   bool=False
     ):
+        # obtain simulated data time stamps from MC:
+        vacuum_simulated_t, vacuum_simulated_E = self.simulate_data_from_mc("vacuum")
+        argon_simulated_t, argon_simulated_E = self.simulate_data_from_mc("argon")
+
         fig, axs = plt.subplots()
         axs.hist(
-            self.energy, 
+            self.ideal_energy, 
             bins=number_of_bins, 
             range=[energy_min, energy_max], 
-            label="produced", 
+            label="ideal produced", 
             histtype="step", stacked=True, density=True
         )
         axs.hist(
-            self.energy[(self.arrival_time > 0)], 
+            self.ideal_energy[(self.ideal_arrival_time > 0)], 
             bins=number_of_bins, 
             range=[energy_min, energy_max], 
-            label="detected", 
+            label="ideal detected", 
+            histtype="step", stacked=True, density=True
+        )
+        axs.hist(
+            self.vacuum_energy, 
+            bins=number_of_bins, 
+            range=[energy_min, energy_max], 
+            label="vacuum produced", 
+            histtype="step", stacked=True, density=True
+        )
+        axs.hist(
+            self.vacuum_energy[(self.vacuum_arrival_time > 0)], 
+            bins=number_of_bins, 
+            range=[energy_min, energy_max], 
+            label="vacuum detected", 
+            histtype="step", stacked=True, density=True
+        )
+        axs.hist(
+            self.argon_energy, 
+            bins=number_of_bins, 
+            range=[energy_min, energy_max], 
+            label="argon produced", 
+            histtype="step", stacked=True, density=True
+        )
+        axs.hist(
+            self.argon_energy[(self.argon_arrival_time > 0)], 
+            bins=number_of_bins, 
+            range=[energy_min, energy_max], 
+            label="argon detected", 
+            histtype="step", stacked=True, density=True
+        )
+        axs.hist(
+            argon_simulated_E, 
+            bins=number_of_bins, 
+            range=[energy_min, energy_max], 
+            label="argon simulated", 
+            histtype="step", stacked=True, density=True
+        )
+        axs.hist(
+            vacuum_simulated_E, 
+            bins=number_of_bins, 
+            range=[energy_min, energy_max], 
+            label="vacuum simulated", 
             histtype="step", stacked=True, density=True
         )
         axs.set_xlabel("Kinetic Energy [keV]")
@@ -144,31 +250,96 @@ class ArtieIAnalysis:
         number_of_bins: int=200,
         energy_min:     float=40,
         energy_max:     float=70,
-        name:           str="Ideal Neutrons",
+        name:           str="Neutrons",
         save:   str='',
         show:   bool=False
     ):
-        hist_all, edges_all = np.histogram(
-            self.energy, 
+        # obtain simulated data time stamps from MC:
+        vacuum_simulated_t, vacuum_simulated_E = self.simulate_data_from_mc("vacuum")
+        argon_simulated_t, argon_simulated_E = self.simulate_data_from_mc("argon")
+
+        ideal_hist_all, ideal_edges_all = np.histogram(
+            self.ideal_energy, 
             bins=number_of_bins,
             range=[energy_min, energy_max]
         )
-        hist_detected, edges_detected = np.histogram(
-            self.energy[(self.arrival_time > 0)], 
+        ideal_hist_detected, ideal_edges_detected = np.histogram(
+            self.ideal_energy[(self.ideal_arrival_time > 0)], 
             bins=number_of_bins,
             range=[energy_min, energy_max]
         )
-        cbins = (edges_all[1:] + edges_all[:-1])/2.0
-        transmission = np.zeros(cbins.size)
-        mask = (hist_all > 0)
-        transmission[mask] = hist_detected[mask] / hist_all[mask]
+        vacuum_hist_all, vacuum_edges_all = np.histogram(
+            self.vacuum_energy, 
+            bins=number_of_bins,
+            range=[energy_min, energy_max]
+        )
+        vacuum_hist_detected, vacuum_edges_detected = np.histogram(
+            self.vacuum_energy[(self.vacuum_arrival_time > 0)], 
+            bins=number_of_bins,
+            range=[energy_min, energy_max]
+        )
+        argon_hist_all, argon_edges_all = np.histogram(
+            self.argon_energy, 
+            bins=number_of_bins,
+            range=[energy_min, energy_max]
+        )
+        argon_hist_detected, argon_edges_detected = np.histogram(
+            self.argon_energy[(self.argon_arrival_time > 0)], 
+            bins=number_of_bins,
+            range=[energy_min, energy_max]
+        )
+        vacuum_hist_simulated, vacuum_edges_simulated = np.histogram(
+            vacuum_simulated_E, 
+            bins=number_of_bins,
+            range=[energy_min, energy_max]
+        )
+        argon_hist_simulated, argon_edges_simulated = np.histogram(
+            argon_simulated_E, 
+            bins=number_of_bins,
+            range=[energy_min, energy_max]
+        )
+        cbins = (ideal_edges_all[1:] + ideal_edges_all[:-1])/2.0
+
+        ideal_transmission = np.zeros(cbins.size)
+        ideal_mask = (ideal_hist_all > 0)
+        ideal_transmission[ideal_mask] = ideal_hist_detected[ideal_mask] / ideal_hist_all[ideal_mask]
+
+        vacuum_transmission = np.zeros(cbins.size)
+        vacuum_mask = (vacuum_hist_all > 0)
+        vacuum_transmission[vacuum_mask] = vacuum_hist_detected[vacuum_mask] / vacuum_hist_all[vacuum_mask]
+
+        argon_transmission = np.zeros(cbins.size)
+        argon_mask = (argon_hist_all > 0)
+        argon_transmission[argon_mask] = argon_hist_detected[argon_mask] / argon_hist_all[argon_mask]
+
+        simulated_transmission = np.zeros(cbins.size)
+        vacuum_simulated_mask = (vacuum_hist_simulated > 0)
+        simulated_transmission[vacuum_simulated_mask] = argon_hist_simulated[vacuum_simulated_mask] / vacuum_hist_simulated[vacuum_simulated_mask]
 
         fig, axs = plt.subplots()
         axs.plot(
-            cbins, transmission,
+            cbins, ideal_transmission,
+            linestyle="--",
+            color="b",
+            label="ideal"
+        )
+        axs.plot(
+            cbins, vacuum_transmission,
             linestyle="--",
             color="k",
-            label="true"
+            label="vacuum"
+        )
+        axs.plot(
+            cbins, argon_transmission,
+            linestyle="--",
+            color="r",
+            label="argon"
+        )
+        axs.plot(
+            cbins, simulated_transmission,
+            linestyle=":",
+            color="m",
+            label="simulated"
         )
         if(save != ''):
             plt.savefig(f"{save}_neutron_transmission.png")
@@ -183,31 +354,108 @@ class ArtieIAnalysis:
         save:   str='',
         show:   bool=False
     ):
-        hist_all, edges_all = np.histogram(
-            self.energy, 
-            bins=number_of_bins,
-            range=[energy_min, energy_max]
-        )
-        hist_detected, edges_detected = np.histogram(
-            self.energy[(self.arrival_time > 0)], 
-            bins=number_of_bins,
-            range=[energy_min, energy_max]
-        )
-        cbins = (edges_all[1:] + edges_all[:-1])/2.0
-        transmission = np.zeros(cbins.size)
-        mask = (hist_all > 0)
-        transmission[mask] = hist_detected[mask] / hist_all[mask]
+        # obtain simulated data time stamps from MC:
+        vacuum_simulated_t, vacuum_simulated_E = self.simulate_data_from_mc("vacuum")
+        argon_simulated_t, argon_simulated_E = self.simulate_data_from_mc("argon")
 
-        cross_section = np.zeros(cbins.size)
-        mask = (transmission > 0)
-        cross_section[mask] = -(1.0 / 4.2) * np.log(transmission[mask])
+        ideal_hist_all, ideal_edges_all = np.histogram(
+            self.ideal_energy, 
+            bins=number_of_bins,
+            range=[energy_min, energy_max]
+        )
+        ideal_hist_detected, ideal_edges_detected = np.histogram(
+            self.ideal_energy[(self.ideal_arrival_time > 0)], 
+            bins=number_of_bins,
+            range=[energy_min, energy_max]
+        )
+        vacuum_hist_all, vacuum_edges_all = np.histogram(
+            self.vacuum_energy, 
+            bins=number_of_bins,
+            range=[energy_min, energy_max]
+        )
+        vacuum_hist_detected, vacuum_edges_detected = np.histogram(
+            self.vacuum_energy[(self.vacuum_arrival_time > 0)], 
+            bins=number_of_bins,
+            range=[energy_min, energy_max]
+        )
+        argon_hist_all, argon_edges_all = np.histogram(
+            self.argon_energy, 
+            bins=number_of_bins,
+            range=[energy_min, energy_max]
+        )
+        argon_hist_detected, argon_edges_detected = np.histogram(
+            self.argon_energy[(self.argon_arrival_time > 0)], 
+            bins=number_of_bins,
+            range=[energy_min, energy_max]
+        )
+        vacuum_hist_simulated, vacuum_edges_simulated = np.histogram(
+            vacuum_simulated_E, 
+            bins=number_of_bins,
+            range=[energy_min, energy_max]
+        )
+        argon_hist_simulated, argon_edges_simulated = np.histogram(
+            argon_simulated_E, 
+            bins=number_of_bins,
+            range=[energy_min, energy_max]
+        )
+        cbins = (ideal_edges_all[1:] + ideal_edges_all[:-1])/2.0
+
+        ideal_transmission = np.zeros(cbins.size)
+        ideal_mask = (ideal_hist_all > 0)
+        ideal_transmission[ideal_mask] = ideal_hist_detected[ideal_mask] / ideal_hist_all[ideal_mask]
+
+        vacuum_transmission = np.zeros(cbins.size)
+        vacuum_mask = (vacuum_hist_all > 0)
+        vacuum_transmission[vacuum_mask] = vacuum_hist_detected[vacuum_mask] / vacuum_hist_all[vacuum_mask]
+
+        argon_transmission = np.zeros(cbins.size)
+        argon_mask = (argon_hist_all > 0)
+        argon_transmission[argon_mask] = argon_hist_detected[argon_mask] / argon_hist_all[argon_mask]
+
+        simulated_transmission = np.zeros(cbins.size)
+        vacuum_simulated_mask = (vacuum_hist_simulated > 0)
+        simulated_transmission[vacuum_simulated_mask] = argon_hist_simulated[vacuum_simulated_mask] / vacuum_hist_simulated[vacuum_simulated_mask]
+
+        ideal_cross_section = np.zeros(cbins.size)
+        ideal_mask = (ideal_transmission > 0)
+        ideal_cross_section[ideal_mask] = -(1.0 / 4.2) * np.log(ideal_transmission[ideal_mask])
+
+        vacuum_cross_section = np.zeros(cbins.size)
+        vacuum_mask = (vacuum_transmission > 0)
+        vacuum_cross_section[vacuum_mask] = -(1.0 / 4.2) * np.log(vacuum_transmission[vacuum_mask])
+
+        argon_cross_section = np.zeros(cbins.size)
+        argon_mask = (argon_transmission > 0)
+        argon_cross_section[argon_mask] = -(1.0 / 4.2) * np.log(argon_transmission[argon_mask])
+
+        simulated_cross_section = np.zeros(cbins.size)
+        simulated_mask = (simulated_transmission > 0)
+        simulated_cross_section[simulated_mask] = -(1.0 / 4.2) * np.log(simulated_transmission[simulated_mask])
 
         fig, axs = plt.subplots()
         axs.plot(
-            cbins, cross_section,
+            cbins, ideal_cross_section,
+            linestyle="--",
+            color="b",
+            label="ideal"
+        )
+        axs.plot(
+            cbins, vacuum_cross_section,
             linestyle="--",
             color="k",
-            label="true"
+            label="vacuum"
+        )
+        axs.plot(
+            cbins, argon_cross_section,
+            linestyle="--",
+            color="r",
+            label="argon"
+        )
+        axs.plot(
+            cbins, simulated_cross_section,
+            linestyle=":",
+            color="m",
+            label="simulated"
         )
         if(save != ''):
             plt.savefig(f"{save}_neutron_cross_section.png")
