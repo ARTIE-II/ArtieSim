@@ -28,6 +28,8 @@ class ArtieIAnalysis:
         self.argon_energy = self.argon_neutron_data["neutron_energy"] * 10e5        # keV
         self.argon_arrival_time = self.argon_neutron_data["arrival_time"] / 1000.0  # us
 
+        print(sum(self.argon_arrival_time > 0))
+
         self.neutron_mass = 939.5654133*1000.0  # keV 
         self.speed_of_light  = 2.99792458*100.0    # m / mus
         self.flight_path = flight_path
@@ -159,6 +161,7 @@ class ArtieIAnalysis:
             label=r"argon $\mu$" + f" = {np.mean(argon_delta):.2e}\n" + r"$\sigma$" + f" = {np.std(argon_delta):.2e}"
         )
         axs.set_xlabel("Kinetic Energy (measured - actual) [keV]")
+        axs.set_ylabel("")
         plt.legend()
         plt.tight_layout()
         if(save != ''):
@@ -185,56 +188,56 @@ class ArtieIAnalysis:
             bins=number_of_bins, 
             range=[energy_min, energy_max], 
             label="ideal produced", 
-            histtype="step", stacked=True, density=True
+            histtype="step", density=True
         )
         axs.hist(
             self.ideal_energy[(self.ideal_arrival_time > 0)], 
             bins=number_of_bins, 
             range=[energy_min, energy_max], 
             label="ideal detected", 
-            histtype="step", stacked=True, density=True
+            histtype="step", density=True
         )
         axs.hist(
             self.vacuum_energy, 
             bins=number_of_bins, 
             range=[energy_min, energy_max], 
             label="vacuum produced", 
-            histtype="step", stacked=True, density=True
+            histtype="step", density=True
         )
         axs.hist(
             self.vacuum_energy[(self.vacuum_arrival_time > 0)], 
             bins=number_of_bins, 
             range=[energy_min, energy_max], 
             label="vacuum detected", 
-            histtype="step", stacked=True, density=True
+            histtype="step", density=True
         )
         axs.hist(
             self.argon_energy, 
             bins=number_of_bins, 
             range=[energy_min, energy_max], 
             label="argon produced", 
-            histtype="step", stacked=True, density=True
+            histtype="step", density=True
         )
         axs.hist(
             self.argon_energy[(self.argon_arrival_time > 0)], 
             bins=number_of_bins, 
             range=[energy_min, energy_max], 
             label="argon detected", 
-            histtype="step", stacked=True, density=True
+            histtype="step", density=True
         )
         axs.hist(
             argon_simulated_E, 
             bins=number_of_bins, 
             range=[energy_min, energy_max], 
             label="argon simulated", 
-            histtype="step", stacked=True, density=True
+            histtype="step", density=True
         )
         axs.hist(
             vacuum_simulated_E, 
             bins=number_of_bins, 
             range=[energy_min, energy_max], 
             label="vacuum simulated", 
-            histtype="step", stacked=True, density=True
+            histtype="step", density=True
         )
         axs.set_xlabel("Kinetic Energy [keV]")
         axs.set_ylabel("Neutrons")
@@ -341,6 +344,12 @@ class ArtieIAnalysis:
             color="m",
             label="simulated"
         )
+        axs.set_xlabel("Energy bin [keV]")
+        axs.set_ylabel("Transmission")
+        axs.set_title("Transmission vs. Energy [keV]")
+        axs.set_yscale("log")
+        plt.legend()
+        plt.tight_layout()
         if(save != ''):
             plt.savefig(f"{save}_neutron_transmission.png")
         if(show):
@@ -457,6 +466,12 @@ class ArtieIAnalysis:
             color="m",
             label="simulated"
         )
+        axs.set_xlabel("Energy bin [keV]")
+        axs.set_ylabel("Cross Section")
+        axs.set_title("Cross Section vs. Energy [keV]")
+        axs.set_yscale("log")
+        plt.legend()
+        plt.tight_layout()
         if(save != ''):
             plt.savefig(f"{save}_neutron_cross_section.png")
         if(show):

@@ -69,8 +69,8 @@ namespace Artie
         }
         else
         {
-            std::cerr << "Material (" + material + ") not recognized! Using high vacuum." << G4endl;
-            return new Vacuum("HighVacuum_" + name, 1.0E-11);
+            std::cerr << "ERROR! Material (" + material + ") not recognized!" << G4endl;
+            exit(0);
         }
     }
 }

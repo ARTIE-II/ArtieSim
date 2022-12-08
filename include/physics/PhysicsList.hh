@@ -48,6 +48,8 @@
 #include "G4UnitsTable.hh"
 #include "G4PhysListFactory.hh"
 
+#include "NeutronHPPhysics.hh"
+
 namespace Artie
 {
     class PhysicsList : public G4VModularPhysicsList
@@ -57,6 +59,7 @@ namespace Artie
         ~PhysicsList();
 
         virtual void SetCuts();
+        virtual void ConstructParticle();
 
         void PrintPhysicsLists();
 
