@@ -176,4 +176,6 @@ file(COPY ${ANALYSIS_FILES} DESTINATION ${PROJECT_BINARY_DIR})
 file(COPY ${CONFIG_FILES} DESTINATION ${PROJECT_BINARY_DIR})
 ##############################################################
 
+##############################################################
 add_custom_target(Artie DEPENDS artie)
+##############################################################

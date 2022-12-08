@@ -75,9 +75,77 @@ namespace Artie
     : mConfigurationFile(configurationFile)
     {
         mConfig = YAML::LoadFile(mConfigurationFile);
-        for(YAML::const_iterator it=mConfig["detector"].begin(); it!=mConfig["detector"].end(); ++it) 
+        if(!mConfig["manager"]) 
         {
-            G4cout << "Categories: " << it->first.as<std::string>() << G4endl;
+            std::cout << "CONFIG ERROR! the section ";
+            std::cout << "'manager' does not exist!" << std::endl;
+            exit(0);
+        }
+        if(!mConfig["detector"]) 
+        {
+            std::cout << "CONFIG ERROR! the section ";
+            std::cout << "'detector' does not exist!" << std::endl;
+            exit(0);
+        }
+        if(!mConfig["generator"]) 
+        {
+            std::cout << "CONFIG ERROR! the section ";
+            std::cout << "'generator' does not exist!" << std::endl;
+            exit(0);
+        }
+        if(!mConfig["manager"]["number_of_threads"]) 
+        {
+            std::cout << "CONFIG ERROR! the parameter ";
+            std::cout << "'manager:number_of_threads' does not exist!" << std::endl;
+            exit(0);
+        }
+        if(!mConfig["manager"]["number_of_runs"]) 
+        {
+            std::cout << "CONFIG ERROR! the parameter ";
+            std::cout << "'manager:number_of_runs' does not exist!" << std::endl;
+            exit(0);
+        }
+        if(!mConfig["manager"]["number_of_events"]) 
+        {
+            std::cout << "CONFIG ERROR! the parameter ";
+            std::cout << "'manager:number_of_events' does not exist!" << std::endl;
+            exit(0);
+        }
+        if(!mConfig["manager"]["mode"]) 
+        {
+            std::cout << "CONFIG ERROR! the parameter ";
+            std::cout << "'manager:mode' does not exist!" << std::endl;
+            exit(0);
+        }
+        if(!mConfig["manager"]["output_filename"]) 
+        {
+            std::cout << "CONFIG ERROR! the parameter ";
+            std::cout << "'manager:output_filename' does not exist!" << std::endl;
+            exit(0);
+        }
+        if(!mConfig["manager"]["save_particle_maps"]) 
+        {
+            std::cout << "CONFIG ERROR! the parameter ";
+            std::cout << "'manager:save_particle_maps' does not exist!" << std::endl;
+            exit(0);
+        }
+        if(!mConfig["manager"]["save_primary_info"]) 
+        {
+            std::cout << "CONFIG ERROR! the parameter ";
+            std::cout << "'manager:save_primary_info' does not exist!" << std::endl;
+            exit(0);
+        }
+        if(!mConfig["manager"]["save_hits"]) 
+        {
+            std::cout << "CONFIG ERROR! the parameter ";
+            std::cout << "'manager:save_hits' does not exist!" << std::endl;
+            exit(0);
+        }
+        if(!mConfig["manager"]["save_neutron_data"]) 
+        {
+            std::cout << "CONFIG ERROR! the parameter ";
+            std::cout << "'manager:save_neutron_data' does not exist!" << std::endl;
+            exit(0);
         }
     }
 

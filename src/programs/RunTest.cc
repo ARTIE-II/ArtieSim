@@ -33,7 +33,8 @@
 int main(int argc, char** argv)
 {
     // load in the config file
-    auto Config = Artie::ConfigParser("artieI_ideal.yaml");
+    
+    auto Config = Artie::ConfigParser("artieI_argon.yaml");
     Artie::EventManager::GetEventManager()->SetConfig(Config.GetConfig());
 
     G4UIExecutive* UIExecutive = 0;
