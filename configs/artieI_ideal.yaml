@@ -30,7 +30,7 @@ detector:
     world_y: 4      # m
     world_z: 200    # m
     wall_thickness: 1.0     # m
-    construct_detector: false # bool
+    construct_detector: true # bool
     detector_radius: 2.0    # cm
     detector_length: 20.0   # cm
     detector_entrance: 69.0 # m
