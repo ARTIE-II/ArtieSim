@@ -96,7 +96,7 @@ namespace Artie
             PrimaryGeneration(
                 "neutron",
                 0,
-                {0., 0., -1. * m},
+                {0., 0., mTZeroLocation},
                 {SampleBeamEnergy()},
                 {0., 0., 1.}
             )
