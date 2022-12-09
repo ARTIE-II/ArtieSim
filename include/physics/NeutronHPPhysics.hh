@@ -40,9 +40,9 @@ namespace Artie
     {
     public:
         NeutronHPPhysics(const G4String& name="neutron");
-        ~NeutronHPPhysics();
+        virtual ~NeutronHPPhysics();
 
-        virtual void ConstructParticle(){}
+        virtual void ConstructParticle();
         virtual void ConstructProcess();
         
     public:

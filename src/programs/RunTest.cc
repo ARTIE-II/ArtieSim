@@ -64,38 +64,6 @@ int main(int argc, char** argv)
     // create the physics list
     auto PhysicsList = new Artie::PhysicsList();
     RunManager->SetUserInitialization(PhysicsList);
-    PhysicsList->PrintPhysicsLists();
-    G4ParticleTable* theParticleTable = G4ParticleTable::GetParticleTable();
-    G4ParticleTable::G4PTblDicIterator* theParticleIterator = theParticleTable->GetIterator();
-    theParticleIterator->reset();
-    //loop on particles and get process manager from there list of processes
-    while((*theParticleIterator)())
-    {
-        G4ParticleDefinition* pd = theParticleIterator->value();
-        std::cout << pd->GetParticleName() << std::endl;
-        G4ProcessManager* pm = pd->GetProcessManager();
-        if(pm)
-        {
-            G4ProcessVector& procs = *(pm->GetProcessList());
-            for ( G4int idx = 0 ; idx<procs.size() ; ++idx)
-            {
-                const G4VProcess* masterP = procs[idx]->GetMasterProcess();
-                std::cout << masterP->GetProcessName() << std::endl;
-                if ( ! masterP )
-                {
-                    //Process does not have an associated shadow master process
-                    //We are in master mode or sequential
-                    procs[idx]->SetMasterProcess(const_cast<G4VProcess*>(procs[idx]));
-                }
-            }
-        }
-        else {
-            std::cout << "NONE" << std::endl;
-        }
-    }
-
-    G4int poop;
-    G4cin >> poop;
 
     // create the detector
     auto Detector = new Artie::ArtieIDetector(
@@ -148,6 +116,8 @@ int main(int argc, char** argv)
             );
         }
     }
+    //delete Detector;
+    delete Generator;
     delete RunManager;
     return 0;
 }

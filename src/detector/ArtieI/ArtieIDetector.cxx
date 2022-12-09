@@ -64,11 +64,16 @@ namespace Artie
         if(Config()["insulation_thickness"]) { mInsulationThickness = Config()["insulation_thickness"].as<G4double>() * cm; }
         if(Config()["window_thickness"])     { mWindowThickness = Config()["window_thickness"].as<G4double>() * cm; }
         if(Config()["buffer_length"])        { mBufferLength = Config()["buffer_length"].as<G4double>() * cm; }
+        if(Config()["construct_beam_pipe"])   { mConstructBeamPipe = Config()["construct_beam_pipe"].as<G4bool>(); }
+        if(Config()["beam_pipe_inner_radius"]) {mBeamPipeInnerRadius = Config()["beam_pipe_inner_radius"].as<G4double>() * cm; }
+        if(Config()["beam_pipe_outer_radius"]) {mBeamPipeOuterRadius = Config()["beam_pipe_outer_radius"].as<G4double>() * cm; }
         if(Config()["gap"])     { mGap = Config()["gap"].as<G4double>() * m; }
+        if(Config()["construct_hall"])   { mConstructHall = Config()["construct_hall"].as<G4bool>(); }
         if(Config()["world_x"]) { mWorldX = Config()["world_x"].as<G4double>() * m; }
         if(Config()["world_y"]) { mWorldY = Config()["world_y"].as<G4double>() * m; }
         if(Config()["world_z"]) { mWorldZ = Config()["world_z"].as<G4double>() * m; }
         if(Config()["wall_thickness"]) { mWallThickness = Config()["wall_thickness"].as<G4double>() * m; }
+        if(Config()["construct_detector"])   { mConstructDetector = Config()["construct_detector"].as<G4bool>(); }
         if(Config()["detector_radius"]) { mDetectorRadius = Config()["detector_radius"].as<G4double>() * cm; }
         if(Config()["detector_length"]) { mDetectorLength = Config()["detector_length"].as<G4double>() * cm; }
         if(Config()["detector_entrance"]) { mDetectorEntrance = Config()["detector_entrance"].as<G4double>() * m; }
@@ -140,68 +145,77 @@ namespace Artie
         }
 
         // create the beampipe
-        mBeamPipeLeftHalfLength = (-mGap / 2.0 + mWorldZ / 2.0) / 2.0;
-        mBeamPipeRightHalfLength = (mDetectorEntrance - mGap / 2.0) / 2.0;
-        mBeamPipeLeftPosition = {
-            0., 
-            0., 
-            (-mWorldZ / 2.0 - mGap / 2.0) / 2.0
-        };
-        mBeamPipeRightPosition = {
-            0., 
-            0., 
-            (mDetectorEntrance + mGap / 2.0) / 2.0
-        };
-        std::shared_ptr<ArtieIBeamPipeLeftBeam> BeamPipeLeftBeam 
-            = std::make_shared<ArtieIBeamPipeLeftBeam>(
-            mBeamPipeInnerRadius, 
-            mBeamPipeLeftHalfLength,
-            mBeamPipeLeftPosition
-        );
-        AddDetectorComponent(BeamPipeLeftBeam);
-        std::shared_ptr<ArtieIBeamPipeRightBeam> BeamPipeRightBeam
-            = std::make_shared<ArtieIBeamPipeRightBeam>(
-            mBeamPipeInnerRadius, 
-            mBeamPipeRightHalfLength,
-            mBeamPipeRightPosition
-        );
-        AddDetectorComponent(BeamPipeRightBeam);
+        if(mConstructBeamPipe)
+        {
+            mBeamPipeLeftHalfLength = (-mGap / 2.0 + mWorldZ / 2.0) / 2.0;
+            mBeamPipeRightHalfLength = (mDetectorEntrance - mGap / 2.0) / 2.0;
+            mBeamPipeLeftPosition = {
+                0., 
+                0., 
+                (-mWorldZ / 2.0 - mGap / 2.0) / 2.0
+            };
+            mBeamPipeRightPosition = {
+                0., 
+                0., 
+                (mDetectorEntrance + mGap / 2.0) / 2.0
+            };
+            std::shared_ptr<ArtieIBeamPipeLeftBeam> BeamPipeLeftBeam 
+                = std::make_shared<ArtieIBeamPipeLeftBeam>(
+                mBeamPipeInnerRadius, 
+                mBeamPipeLeftHalfLength,
+                mBeamPipeLeftPosition
+            );
+            AddDetectorComponent(BeamPipeLeftBeam);
+            std::shared_ptr<ArtieIBeamPipeRightBeam> BeamPipeRightBeam
+                = std::make_shared<ArtieIBeamPipeRightBeam>(
+                mBeamPipeInnerRadius, 
+                mBeamPipeRightHalfLength,
+                mBeamPipeRightPosition
+            );
+            AddDetectorComponent(BeamPipeRightBeam);
 
-        std::shared_ptr<ArtieIBeamPipeLeftPipe> BeamPipeLeftPipe
-            = std::make_shared<ArtieIBeamPipeLeftPipe>(
-            mBeamPipeInnerRadius, 
-            mBeamPipeOuterRadius,
-            mBeamPipeLeftHalfLength,
-            mBeamPipeLeftPosition
-        );
-        AddDetectorComponent(BeamPipeLeftPipe);
-        std::shared_ptr<ArtieIBeamPipeRightPipe> BeamPipeRightPipe 
-            = std::make_shared<ArtieIBeamPipeRightPipe>(
-            mBeamPipeInnerRadius, 
-            mBeamPipeOuterRadius,
-            mBeamPipeRightHalfLength,
-            mBeamPipeRightPosition
-        );
-        AddDetectorComponent(BeamPipeRightPipe);
+            std::shared_ptr<ArtieIBeamPipeLeftPipe> BeamPipeLeftPipe
+                = std::make_shared<ArtieIBeamPipeLeftPipe>(
+                mBeamPipeInnerRadius, 
+                mBeamPipeOuterRadius,
+                mBeamPipeLeftHalfLength,
+                mBeamPipeLeftPosition
+            );
+            AddDetectorComponent(BeamPipeLeftPipe);
+            std::shared_ptr<ArtieIBeamPipeRightPipe> BeamPipeRightPipe 
+                = std::make_shared<ArtieIBeamPipeRightPipe>(
+                mBeamPipeInnerRadius, 
+                mBeamPipeOuterRadius,
+                mBeamPipeRightHalfLength,
+                mBeamPipeRightPosition
+            );
+            AddDetectorComponent(BeamPipeRightPipe);
+        }
 
         // construct the detector
-        std::shared_ptr<ArtieITargetDetector> TargetDetector
-            = std::make_shared<ArtieITargetDetector>(
-            mDetectorRadius, 
-            mDetectorLength,
-            mDetectorEntrance
-        );
-        AddDetectorComponent(TargetDetector);
+        if(mConstructDetector)
+        {
+            std::shared_ptr<ArtieITargetDetector> TargetDetector
+                = std::make_shared<ArtieITargetDetector>(
+                mDetectorRadius, 
+                mDetectorLength,
+                mDetectorEntrance
+            );
+            AddDetectorComponent(TargetDetector);
+        }
 
         // add the hall
-        std::shared_ptr<ArtieIHall> Hall
-            = std::make_shared<ArtieIHall>(
-            mWorldX,
-            mWorldY,
-            mWorldZ,
-            mWallThickness
-        );
-        AddDetectorComponent(Hall);
+        if(mConstructHall)
+        {
+            std::shared_ptr<ArtieIHall> Hall
+                = std::make_shared<ArtieIHall>(
+                mWorldX,
+                mWorldY,
+                mWorldZ,
+                mWallThickness
+            );
+            AddDetectorComponent(Hall);
+        }
     }
 
     ArtieIDetector::~ArtieIDetector()

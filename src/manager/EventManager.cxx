@@ -586,7 +586,7 @@ namespace Artie
 
             // If we have just reached the detector, 
             // record the time and energy
-            if(volumeName == "Logical_ArtieITargetDetector")
+            if(volumeName == "Logical_ArtieITargetDetector" && step->IsFirstStepInVolume())
             {
                 mNeutronEventData[neutron_index].arrival_time = track->GetLocalTime();
                 mNeutronEventData[neutron_index].arrival_energy = postStepPoint->GetKineticEnergy();

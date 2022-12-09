@@ -16,22 +16,25 @@ detector:
     active_volume_material:         "liquid_argon"
     target_radius: 1.25             # cm
     target_length: 168              # cm
-    construct_container: false      # bool
+    construct_container: false       # bool
     container_radius: 1.745         # cm
     insulation_thickness: 10        # cm
     window_thickness: 0.00762       # cm
     buffer_length: 5.0              # cm
+    construct_beam_pipe: false       # bool
     beam_pipe_inner_radius: 18.0    # cm
     beam_pipe_outer_radius: 20.0    # cm
     gap: 2.5        # m
-    world_material: "high_vacuum"
+    construct_hall: false # bool
     world_x: 4      # m                 
     world_y: 4      # m
     world_z: 200    # m
     wall_thickness: 1.0     # m
+    construct_detector: false # bool
     detector_radius: 2.0    # cm
     detector_length: 20.0   # cm
     detector_entrance: 69.0 # m
+    world_material: "high_vacuum"
     
 # ARTIE-I generator parameters
 generator:

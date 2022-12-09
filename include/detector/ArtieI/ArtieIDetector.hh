@@ -83,6 +83,7 @@ namespace Artie
         G4double mBufferLength = {5.0 * cm};
 
         // Beam pipes
+        G4bool mConstructBeamPipe = {true};
         G4double mBeamPipeInnerRadius = {18.0 * cm};
         G4double mBeamPipeOuterRadius = {20.0 * cm};
         G4double mBeamPipeLeftHalfLength = 0.;
@@ -92,12 +93,14 @@ namespace Artie
         G4double mGap = {2.5 * m};
 
         // Hall
+        G4bool mConstructHall = {true};
         G4double mWorldX = {4 * m};
         G4double mWorldY = {4 * m};
         G4double mWorldZ = {200 * m};
         G4double mWallThickness = {1 * m};
 
         // Detector
+        G4bool mConstructDetector = {true};
         G4double mDetectorRadius = {2.0 * cm};
         G4double mDetectorLength = {20.0 * cm};
         G4double mDetectorEntrance = {69.0 * m};
