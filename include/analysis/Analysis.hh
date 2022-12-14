@@ -7,8 +7,7 @@
  */
 #pragma once
 
-#include "EventManager.hh"
 namespace Artie
 {
-    void ExampleAnalysisFunction();
+    
 }

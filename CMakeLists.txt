@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
-set(CMAKE_CXX_STANDARD 20)
+#set(CMAKE_CXX_STANDARD 20)
 
 project(Artie)
 
@@ -150,22 +150,27 @@ endif()
 ##############################################################
 # create programs
 # argon cube example
-add_executable(argon_cube 
-    src/programs/ArgonCube.cc 
-)
-target_link_libraries(argon_cube artie)
+# add_executable(argon_cube 
+#     src/programs/ArgonCube.cc 
+# )
+# target_link_libraries(argon_cube artie)
 
-# detector test
-add_executable(detector_test 
-    src/programs/DetectorTest.cc 
-)
-target_link_libraries(detector_test artie)
+# # detector test
+# add_executable(detector_test 
+#     src/programs/DetectorTest.cc 
+# )
+# target_link_libraries(detector_test artie)
 
+# # run test
+# add_executable(run_test 
+#     src/programs/RunTest.cc 
+# )
+# target_link_libraries(run_test artie)
 # run test
-add_executable(run_test 
-    src/programs/RunTest.cc 
+add_executable(artie_run 
+    src/programs/ArtieI.cc 
 )
-target_link_libraries(run_test artie)
+target_link_libraries(artie_run artie)
 ##############################################################
 
 ##############################################################

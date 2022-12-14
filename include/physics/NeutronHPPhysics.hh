@@ -6,6 +6,8 @@
  * @date 2022-04-27
  */
 #pragma once
+#include <iostream>
+#include <fstream>
 #include "G4VModularPhysicsList.hh"
 #include "G4EmStandardPhysics.hh"
 #include "G4OpticalPhysics.hh"
@@ -34,6 +36,8 @@
 #include "G4VPhysicsConstructor.hh"
 #include "globals.hh"
 
+#include "Argon.hh"
+
 namespace Artie
 {
     class NeutronHPPhysics : public G4VPhysicsConstructor
@@ -45,11 +49,10 @@ namespace Artie
         virtual void ConstructParticle();
         virtual void ConstructProcess();
         
-    public:
         void SetThermalPhysics(G4bool flag) {mThermal = flag;};  
         
     private:
-        G4bool mThermal;
-        std::shared_ptr<G4ProcessManager> mPManager = {nullptr};
+        G4bool mThermal = {true};
+        
     };
 }

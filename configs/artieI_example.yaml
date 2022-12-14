@@ -28,7 +28,7 @@ detector:
     construct_hall: true # bool
     world_x: 4      # m                 
     world_y: 4      # m
-    world_z: 200    # m
+    world_z: 200      # m
     wall_thickness: 1.0     # m
     construct_detector: true # bool
     detector_radius: 2.0    # cm

@@ -3,7 +3,7 @@
  * @author Nicholas Carrara [nmcarrara@ucdavis.edu]
  * @brief 
  * @version 0.1
- * @date 2022-04-27
+ * @date 2022-12-13
  */
 #pragma once
 #include <memory>
@@ -14,20 +14,10 @@
 #include "G4AnalysisManager.hh"
 #include "G4RunManager.hh"
 
-#include "EventManager.hh"
 #include "RunAction.hh"
-#include "PrimaryGeneratorAction.hh"
 
 namespace Artie
 {
-    /**
-     * @brief All detector MC must be managed here at the
-     * event level!
-     * 
-     * @details
-     * 	Change log:
-     * 		2022-09-22 - Initial creation of file.
-     */
     class EventAction : public G4UserEventAction
     {
     public:

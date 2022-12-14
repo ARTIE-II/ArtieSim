@@ -64,10 +64,6 @@ namespace Artie
         void PrintPhysicsLists();
 
     private:
-        std::shared_ptr<G4PhysListFactory> mPhysicsListFactory;
-        std::vector<G4String> mPhysicsLists;
-
-        std::shared_ptr<G4ProcessManager> mPhysicsManager = {nullptr};
-        std::shared_ptr<G4ProcessVector> mProcesses = {nullptr};
+        
     };
 }

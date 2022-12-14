@@ -21,9 +21,6 @@
 #include "G4RunManager.hh"
 #include "G4AnalysisManager.hh"
 
-#include "DetectorComponent.hh"
-#include "EventManager.hh"
-
 namespace Artie
 {
     class EventManager;

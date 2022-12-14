@@ -1,23 +1,35 @@
 /**
- * @file ArtieIGenerator.cxx
+ * @file ArtieIPrimaryGeneratorAction.cxx
  * @author Nicholas Carrara [nmcarrara@ucdavis.edu]
  * @brief 
  * @version 0.1
- * @date 2022-04-27
+ * @date 2022-12-13
  */
-#include "ArtieIGenerator.hh"
+#include "ArtieIPrimaryGeneratorAction.hh"
 
 namespace Artie
 {
-    ArtieIGenerator::ArtieIGenerator()
-    : Generator()
+    ArtieIPrimaryGeneratorAction::ArtieIPrimaryGeneratorAction()
     {
-        ConstructEnergyDistribution();
+
+        mParticleGun = new G4ParticleGun();
+        G4ParticleDefinition* particle = G4ParticleTable::GetParticleTable()->FindParticle("neutron");
+        mParticleGun->SetNumberOfParticles(1);
+        mParticleGun->SetParticleEnergy(1. * MeV);
+        mParticleGun->SetParticlePosition(G4ThreeVector(0.,0.,0.));
+        mParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
+        mParticleGun->SetParticleDefinition(particle);
+    }
+
+    ArtieIPrimaryGeneratorAction::~ArtieIPrimaryGeneratorAction()
+    {
+#ifdef ARTIE_ROOT
+        mLANLDistributionFile->Close();
+#endif
     }
 
 #ifdef ARTIE_YAML
-    ArtieIGenerator::ArtieIGenerator(YAML::Node config)
-    : Generator(config)
+    ArtieIPrimaryGeneratorAction::ArtieIPrimaryGeneratorAction(YAML::Node config)
     {
         if(Config()["use_lanl_distribution"])       { mUseLANLDistribution = Config()["use_lanl_distribution"].as<G4bool>(); }
 #ifdef ARTIE_ROOT
@@ -27,21 +39,30 @@ namespace Artie
         if(Config()["t_zero_location"]) { mTZeroLocation = Config()["t_zero_location"].as<G4double>() * m; }
         if(Config()["energy_cut_low"])  { mEnergyCutLow = Config()["energy_cut_low"].as<G4double>() * keV; }
         if(Config()["energy_cut_high"]) { mEnergyCutHigh = Config()["energy_cut_high"].as<G4double>() * keV; }
+
+        mParticleGun = new G4ParticleGun();
+        G4ParticleDefinition* particle = G4ParticleTable::GetParticleTable()->FindParticle("neutron");
+        mParticleGun->SetNumberOfParticles(1);
+        mParticleGun->SetParticleEnergy(1. * MeV);
+        mParticleGun->SetParticlePosition(G4ThreeVector(0.,0., mTZeroLocation));
+        mParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
+        mParticleGun->SetParticleDefinition(particle);
+
         ConstructEnergyDistribution();
     }
 #endif
 
-    void ArtieIGenerator::ConstructEnergyDistribution()
+    void ArtieIPrimaryGeneratorAction::ConstructEnergyDistribution()
     {
 #ifdef ARTIE_ROOT
         mLANLDistributionFile = new TFile(mLANLDistributionFileName);
         TGraph *DistributionGraph = (TGraph*)mLANLDistributionFile->Get(mLANLDistributionName);
-        
+
         // Make variable-bin histogram for beam energy
         const G4int nlogbins=500;        
         G4double xmin = 1.e-3;  //eV
         G4double xmax = 1.e7;   //eV
-        G4double *xbins    = new G4double[nlogbins+1];
+        G4double *xbins = new G4double[nlogbins+1];
         G4double xlogmin = TMath::Log10(xmin);
         G4double xlogmax = TMath::Log10(xmax);
         G4double dlogx   = (xlogmax-xlogmin)/((G4double)nlogbins);
@@ -59,48 +80,30 @@ namespace Artie
             if( 
                 x / 1000 > mEnergyCutLow && 
                 x / 1000 < mEnergyCutHigh
-            ) {
+            ) 
+            {
                 mLANLDistribution->Fill(x,y);
             }
         }
 #endif
     }
 
-    ArtieIGenerator::~ArtieIGenerator()
-    {
-#ifdef ARTIE_ROOT
-        mLANLDistributionFile->Close();
-#endif
-    }
-
-    ArtieIGenerator::ArtieIGenerator(G4double energyCutLow, G4double energyCutHigh)
-    : mEnergyCutLow(energyCutLow)
-    , mEnergyCutHigh(energyCutHigh)
-    {    
-    }
-
-    G4double ArtieIGenerator::SampleBeamEnergy()
+    G4double ArtieIPrimaryGeneratorAction::SampleBeamEnergy()
     {
 #ifdef ARTIE_ROOT
         if(mUseLANLDistribution) {
-            return mLANLDistribution->GetRandom() / 1000 * keV;
+            G4double energy = mLANLDistribution->GetRandom();
+            return mLANLDistribution->GetRandom() * keV;
         }
 #endif
-        return (mEnergyCutLow + (mEnergyCutHigh - mEnergyCutLow) * G4UniformRand()) * keV;
+        return (mEnergyCutLow + (mEnergyCutHigh - mEnergyCutLow) * G4UniformRand());
     }
 
-    std::vector<PrimaryGeneration> ArtieIGenerator::GeneratePrimaryList()
+    void ArtieIPrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
     {
-        std::vector<PrimaryGeneration> primaries;
-        primaries.emplace_back(
-            PrimaryGeneration(
-                "neutron",
-                0,
-                {0., 0., mTZeroLocation},
-                {SampleBeamEnergy()},
-                {0., 0., 1.}
-            )
-        );
-        return primaries;
+        mParticleGun->SetNumberOfParticles(1);
+        G4double BeamEnergy = SampleBeamEnergy();
+        mParticleGun->SetParticleEnergy(BeamEnergy);
+        mParticleGun->GeneratePrimaryVertex(event);
     }
 }

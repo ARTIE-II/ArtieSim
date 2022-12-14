@@ -18,40 +18,36 @@ namespace Artie
         new G4UnitDefinition( "mm2/g",  "mm2/g", "Surface/Mass", mm2/g);
         new G4UnitDefinition( "um2/mg", "um2/mg","Surface/Mass", um*um/mg);
         
-        // Standard EM Physics
-        RegisterPhysics(new G4EmStandardPhysics());
+        // // Standard EM Physics
+        // RegisterPhysics(new G4EmStandardPhysics());
 
-        // Synchroton Radiation & GN Physics
-        RegisterPhysics(new G4EmExtraPhysics());
+        // // Synchroton Radiation & GN Physics
+        // RegisterPhysics(new G4EmExtraPhysics());
 
-        // Optical Physics
-        RegisterPhysics(new G4OpticalPhysics());
+        // // Optical Physics
+        // RegisterPhysics(new G4OpticalPhysics());
 
-        // Decay Physics
-        RegisterPhysics(new G4DecayPhysics());
-        RegisterPhysics(new G4RadioactiveDecayPhysics());
+        // // Decay Physics
+        // RegisterPhysics(new G4DecayPhysics());
+        // RegisterPhysics(new G4RadioactiveDecayPhysics());
 
-        // Stopping Physics
-        RegisterPhysics(new G4StoppingPhysics());
+        // // Stopping Physics
+        // RegisterPhysics(new G4StoppingPhysics());
 
-        // Ion Physics
-        RegisterPhysics(new G4IonPhysics());
+        // // Ion Physics
+        // RegisterPhysics(new G4IonPhysics());
 
-        // Hadron Elastic scattering
-        RegisterPhysics(new G4HadronElasticPhysicsHP());
+        // // Hadron Elastic scattering
+        // RegisterPhysics(new G4HadronElasticPhysicsHP());
 
-        // Hadron Physics
-        RegisterPhysics(new G4HadronPhysicsQGSP_BERT_HP());
+        // // Hadron Physics
+        // RegisterPhysics(new G4HadronPhysicsQGSP_BERT_HP());
 
-        // Step limiter
-        RegisterPhysics(new G4StepLimiterPhysics());
+        // // Step limiter
+        // RegisterPhysics(new G4StepLimiterPhysics());
 
         // Neutron Physics
         RegisterPhysics(new NeutronHPPhysics("neutronHP"));
-
-        // // Get the list of physics lists
-        mPhysicsListFactory = std::make_shared<G4PhysListFactory>();
-        mPhysicsLists = mPhysicsListFactory->AvailablePhysLists();
     }
 
     PhysicsList::~PhysicsList()
@@ -85,15 +81,15 @@ namespace Artie
         SetCutValue(1 * um, "gamma");
         SetCutValue(1 * um, "e-");
         SetCutValue(1 * um, "e+");
-        SetCutValue(1 * um, "neutron");
+        SetCutValue(0, "neutron");
     }
 
     void PhysicsList::PrintPhysicsLists()
     {
-        G4cout << "Enabled Physics Lists:" << G4endl;
-        for(size_t ii = 0; ii < mPhysicsLists.size(); ii++)
-        {
-            G4cout << "\t[" << ii << "]: " << mPhysicsLists[ii] << G4endl;
-        }
+        // G4cout << "Enabled Physics Lists:" << G4endl;
+        // for(size_t ii = 0; ii < mPhysicsLists.size(); ii++)
+        // {
+        //     G4cout << "\t[" << ii << "]: " << mPhysicsLists[ii] << G4endl;
+        // }
     }
 }

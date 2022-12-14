@@ -15,7 +15,7 @@ namespace Artie
         enum G4State state,
         G4double Ar36Ratio, G4double Ar38Ratio, G4double Ar40Ratio
     )
-    : Material(name)
+    : mName(name)
     , mTemperature(temperature)
     , mPressure(pressure)
     , mState(state)
@@ -123,17 +123,39 @@ namespace Artie
         mArIsotopes->AddIsotope(mIAr40.get(), mAr40Ratio * perCent);
 
         // need now the definition of LAr with the composition
+        // mMaterial.reset(
+        //     new G4Material(
+        //         mName,              // name
+        //         18.0,               // number
+        //         mAverageMassMol,    // # of components
+        //         mAverageDensity,    // density
+        //         mState,             // state
+        //         GetTemperature(),   // temperature
+        //         GetPressure()       // pressure
+        //     )
+        // );  
         mMaterial.reset(
             new G4Material(
-                mName,          // name
-                18.0,           // number
-                mAverageMassMol,// # of components
-                mAverageDensity,// density
-                mState,         // state
+                mName,              // name
+                mAverageDensity,    // density
+                1,
+                mState,             // state
                 GetTemperature(),   // temperature
                 GetPressure()       // pressure
             )
-        );   
+        ); 
+        mMaterial->AddElement(mArIsotopes.get(), 1.0);
+
+        // const G4ElementVector* elm = mMaterial->GetElementVector();
+        // const G4double* dens = mMaterial->GetAtomicNumDensityVector();
+
+        // // fill absorption length vector
+        // G4int nelm = (G4int)mMaterial->GetNumberOfElements();
+        // G4cout << dens << "\n" << nelm << G4endl;
+        // for (G4int j=0; j<nelm; ++j)
+        // {
+        //     G4cout << dens[j] << "," << (*elm)[j]->GetZasInt() << G4endl; 
+        // }
 
         // Set up refractive index with 128nm scintillation photons
         // These data are taken from LArSoft (https://github.com/LArSoft/lardataalg/blob/develop/lardataalg/DetectorInfo/larproperties.fcl)

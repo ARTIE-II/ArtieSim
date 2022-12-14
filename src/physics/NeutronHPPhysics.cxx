@@ -50,18 +50,23 @@ namespace Artie
         }
                         
         // Elastic Processes
-        G4HadronElasticProcess* process1 = new G4HadronElasticProcess();
+        G4HadronElasticProcess* process1 = new G4HadronElasticProcess(
+            "neutronElastic"
+        );
         G4ParticleHPElastic* model1a = new G4ParticleHPElastic();
+        G4ParticleHPElasticData* dataSet1a = new G4ParticleHPElasticData();
+
         G4ParticleHPThermalScattering* model1b = new G4ParticleHPThermalScattering();
-        G4ParticleHPThermalScatteringData* dataSet1 = new G4ParticleHPThermalScatteringData();
+        G4ParticleHPThermalScatteringData* dataSet1b = new G4ParticleHPThermalScatteringData();
+        
         pManager->AddDiscreteProcess(process1);   
         process1->RegisterMe(model1a);
-        process1->AddDataSet(new G4ParticleHPElasticData());
+        process1->AddDataSet(dataSet1a);
         if (mThermal) 
         {
             model1a->SetMinEnergy(4*eV);
             process1->RegisterMe(model1b);
-            process1->AddDataSet(dataSet1);
+            process1->AddDataSet(dataSet1b);
         }
 
         // Inelastic Processes

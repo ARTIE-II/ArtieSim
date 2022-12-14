@@ -3,7 +3,7 @@
  * @author Nicholas Carrara [nmcarrara@ucdavis.edu]
  * @brief 
  * @version 0.1
- * @date 2022-04-27
+ * @date 2022-12-13
  */
 #pragma once
 #include <memory>
@@ -12,9 +12,6 @@
 #include "G4Step.hh"
 #include "G4Gamma.hh"
 #include "G4Electron.hh"
-
-#include "EventAction.hh"
-#include "Core.hh"
 
 namespace Artie
 {

@@ -20,7 +20,7 @@ namespace Artie
     static constexpr G4double Ar38MassMol = 37.962*g/mole;
     static constexpr G4double Ar40MassMol = 39.962*g/mole;
 
-    class Argon : public Material
+    class Argon
     {
     public:
         /**
@@ -89,6 +89,7 @@ namespace Artie
         void PrintProperties();
 
     private:
+        G4String mName;
         G4double mTemperature;
         G4double mPressure;
         enum G4State mState;
@@ -118,5 +119,7 @@ namespace Artie
         std::shared_ptr<G4Isotope> mIAr38 = {nullptr};
         std::shared_ptr<G4Isotope> mIAr40 = {nullptr};
         std::shared_ptr<G4Element> mArIsotopes = {nullptr};
+
+        std::shared_ptr<G4Material> mMaterial = {nullptr};
     };
 }
