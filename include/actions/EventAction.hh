@@ -15,6 +15,7 @@
 #include "G4RunManager.hh"
 
 #include "RunAction.hh"
+#include "EventManager.hh"
 
 namespace Artie
 {

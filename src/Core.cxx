@@ -24,6 +24,48 @@ namespace Artie
         return sInstance;
     }
 
+    G4String GetVolumeMaterialName(const G4Step* step)
+    {
+        G4String name = "none";
+        const G4StepPoint *preStepPoint = step->GetPreStepPoint();
+        const G4StepPoint *postStepPoint = step->GetPostStepPoint();
+        
+        G4LogicalVolume* preVolume = 0;
+        G4VPhysicalVolume* prePhysical = 0;
+        G4Material* preMaterial = 0;
+        const G4TouchableHandle& preTouchable = preStepPoint->GetTouchableHandle();
+        if(preTouchable) {
+            prePhysical = preTouchable->GetVolume();
+        }
+        if(prePhysical) {
+            preVolume = prePhysical->GetLogicalVolume();
+        }
+        if(preVolume) { 
+            preMaterial = preVolume->GetMaterial();
+        }
+        if(preMaterial) {
+            return preMaterial->GetName();
+        }
+
+        G4LogicalVolume* postVolume = 0;
+        G4VPhysicalVolume* postPhysical = 0;
+        G4Material* postMaterial = 0;
+        const G4TouchableHandle& postTouchable = postStepPoint->GetTouchableHandle();
+        if(postTouchable) {
+            postPhysical = postTouchable->GetVolume();
+        }
+        if(postPhysical) {
+            postVolume = postPhysical->GetLogicalVolume();
+        }
+        if(postVolume) { 
+            postMaterial = postVolume->GetMaterial();
+        }
+        if(postMaterial) {
+            return postMaterial->GetName();
+        }
+        return name;
+    }
+
     G4String GetVolumeName(const G4Step* step)
     {
         G4String name = "none";

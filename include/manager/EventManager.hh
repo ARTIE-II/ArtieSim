@@ -20,16 +20,13 @@
 #include "G4UIExecutive.hh"
 #include "G4VUserDetectorConstruction.hh"
 #include "G4VModularPhysicsList.hh"
+#include "G4AnalysisManager.hh"
 
 #ifdef ARTIE_YAML
 #include "yaml-cpp/yaml.h"
 #endif
 
-#include "PhysicsList.hh"
-#include "Generator.hh"
 #include "Core.hh"
-#include "Detector.hh"
-#include "DetectorComponent.hh"
 #include "Hit.hh"
 #include "Neutron.hh"
 
@@ -87,18 +84,6 @@ namespace Artie
         // Number of threads
         G4int NumberOfThreads()             { return sNumberOfThreads; }
         void NumberOfThreads(G4int threads) { sNumberOfThreads = threads;}
-
-        // Number of runs
-        G4int NumberOfRuns()             { return sNumberOfRuns; }
-        void NumberOfRuns(G4int Runs) { sNumberOfRuns = Runs;}
-
-        // Number of events
-        G4int NumberOfEvents()             { return sNumberOfEvents; }
-        void NumberOfEvents(G4int Events) { sNumberOfEvents = Events;}
-
-        // Run mode
-        G4String Mode()             { return sMode; }
-        void Mode(G4String mode)    { sMode = mode;}
 
         // Tuple related functions
         G4String OutputFileName()           { return sOutputFileName; }

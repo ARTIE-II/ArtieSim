@@ -12,7 +12,7 @@ namespace Artie
     PhysicsList::PhysicsList()
     : G4VModularPhysicsList()
     {   
-        SetVerboseLevel(0);
+        SetVerboseLevel(1);
 
         new G4UnitDefinition( "millielectronVolt", "meV", "Energy", 1.e-3*eV);   
         new G4UnitDefinition( "mm2/g",  "mm2/g", "Surface/Mass", mm2/g);
@@ -77,11 +77,11 @@ namespace Artie
 
     void PhysicsList::SetCuts()
     {
-        SetCutValue(1 * mm, "proton");
-        SetCutValue(1 * um, "gamma");
-        SetCutValue(1 * um, "e-");
-        SetCutValue(1 * um, "e+");
-        SetCutValue(0, "neutron");
+        SetCutValue(0 * mm, "proton");
+        // SetCutValue(1 * um, "gamma");
+        // SetCutValue(1 * um, "e-");
+        // SetCutValue(1 * um, "e+");
+        // SetCutValue(0, "neutron");
     }
 
     void PhysicsList::PrintPhysicsLists()

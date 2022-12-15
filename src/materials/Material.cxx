@@ -15,6 +15,9 @@ namespace Artie
         if(material_name == "gaseous_argon") {
             material = G4NistManager::Instance()->FindOrBuildMaterial("G4_Ar");
         }
+        else if(material_name == "liquid_argon") {
+            material = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");
+        }
         else if(material_name == "concrete") {
             material = G4NistManager::Instance()->FindOrBuildMaterial("G4_CONCRETE");
         }
@@ -40,7 +43,7 @@ namespace Artie
         {
             auto air = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
             material = new G4Material(
-                "Vacuum", air->GetDensity() * 10E-1, 1
+                "VacuumRough", air->GetDensity() * 0.1, 1
             );
             material->AddMaterial(air, 1.0);
         }
@@ -48,7 +51,7 @@ namespace Artie
         {
             auto air = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
             material = new G4Material(
-                "Vacuum", air->GetDensity() * 10E-11, 1
+                "VacuumHigh", air->GetDensity() * 1.0E-11, 1
             );
             material->AddMaterial(air, 1.0);
         }

@@ -19,10 +19,17 @@ namespace Artie
 
     void TrackingAction::PreUserTrackingAction(const G4Track* track)
     {
+        auto Manager = EventManager::GetEventManager();
+        Manager->AddParticleMapsFromTrack(track);
+        Manager->AddPrimaryInfoFromTrackBegin(track);
+        Manager->AddNeutronInfoFromTrackBegin(track);
     }
 
     void TrackingAction::PostUserTrackingAction(const G4Track* track)
     {
+        auto Manager = EventManager::GetEventManager();
+        Manager->AddPrimaryInfoFromTrackEnd(track);
+        Manager->AddNeutronInfoFromTrackEnd(track);
     }
 
 }

@@ -15,7 +15,7 @@ namespace Artie
         mParticleGun = new G4ParticleGun();
         G4ParticleDefinition* particle = G4ParticleTable::GetParticleTable()->FindParticle("neutron");
         mParticleGun->SetNumberOfParticles(1);
-        mParticleGun->SetParticleEnergy(1. * MeV);
+        mParticleGun->SetParticleEnergy(57*keV);
         mParticleGun->SetParticlePosition(G4ThreeVector(0.,0.,0.));
         mParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
         mParticleGun->SetParticleDefinition(particle);
@@ -43,7 +43,7 @@ namespace Artie
         mParticleGun = new G4ParticleGun();
         G4ParticleDefinition* particle = G4ParticleTable::GetParticleTable()->FindParticle("neutron");
         mParticleGun->SetNumberOfParticles(1);
-        mParticleGun->SetParticleEnergy(1. * MeV);
+        mParticleGun->SetParticleEnergy(57*keV);
         mParticleGun->SetParticlePosition(G4ThreeVector(0.,0., mTZeroLocation));
         mParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
         mParticleGun->SetParticleDefinition(particle);

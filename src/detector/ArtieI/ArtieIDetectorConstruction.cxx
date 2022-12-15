@@ -45,6 +45,7 @@ namespace Artie
         if(mConfig["detector_radius"]) { mDetectorRadius = mConfig["detector_radius"].as<G4double>() * cm; }
         if(mConfig["detector_length"]) { mDetectorLength = mConfig["detector_length"].as<G4double>() * cm; }
         if(mConfig["detector_entrance"]) { mDetectorEntrance = mConfig["detector_entrance"].as<G4double>() * m; }   
+        if(mConfig["world_material"]) { mWorldMaterialName = mConfig["world_material"].as<std::string>(); }
         DefineMaterials();
     }
 #endif
@@ -80,17 +81,31 @@ namespace Artie
         mArIsotopes->AddIsotope(mIAr38, mAr38Ratio*perCent);
         mArIsotopes->AddIsotope(mIAr40, mAr40Ratio*perCent);
 
-        // need now the definition of LAr with the composition
-        mLAr = new G4Material(
-            "LAr",          // name
-            mAverageDensity,// density
-            1,              // # om components
-            kStateLiquid,   // state
-            mTemperature,   // temperature
-            mPressure);     // pressure
-        
-        mLAr->AddElement(mArIsotopes, 1);
+        mAverageDensity = 1.406*g/cm3;
+        mNaturalArDensity = 1.3973*g/cm3;
+        G4double mAverageMassMol = mAr36MassMol * mAr36Ratio + mAr38MassMol * mAr38Ratio + mAr40MassMol * mAr40Ratio;
 
+        // need now the definition of LAr with the composition
+        // mLAr = new G4Material(
+        //     "LAr",          // name
+        //     mAverageDensity,// density
+        //     1,              // # om components
+        //     kStateLiquid,   // state
+        //     mTemperature,   // temperature
+        //     mPressure
+        // );     
+        mLAr = new G4Material(
+            "LAr",
+            18.0,
+            mAverageMassMol,
+            mAverageDensity,
+            kStateLiquid,
+            mTemperature,
+            mPressure
+        );
+        //mLAr->AddElement(mArIsotopes, 1);
+
+        mActiveVolumeMaterial = CreateMaterial(mActiveVolumeMaterialName);
         mWorldMaterial = CreateMaterial(mWorldMaterialName);
         mContainerMaterial = CreateMaterial(mContainerMaterialName); 
         mInsulationMaterial = CreateMaterial(mInsulationMaterialName); 
@@ -146,7 +161,7 @@ namespace Artie
         );
         mLogicalActiveVolume = new G4LogicalVolume(
             mSolidActiveVolume, 
-            mLAr, 
+            mActiveVolumeMaterial, 
             "Logical_ArtieIActiveVolume"
         );
         mPhysicalActiveVolume = new G4PVPlacement(

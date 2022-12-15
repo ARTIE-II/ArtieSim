@@ -11,6 +11,8 @@
 #include "G4GenericMessenger.hh"
 #include "G4AnalysisManager.hh"
 
+#include "EventManager.hh"
+
 namespace Artie
 {
     class TrackingAction : public G4UserTrackingAction

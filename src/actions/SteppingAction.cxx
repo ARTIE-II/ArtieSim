@@ -19,5 +19,10 @@ namespace Artie
 
     void SteppingAction::UserSteppingAction(const G4Step *step)
     {   
+        if(step->GetTrack()->GetGlobalTime() >= EventManager::GetEventManager()->EventMaxTime()) {
+            step->GetTrack()->SetTrackStatus(fStopAndKill);
+        }
+        auto Manager = EventManager::GetEventManager();
+        Manager->AddNeutronInfoFromStep(step);
     }
 }

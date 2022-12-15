@@ -31,6 +31,12 @@ namespace Artie
         G4double max_dphi = {0};
         G4double max_dp = {0};
         G4double max_dE = {0};
+        G4double first_target_step_time = {0};
+        G4double first_target_step_energy = {0};
+        G4double first_target_step_z = {0};
+        G4int reached_lar = {0};
+        G4int exited_lar = {0};
+        G4int safe_passage = {0};
 
         NeutronEventData()
         {}

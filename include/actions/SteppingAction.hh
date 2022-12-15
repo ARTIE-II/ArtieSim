@@ -13,6 +13,8 @@
 #include "G4Gamma.hh"
 #include "G4Electron.hh"
 
+#include "EventManager.hh"
+
 namespace Artie
 {
     class SteppingAction : public G4UserSteppingAction

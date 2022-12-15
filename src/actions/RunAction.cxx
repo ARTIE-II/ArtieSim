@@ -12,6 +12,7 @@ namespace Artie
     RunAction::RunAction()
     : G4UserRunAction()
     {
+        EventManager::GetEventManager()->CreateTuples();
     }
 
     RunAction::~RunAction()
@@ -19,9 +20,14 @@ namespace Artie
 
     void RunAction::BeginOfRunAction(const G4Run* run)
     {
+        auto Manager = EventManager::GetEventManager();
+        Manager->ResetProfiling();
+        Manager->OpenOutputFile(run->GetRunID());
     }
 
     void RunAction::EndOfRunAction(const G4Run* run)
     {
+        auto Manager = EventManager::GetEventManager();
+        Manager->CloseOutputFile(run->GetRunID());
     }
 }

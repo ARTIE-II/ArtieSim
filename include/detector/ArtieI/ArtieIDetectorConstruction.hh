@@ -140,6 +140,7 @@ namespace Artie
         G4VPhysicalVolume* mPhysicalExperimentalHall;
 
         // Active Volume
+        G4Material *mActiveVolumeMaterial;
         G4Tubs *mSolidActiveVolume;
         G4LogicalVolume* mLogicalActiveVolume;
         G4VPhysicalVolume* mPhysicalActiveVolume;

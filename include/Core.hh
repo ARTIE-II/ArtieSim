@@ -147,6 +147,7 @@ namespace Artie
 
     G4String GetVolumeName(const G4Step* step);
     G4String GetPostProcessName(const G4Step* step);
+    G4String GetVolumeMaterialName(const G4Step* step);
 
 #ifdef ARTIE_YAML
     class ConfigParser

@@ -35,14 +35,6 @@ namespace Artie
     }
 #endif
 
-    std::vector<PrimaryGeneration> EventManager::GeneratePrimaryList()
-    {
-        StartFunctionProfile();
-        std::vector<PrimaryGeneration> primaries = mGenerator->GeneratePrimaryList();
-        EndFunctionProfile("GeneratePrimaryList");
-        return primaries;
-    }
-
     G4int EventManager::GetIndex(G4String tuple)
     {
         for(size_t ii = 0; ii < sTuples.size(); ii++)
@@ -228,6 +220,10 @@ namespace Artie
             AnalysisManager->CreateNtupleDColumn("max_dphi");
             AnalysisManager->CreateNtupleDColumn("max_dp");
             AnalysisManager->CreateNtupleDColumn("max_dE");
+            AnalysisManager->CreateNtupleIColumn("safe_passage");
+            AnalysisManager->CreateNtupleDColumn("first_target_step_time");
+            AnalysisManager->CreateNtupleDColumn("first_target_step_energy");
+            AnalysisManager->CreateNtupleDColumn("first_target_step_z");
             AnalysisManager->FinishNtuple(index);
         }
         EndFunctionProfile("CreateTuples");
@@ -348,6 +344,10 @@ namespace Artie
             AnalysisManager->FillNtupleDColumn(index, 13, mNeutronEventData[ii].max_dphi);
             AnalysisManager->FillNtupleDColumn(index, 14, mNeutronEventData[ii].max_dp);
             AnalysisManager->FillNtupleDColumn(index, 15, mNeutronEventData[ii].max_dE);
+            AnalysisManager->FillNtupleIColumn(index, 16, mNeutronEventData[ii].safe_passage);
+            AnalysisManager->FillNtupleDColumn(index, 17, mNeutronEventData[ii].first_target_step_time);
+            AnalysisManager->FillNtupleDColumn(index, 18, mNeutronEventData[ii].first_target_step_energy);
+            AnalysisManager->FillNtupleDColumn(index, 19, mNeutronEventData[ii].first_target_step_z);
             AnalysisManager->AddNtupleRow(index);
         }
 
@@ -484,14 +484,12 @@ namespace Artie
         G4double        energy = preStepPoint->GetTotalEnergy();
         G4ThreeVector   particleMomentum = preStepPoint->GetMomentum();
 
-        G4bool detected_hit = GetComponent(copyNo)->ProcessHits(step, history);
-
         mHits.emplace_back(
             Hit(
                 copyNo, trackID,
                 parentID, localTime, globalTime,
                 particlePosition, particleMomentum,
-                energy, detected_hit
+                energy
             )
         );
         EndFunctionProfile("AddHitInfoFromStep");
@@ -553,8 +551,14 @@ namespace Artie
                 postStepPoint->GetKineticEnergy() - preStepPoint->GetKineticEnergy()
             );
 
+            if(step->IsFirstStepInVolume() && volumeName == "Logical_ArtieIActiveVolume")
+            {
+                mNeutronEventData[neutron_index].first_target_step_time = track->GetLocalTime();
+                mNeutronEventData[neutron_index].first_target_step_energy = track->GetKineticEnergy();
+                mNeutronEventData[neutron_index].first_target_step_z = position.z();
+            }
             // Keep track of how often each process occurs.
-            if(postProcessName == "hadElastic") {
+            if(postProcessName == "neutronElastic") {
                 mNeutronEventData[neutron_index].num_elastic += 1;
             }
             else if(postProcessName == "neutronInelastic") {
@@ -566,10 +570,24 @@ namespace Artie
             else if(postProcessName == "nFission") {
                 mNeutronEventData[neutron_index].num_fission += 1;
             }
+            else
+            {
+                if(
+                    step->IsLastStepInVolume() && 
+                    volumeName == "Logical_ArtieIActiveVolume" &&
+                    mNeutronEventData[neutron_index].num_elastic == 0 &&
+                    mNeutronEventData[neutron_index].num_inelastic == 0 &&
+                    mNeutronEventData[neutron_index].num_capture == 0 &&
+                    mNeutronEventData[neutron_index].num_fission == 0
+                ) 
+                {
+                    mNeutronEventData[neutron_index].safe_passage = 1;    
+                }
+            }
 
             // If we have just reached the detector, 
             // record the time and energy
-            if(volumeName == "Logical_ArtieITargetDetector")
+            if(step->IsFirstStepInVolume() && volumeName == "Logical_ArtieITargetDetector")
             {
                 mNeutronEventData[neutron_index].arrival_time = track->GetLocalTime();
                 mNeutronEventData[neutron_index].arrival_energy = postStepPoint->GetKineticEnergy();
@@ -578,7 +596,7 @@ namespace Artie
             // Quantify scattering
             if (dp > 0)
             {
-                if (volumeName == "Logical_ArtieITargetActiveVolume")
+                if (volumeName == "Logical_ArtieIActiveVolume")
                 {
                     mNeutronEventData[neutron_index].num_scatter += 1;
                     if (
