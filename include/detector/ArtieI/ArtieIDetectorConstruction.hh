@@ -73,7 +73,7 @@ namespace Artie
         G4double mTargetLength = {168 * cm};
 
         // Container
-        G4bool mConstructContainer = {true};
+        G4bool mConstructContainer = {false};
         G4String mContainerMaterialName = {"stainless_steel"};
         G4String mInsulationMaterialName = {"polyurethane"};
         G4String mLeftWindowMaterialName = {"kapton"};
@@ -86,7 +86,7 @@ namespace Artie
         G4double mBufferLength = {5.0 * cm};
 
         // Beam pipes
-        G4bool mConstructBeamPipe = {true};
+        G4bool mConstructBeamPipe = {false};
         G4String mBeamPipeLeftBeamMaterialName = {"high_vacuum"};
         G4String mBeamPipeRightBeamMaterialName = {"high_vacuum"};
         G4String mBeamPipeLeftPipeMaterialName = {"rough_vacuum"};
@@ -100,7 +100,7 @@ namespace Artie
         G4double mGap = {2.5 * m};
 
         // Hall
-        G4bool mConstructHall = {true};
+        G4bool mConstructHall = {false};
         G4String mHallMaterialName = {"concrete"};
         G4double mWorldX = {4 * m};
         G4double mWorldY = {4 * m};

@@ -27,7 +27,7 @@ namespace Artie
     void ArtieIActionInitialization::Build() const
     {
 #ifdef ARTIE_YAML
-        SetUserAction(new ArtieIPrimaryGeneratorAction(mConfig["generator"]));
+        SetUserAction(new ArtieIPrimaryGeneratorAction(mConfig));
 #else
         SetUserAction(new ArtieIPrimaryGeneratorAction());
 #endif 

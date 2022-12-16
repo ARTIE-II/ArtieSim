@@ -50,5 +50,5 @@ generator:
     lanl_distribution_filename: "resolution13a.root"
     lanl_distribution_name: "tally5"
     t_zero_location: -1.0   # m
-    energy_cut_low: 50      # keV
-    energy_cut_high: 60     # keV
+    energy_cut_low: 56      # keV
+    energy_cut_high: 58     # keV

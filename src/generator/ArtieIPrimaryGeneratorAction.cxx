@@ -10,6 +10,7 @@
 namespace Artie
 {
     ArtieIPrimaryGeneratorAction::ArtieIPrimaryGeneratorAction()
+    : G4VUserPrimaryGeneratorAction()
     {
 
         mParticleGun = new G4ParticleGun();
@@ -30,15 +31,17 @@ namespace Artie
 
 #ifdef ARTIE_YAML
     ArtieIPrimaryGeneratorAction::ArtieIPrimaryGeneratorAction(YAML::Node config)
+    : G4VUserPrimaryGeneratorAction()
+    , mConfig(config["generator"])
     {
-        if(Config()["use_lanl_distribution"])       { mUseLANLDistribution = Config()["use_lanl_distribution"].as<G4bool>(); }
+        if(mConfig["use_lanl_distribution"])       { mUseLANLDistribution = mConfig["use_lanl_distribution"].as<G4bool>(); }
 #ifdef ARTIE_ROOT
-        if(Config()["lanl_distribution_filename"])  { mLANLDistributionFileName = Config()["lanl_distribution_filename"].as<std::string>(); }
-        if(Config()["lanl_distribution_name"])      { mLANLDistributionName = Config()["lanl_distribution_name"].as<std::string>(); }
+        if(mConfig["lanl_distribution_filename"])  { mLANLDistributionFileName = mConfig["lanl_distribution_filename"].as<std::string>(); }
+        if(mConfig["lanl_distribution_name"])      { mLANLDistributionName = mConfig["lanl_distribution_name"].as<std::string>(); }
 #endif
-        if(Config()["t_zero_location"]) { mTZeroLocation = Config()["t_zero_location"].as<G4double>() * m; }
-        if(Config()["energy_cut_low"])  { mEnergyCutLow = Config()["energy_cut_low"].as<G4double>() * keV; }
-        if(Config()["energy_cut_high"]) { mEnergyCutHigh = Config()["energy_cut_high"].as<G4double>() * keV; }
+        if(mConfig["t_zero_location"]) { mTZeroLocation = mConfig["t_zero_location"].as<G4double>() * m; }
+        if(mConfig["energy_cut_low"])  { mEnergyCutLow = mConfig["energy_cut_low"].as<G4double>() * keV; }
+        if(mConfig["energy_cut_high"]) { mEnergyCutHigh = mConfig["energy_cut_high"].as<G4double>() * keV; }
 
         mParticleGun = new G4ParticleGun();
         G4ParticleDefinition* particle = G4ParticleTable::GetParticleTable()->FindParticle("neutron");
