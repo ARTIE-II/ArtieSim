@@ -51,7 +51,7 @@ namespace Artie
                         
         // Elastic Processes
         G4HadronElasticProcess* process1 = new G4HadronElasticProcess(
-            "neutronElastic"
+            //"neutronElastic"
         );
         G4ParticleHPElastic* model1a = new G4ParticleHPElastic();
         G4ParticleHPElasticData* dataSet1a = new G4ParticleHPElasticData();

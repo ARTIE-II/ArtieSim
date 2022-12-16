@@ -24,27 +24,38 @@ namespace Artie
     , mConfig(config["detector"])
     {
         if(mConfig["active_volume_material"]) { mActiveVolumeMaterialName = mConfig["active_volume_material"].as<std::string>(); }
-        if(mConfig["target_radius"]) { mTargetRadius = mConfig["target_radius"].as<G4double>() * cm; }
-        if(mConfig["target_length"]) { mTargetLength = mConfig["target_length"].as<G4double>() * cm; }
+        if(mConfig["target_radius"])          { mTargetRadius = mConfig["target_radius"].as<G4double>() * cm; }
+        if(mConfig["target_length"])          { mTargetLength = mConfig["target_length"].as<G4double>() * cm; }
+
         if(mConfig["construct_container"])  { mConstructContainer = mConfig["construct_container"].as<G4bool>(); }
         if(mConfig["container_material"])   { mContainerMaterialName = mConfig["container_material"].as<std::string>(); }
         if(mConfig["container_radius"])     { mContainerRadius = mConfig["container_radius"].as<G4double>() * cm; }
+        if(mConfig["insulation_material"])  { mInsulationMaterialName = mConfig["insulation_material"].as<std::string>(); }
         if(mConfig["insulation_thickness"]) { mInsulationThickness = mConfig["insulation_thickness"].as<G4double>() * cm; }
+        if(mConfig["window_material"])      { mLeftWindowMaterialName = mConfig["window_material"].as<std::string>(); mRightWindowMaterialName = mConfig["window_material"].as<std::string>(); }
         if(mConfig["window_thickness"])     { mWindowThickness = mConfig["window_thickness"].as<G4double>() * cm; }
+        if(mConfig["buffer_material"])      { mLeftBufferMaterialName = mConfig["buffer_material"].as<std::string>(); mRightBufferMaterialName = mConfig["buffer_material"].as<std::string>(); }
         if(mConfig["buffer_length"])        { mBufferLength = mConfig["buffer_length"].as<G4double>() * cm; }
-        if(mConfig["construct_beam_pipe"])   { mConstructBeamPipe = mConfig["construct_beam_pipe"].as<G4bool>(); }
+        
+        if(mConfig["construct_beam_pipe"])    { mConstructBeamPipe = mConfig["construct_beam_pipe"].as<G4bool>(); }
+        if(mConfig["beam_pipe_material"])     { mBeamPipeLeftPipeMaterialName = mConfig["beam_pipe_material"].as<std::string>(); mBeamPipeRightPipeMaterialName = mConfig["beam_pipe_material"].as<std::string>(); }
+        if(mConfig["beam_material"])          { mBeamPipeLeftBeamMaterialName = mConfig["beam_material"].as<std::string>(); mBeamPipeRightBeamMaterialName = mConfig["beam_material"].as<std::string>(); }
         if(mConfig["beam_pipe_inner_radius"]) {mBeamPipeInnerRadius = mConfig["beam_pipe_inner_radius"].as<G4double>() * cm; }
         if(mConfig["beam_pipe_outer_radius"]) {mBeamPipeOuterRadius = mConfig["beam_pipe_outer_radius"].as<G4double>() * cm; }
-        if(mConfig["gap"])     { mGap = mConfig["gap"].as<G4double>() * m; }
+        
+        if(mConfig["gap"])              { mGap = mConfig["gap"].as<G4double>() * m; }
         if(mConfig["construct_hall"])   { mConstructHall = mConfig["construct_hall"].as<G4bool>(); }
-        if(mConfig["world_x"]) { mWorldX = mConfig["world_x"].as<G4double>() * m; }
-        if(mConfig["world_y"]) { mWorldY = mConfig["world_y"].as<G4double>() * m; }
-        if(mConfig["world_z"]) { mWorldZ = mConfig["world_z"].as<G4double>() * m; }
-        if(mConfig["wall_thickness"]) { mWallThickness = mConfig["wall_thickness"].as<G4double>() * m; }
+        if(mConfig["hall_material"])    { mHallMaterialName = mConfig["hall_material"].as<std::string>(); }
+        if(mConfig["world_x"])          { mWorldX = mConfig["world_x"].as<G4double>() * m; }
+        if(mConfig["world_y"])          { mWorldY = mConfig["world_y"].as<G4double>() * m; }
+        if(mConfig["world_z"])          { mWorldZ = mConfig["world_z"].as<G4double>() * m; }
+        if(mConfig["wall_thickness"])   { mWallThickness = mConfig["wall_thickness"].as<G4double>() * m; }
+        
         if(mConfig["construct_detector"])   { mConstructDetector = mConfig["construct_detector"].as<G4bool>(); }
-        if(mConfig["detector_radius"]) { mDetectorRadius = mConfig["detector_radius"].as<G4double>() * cm; }
-        if(mConfig["detector_length"]) { mDetectorLength = mConfig["detector_length"].as<G4double>() * cm; }
-        if(mConfig["detector_entrance"]) { mDetectorEntrance = mConfig["detector_entrance"].as<G4double>() * m; }   
+        if(mConfig["detector_radius"])      { mDetectorRadius = mConfig["detector_radius"].as<G4double>() * cm; }
+        if(mConfig["detector_length"])      { mDetectorLength = mConfig["detector_length"].as<G4double>() * cm; }
+        if(mConfig["detector_entrance"])    { mDetectorEntrance = mConfig["detector_entrance"].as<G4double>() * m; }   
+        
         if(mConfig["world_material"]) { mWorldMaterialName = mConfig["world_material"].as<std::string>(); }
         DefineMaterials();
     }
@@ -150,30 +161,122 @@ namespace Artie
             0
         );
 
-        // Construct the active volume
-        mSolidActiveVolume = new G4Tubs(
-            "Solid_ArtieIActiveVolume", 
-            0,
-            mTargetRadius, 
-            0.5 * mTargetLength, 
-            0,
-            2*M_PI
-        );
-        mLogicalActiveVolume = new G4LogicalVolume(
-            mSolidActiveVolume, 
-            mActiveVolumeMaterial, 
-            "Logical_ArtieIActiveVolume"
-        );
-        mPhysicalActiveVolume = new G4PVPlacement(
-            0, 
-            G4ThreeVector(0., 0., 0.), 
-            mLogicalActiveVolume, 
-            "Physical_ArtieIActiveVolume", 
-            mLogicalExperimentalHall, 
-            false, 
-            0, 
-            true
-        );
+        // Construct the beampipe
+        if(mConstructBeamPipe)
+        {
+            mBeamPipeLeftHalfLength = (-mGap / 2.0 + mWorldZ / 2.0) / 2.0;
+            mBeamPipeRightHalfLength = (mDetectorEntrance - mGap / 2.0) / 2.0;
+            mBeamPipeLeftPosition = {
+                0., 
+                0., 
+                (-mWorldZ / 2.0 - mGap / 2.0) / 2.0
+            };
+            mBeamPipeRightPosition = {
+                0., 
+                0., 
+                (mDetectorEntrance + mGap / 2.0) / 2.0
+            };
+
+            // Left Beam
+            mSolidBeamPipeLeftBeam = new G4Tubs(
+                "Solid_ArtieIBeamPipeLeftBeam", 
+                0,
+                mBeamPipeInnerRadius, 
+                mBeamPipeLeftHalfLength, 
+                0,
+                2*M_PI
+            );
+            mLogicalBeamPipeLeftBeam = new G4LogicalVolume(
+                mSolidBeamPipeLeftBeam, 
+                mBeamPipeLeftBeamMaterial, 
+                "Logical_ArtieIBeamPipeLeftBeam"
+            );
+            mPhysicalBeamPipeLeftBeam = new G4PVPlacement(
+                0, 
+                mBeamPipeLeftPosition, 
+                mLogicalBeamPipeLeftBeam, 
+                "Physical_ArtieIBeamPipeLeftBeam", 
+                mLogicalExperimentalHall, 
+                false, 
+                0, 
+                true
+            );
+
+            // Right Beam
+            mSolidBeamPipeRightBeam = new G4Tubs(
+                "Solid_ArtieIBeamPipeRightBeam", 
+                0,
+                mBeamPipeInnerRadius, 
+                mBeamPipeRightHalfLength, 
+                0,
+                2*M_PI
+            );
+            mLogicalBeamPipeRightBeam = new G4LogicalVolume(
+                mSolidBeamPipeRightBeam, 
+                mBeamPipeRightBeamMaterial, 
+                "Logical_ArtieIBeamPipeRightBeam"
+            );
+            mPhysicalBeamPipeRightBeam = new G4PVPlacement(
+                0, 
+                mBeamPipeRightPosition, 
+                mLogicalBeamPipeRightBeam, 
+                "Physical_ArtieIBeamPipeRightBeam", 
+                mLogicalExperimentalHall, 
+                false, 
+                0, 
+                true
+            );
+
+            // Left Pipe
+            mSolidBeamPipeLeftPipe = new G4Tubs(
+                "Solid_ArtieIBeamPipeLeftPipe", 
+                mBeamPipeInnerRadius,
+                mBeamPipeOuterRadius, 
+                mBeamPipeLeftHalfLength, 
+                0,
+                2*M_PI
+            );
+            mLogicalBeamPipeLeftPipe = new G4LogicalVolume(
+                mSolidBeamPipeLeftPipe, 
+                mBeamPipeLeftPipeMaterial, 
+                "Logical_ArtieIBeamPipeLeftPipe"
+            );
+            mPhysicalBeamPipeLeftPipe = new G4PVPlacement(
+                0, 
+                mBeamPipeLeftPosition, 
+                mLogicalBeamPipeLeftPipe, 
+                "Physical_ArtieIBeamPipeLeftPipe", 
+                mLogicalExperimentalHall, 
+                false, 
+                0, 
+                true
+            );
+
+            // Right Pipe
+            mSolidBeamPipeRightPipe = new G4Tubs(
+                "Solid_ArtieIBeamPipeRightPipe", 
+                mBeamPipeInnerRadius,
+                mBeamPipeOuterRadius, 
+                mBeamPipeRightHalfLength, 
+                0,
+                2*M_PI
+            );
+            mLogicalBeamPipeRightPipe = new G4LogicalVolume(
+                mSolidBeamPipeRightPipe, 
+                mBeamPipeRightPipeMaterial, 
+                "Logical_ArtieIBeamPipeRightPipe"
+            );
+            mPhysicalBeamPipeRightPipe = new G4PVPlacement(
+                0, 
+                mBeamPipeRightPosition, 
+                mLogicalBeamPipeRightPipe, 
+                "Physical_ArtieIBeamPipeRightPipe", 
+                mLogicalExperimentalHall, 
+                false, 
+                0, 
+                true
+            );
+        }
 
         // Construct the container
         if(mConstructContainer)
@@ -341,123 +444,6 @@ namespace Artie
             );
         }
 
-        // Construct the beampipe
-        if(mConstructBeamPipe)
-        {
-            mBeamPipeLeftHalfLength = (-mGap / 2.0 + mWorldZ / 2.0) / 2.0;
-            mBeamPipeRightHalfLength = (mDetectorEntrance - mGap / 2.0) / 2.0;
-            mBeamPipeLeftPosition = {
-                0., 
-                0., 
-                (-mWorldZ / 2.0 - mGap / 2.0) / 2.0
-            };
-            mBeamPipeRightPosition = {
-                0., 
-                0., 
-                (mDetectorEntrance + mGap / 2.0) / 2.0
-            };
-
-            // Left Beam
-            mSolidBeamPipeLeftBeam = new G4Tubs(
-                "Solid_ArtieIBeamPipeLeftBeam", 
-                0,
-                mBeamPipeInnerRadius, 
-                mBeamPipeLeftHalfLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalBeamPipeLeftBeam = new G4LogicalVolume(
-                mSolidBeamPipeLeftBeam, 
-                mBeamPipeLeftBeamMaterial, 
-                "Logical_ArtieIBeamPipeLeftBeam"
-            );
-            mPhysicalBeamPipeLeftBeam = new G4PVPlacement(
-                0, 
-                mBeamPipeLeftPosition, 
-                mLogicalBeamPipeLeftBeam, 
-                "Physical_ArtieIBeamPipeLeftBeam", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
-
-            // Right Beam
-            mSolidBeamPipeRightBeam = new G4Tubs(
-                "Solid_ArtieIBeamPipeRightBeam", 
-                0,
-                mBeamPipeInnerRadius, 
-                mBeamPipeRightHalfLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalBeamPipeRightBeam = new G4LogicalVolume(
-                mSolidBeamPipeRightBeam, 
-                mBeamPipeRightBeamMaterial, 
-                "Logical_ArtieIBeamPipeRightBeam"
-            );
-            mPhysicalBeamPipeRightBeam = new G4PVPlacement(
-                0, 
-                mBeamPipeRightPosition, 
-                mLogicalBeamPipeRightBeam, 
-                "Physical_ArtieIBeamPipeRightBeam", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
-
-            // Left Pipe
-            mSolidBeamPipeLeftPipe = new G4Tubs(
-                "Solid_ArtieIBeamPipeLeftPipe", 
-                mBeamPipeInnerRadius,
-                mBeamPipeOuterRadius, 
-                mBeamPipeLeftHalfLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalBeamPipeLeftPipe = new G4LogicalVolume(
-                mSolidBeamPipeLeftPipe, 
-                mBeamPipeLeftPipeMaterial, 
-                "Logical_ArtieIBeamPipeLeftPipe"
-            );
-            mPhysicalBeamPipeLeftPipe = new G4PVPlacement(
-                0, 
-                mBeamPipeLeftPosition, 
-                mLogicalBeamPipeLeftPipe, 
-                "Physical_ArtieIBeamPipeLeftPipe", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
-
-            // Right Pipe
-            mSolidBeamPipeRightPipe = new G4Tubs(
-                "Solid_ArtieIBeamPipeRightPipe", 
-                mBeamPipeInnerRadius,
-                mBeamPipeOuterRadius, 
-                mBeamPipeRightHalfLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalBeamPipeRightPipe = new G4LogicalVolume(
-                mSolidBeamPipeRightPipe, 
-                mBeamPipeRightPipeMaterial, 
-                "Logical_ArtieIBeamPipeRightPipe"
-            );
-            mPhysicalBeamPipeRightPipe = new G4PVPlacement(
-                0, 
-                mBeamPipeRightPosition, 
-                mLogicalBeamPipeRightPipe, 
-                "Physical_ArtieIBeamPipeRightPipe", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
-        }
-
         // Construct the detector
         if(mConstructDetector)
         {
@@ -525,6 +511,31 @@ namespace Artie
                 true
             );
         }        
+
+        // Construct the active volume
+        mSolidActiveVolume = new G4Tubs(
+            "Solid_ArtieIActiveVolume", 
+            0,
+            mTargetRadius, 
+            0.5 * mTargetLength, 
+            0,
+            2*M_PI
+        );
+        mLogicalActiveVolume = new G4LogicalVolume(
+            mSolidActiveVolume, 
+            mActiveVolumeMaterial, 
+            "Logical_ArtieIActiveVolume"
+        );
+        mPhysicalActiveVolume = new G4PVPlacement(
+            0, 
+            G4ThreeVector(0., 0., 0.), 
+            mLogicalActiveVolume, 
+            "Physical_ArtieIActiveVolume", 
+            mLogicalExperimentalHall, 
+            false, 
+            0, 
+            true
+        );
 
         return mPhysicalExperimentalHall;
     }

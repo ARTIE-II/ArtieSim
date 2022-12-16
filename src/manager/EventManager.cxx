@@ -522,7 +522,10 @@ namespace Artie
 
     void EventManager::AddNeutronInfoFromStep(const G4Step* step)
     {
-        if(step->GetTrack()->GetParticleDefinition()->GetParticleName() != "neutron") {
+        if(
+            step->GetTrack()->GetParticleDefinition()->GetParticleName() != "neutron" ||
+            step->GetTrack()->GetParentID() != 0
+        ) {
             return;
         }
 
@@ -538,6 +541,11 @@ namespace Artie
         G4ThreeVector   position = track->GetPosition();
 
         G4int neutron_index = GetNeutronEventDataIndex(trackID);
+
+        if(mNeutronEventData[neutron_index].track_id != trackID) {
+            G4cout << "ERROR! Bug in neutron index." << G4endl;
+            exit(0);
+        }
         
         // check if neutron has arrived at the detector
         if(mNeutronEventData[neutron_index].arrival_time == 0)
@@ -558,7 +566,7 @@ namespace Artie
                 mNeutronEventData[neutron_index].first_target_step_z = position.z();
             }
             // Keep track of how often each process occurs.
-            if(postProcessName == "neutronElastic") {
+            if(postProcessName == "hadElastic") {
                 mNeutronEventData[neutron_index].num_elastic += 1;
             }
             else if(postProcessName == "neutronInelastic") {
@@ -570,19 +578,16 @@ namespace Artie
             else if(postProcessName == "nFission") {
                 mNeutronEventData[neutron_index].num_fission += 1;
             }
-            else
+            if(
+                step->IsLastStepInVolume() && 
+                volumeName == "Logical_ArtieIActiveVolume" &&
+                mNeutronEventData[neutron_index].num_elastic == 0 &&
+                mNeutronEventData[neutron_index].num_inelastic == 0 &&
+                mNeutronEventData[neutron_index].num_capture == 0 &&
+                mNeutronEventData[neutron_index].num_fission == 0
+            ) 
             {
-                if(
-                    step->IsLastStepInVolume() && 
-                    volumeName == "Logical_ArtieIActiveVolume" &&
-                    mNeutronEventData[neutron_index].num_elastic == 0 &&
-                    mNeutronEventData[neutron_index].num_inelastic == 0 &&
-                    mNeutronEventData[neutron_index].num_capture == 0 &&
-                    mNeutronEventData[neutron_index].num_fission == 0
-                ) 
-                {
-                    mNeutronEventData[neutron_index].safe_passage = 1;    
-                }
+                mNeutronEventData[neutron_index].safe_passage = 1;    
             }
 
             // If we have just reached the detector, 
