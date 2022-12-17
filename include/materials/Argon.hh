@@ -8,6 +8,7 @@
 #pragma once
 #include <memory>
 
+#include "Argon.hh"
 #include "Material.hh"
 #include "G4NistManager.hh"
 #include "G4SystemOfUnits.hh"
@@ -84,6 +85,8 @@ namespace Artie
         std::vector<G4double> GetAbsorptionLengthSpectrum() const { return mAbsorptionLengthSpectrum; }
         std::vector<G4double> GetRayleighScatteringEnergies() const { return mRayleighScatteringEnergies; }
         std::vector<G4double> GetRayleighScatteringSpectrum() const { return mRayleighScatteringSpectrum; }
+
+        G4Material* GetMaterial() { return mMaterial.get(); }
 
         void DefineMaterials();
         void PrintProperties();

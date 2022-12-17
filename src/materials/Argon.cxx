@@ -25,7 +25,7 @@ namespace Artie
     {
 
         mAverageDensity = 1.406*g/cm3;
-        mNaturalArDensity = 1.3973*g/cm3;
+        mNaturalArDensity = 1.3954*g/cm3;
         mAverageMassMol = Ar36MassMol * mAr36Ratio + Ar38MassMol * mAr38Ratio + Ar40MassMol * mAr40Ratio;
 
         DefineMaterials();
@@ -137,7 +137,7 @@ namespace Artie
         mMaterial.reset(
             new G4Material(
                 mName,              // name
-                mAverageDensity,    // density
+                mNaturalArDensity,  // density
                 1,
                 mState,             // state
                 GetTemperature(),   // temperature

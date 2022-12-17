@@ -36,10 +36,10 @@ class ArtieIAnalysis:
         endf_energy = []
         endf_transmission = []
         endf_cross_section = []
-        with open("endf_ar.csv", "r") as file:
+        with open("endf_natar.csv", "r") as file:
             reader = csv.reader(file, delimiter=",")
             for row in reader:
-                endf_energy.append(float(row[0]) / 1000)
+                endf_energy.append(float(row[0]))
                 endf_transmission.append(np.exp(-4.2 * float(row[1])))
                 endf_cross_section.append(float(row[1]))
         self.endf_energy = np.array(endf_energy)
@@ -619,8 +619,8 @@ class ArtieIAnalysis:
             )
         axs.set_xlim(energy_min, energy_max)
         axs.set_xlabel("Energy bin [keV]")
-        axs.set_ylabel("Cross Section")
-        axs.set_title("Cross Section vs. Energy [keV]")
+        axs.set_ylabel("Cross Section [barn]")
+        axs.set_title("Cross Section [barn] vs. Energy [keV]")
         axs.set_yscale("log")
         plt.legend()
         plt.tight_layout()

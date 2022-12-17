@@ -81,7 +81,7 @@ namespace Artie
         // SetCutValue(1 * um, "gamma");
         // SetCutValue(1 * um, "e-");
         // SetCutValue(1 * um, "e+");
-        // SetCutValue(0, "neutron");
+        SetCutValue(0 * mm, "neutron");
     }
 
     void PhysicsList::PrintPhysicsLists()
