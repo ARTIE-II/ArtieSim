@@ -3,13 +3,14 @@
 version: 2.1
 
 jobs:
-  say-hello:
+  install-artie:
     machine:
       image: ubuntu-2204:edge
     steps:
       - checkout
       - run: 
-          command: "echo Do some things!"
+          command: "echo Installing Geant4..."
+          command: "pwd"
 
 # jobs:
 #   say-hello:
@@ -30,4 +31,4 @@ jobs:
 workflows:
   say-hello-workflow:
     jobs:
-      - say-hello
+      - install-artie
