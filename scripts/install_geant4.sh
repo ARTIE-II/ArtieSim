@@ -51,7 +51,7 @@ make install
 
 # source the geant4 install script
 INSTALL_SCRIPT=$INSTALL_DIRECTORY"/share/Geant4*/geant4make/"
-source $INSTALL_SCRIPT"geant4make.sh"
+source $INSTALL_SCRIPT/geant4make.sh
 
 # add geant4 script to bashrc
-echo 'export source $INSTALL_SCRIPT"geant4make.sh"' >> ~/.bashrc
+echo 'export source $INSTALL_SCRIPT/geant4make.sh' >> ~/.bashrc

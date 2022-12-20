@@ -5,7 +5,7 @@ import uproot
 from matplotlib import pyplot as plt
 import csv
 
-class ArtieIAnalysis:
+class ArtieAnalysis:
 
     def __init__(self,
         ideal_file:     str="artieI_ideal_0.root",
@@ -36,6 +36,13 @@ class ArtieIAnalysis:
         self.argon_arrival_time = self.argon_neutron_data["arrival_time"] / 1000.0  # us
         self.argon_num_scatters = self.argon_neutron_data["num_scatter"]
 
+        self.configuration = self.argon_file['Configuration'].arrays(library="np")
+        self.config = {
+            self.configuration['parameter'][ii]: self.configuration['value'][ii]
+            for ii in range(len(self.configuration['parameter']))
+        }
+        
+
         endf_energy = []
         endf_transmission = []
         endf_cross_section = []
@@ -43,7 +50,7 @@ class ArtieIAnalysis:
             reader = csv.reader(file, delimiter=",")
             for row in reader:
                 endf_energy.append(float(row[0]))
-                endf_transmission.append(np.exp(-4.2 * float(row[1])))
+                endf_transmission.append(np.exp(-3.53 * float(row[1])))
                 endf_cross_section.append(float(row[1]))
         self.endf_energy = np.array(endf_energy)
         self.endf_transmission = np.array(endf_transmission)
@@ -134,7 +141,7 @@ class ArtieIAnalysis:
         )
         axs.set_xlabel("Time of Flight [" + r"$\mu$" + "s]")
         axs.set_ylabel("Neutrons")
-        axs.set_title(f"{name} Time of Flight Distribution")
+        axs.set_title(f"{name} Time of Flight Distribution - L={self.config['target_length']}cm")
         plt.legend()
         plt.tight_layout()
         if(save != ''):
@@ -205,7 +212,7 @@ class ArtieIAnalysis:
         axs.set_xticks(xticks)
         axs.set_xticklabels(categories, rotation=45, ha='right')
         axs.set_yscale("log")
-        axs.set_title("Number/Type of Scatters")
+        axs.set_title(f"Number/Type of Scatters - L={self.config['target_length']}cm")
         plt.legend()
         plt.tight_layout()
         plt.show()
@@ -291,7 +298,7 @@ class ArtieIAnalysis:
         )
         axs.set_xlabel("Kinetic Energy [keV]")
         axs.set_ylabel("Neutrons")
-        axs.set_title(f"{name} Kinetic Energy Distribution")
+        axs.set_title(f"{name} Kinetic Energy Distribution - L={self.config['target_length']}cm")
         plt.legend()
         plt.tight_layout()
         if(save != ''):
@@ -375,37 +382,43 @@ class ArtieIAnalysis:
             )
         cbins = (ideal_edges_all[1:] + ideal_edges_all[:-1])/2.0
 
-        ideal_transmission = np.zeros(cbins.size)
-        ideal_transmission_safe = np.zeros(cbins.size)
-        ideal_errorbars = np.zeros(cbins.size)
+        ideal_transmission = np.zeros(cbins.size, dtype=float)
+        ideal_errorbars = np.zeros(cbins.size, dtype=float)
         ideal_mask = (ideal_hist_all > 0)
         ideal_transmission[ideal_mask] = ideal_hist_detected[ideal_mask] / ideal_hist_all[ideal_mask]
-        ideal_mask = (ideal_hist_safe_passage > 0)
-        ideal_transmission_safe[ideal_mask] = ideal_hist_safe_passage[ideal_mask] / ideal_hist_all[ideal_mask]
-        ideal_errorbars[ideal_mask] = 1.0 / np.sqrt(len(ideal_hist_detected[ideal_mask]))
+        ideal_in = ideal_hist_detected[ideal_mask].astype(float)
+        ideal_out = ideal_hist_all[ideal_mask].astype(float) - ideal_in
+        ideal_errorbars[ideal_mask] = np.sqrt(
+            np.divide(1.0, ideal_in, out=np.zeros_like(ideal_in), casting='unsafe', where=ideal_in!=0) +
+            np.divide(1.0, ideal_out, out=np.zeros_like(ideal_out), casting='unsafe', where=ideal_out!=0)
+        )
 
-        vacuum_transmission = np.zeros(cbins.size)
-        vacuum_transmission_safe = np.zeros(cbins.size)
-        vacuum_errorbars = np.zeros(cbins.size)
+        vacuum_transmission = np.zeros(cbins.size, dtype=float)
+        vacuum_errorbars = np.zeros(cbins.size, dtype=float)
         vacuum_mask = (vacuum_hist_all > 0)
         vacuum_transmission[vacuum_mask] = vacuum_hist_detected[vacuum_mask] / vacuum_hist_all[vacuum_mask]
-        vacuum_mask = (vacuum_hist_safe_passage > 0)
-        vacuum_transmission_safe[vacuum_mask] = vacuum_hist_safe_passage[vacuum_mask] / vacuum_hist_all[vacuum_mask]
-        vacuum_errorbars[vacuum_mask] = 1.0 / np.sqrt(len(vacuum_hist_detected[vacuum_mask]))
+        vacuum_in = vacuum_hist_detected[vacuum_mask].astype(float)
+        vacuum_out = vacuum_hist_all[vacuum_mask].astype(float) - vacuum_in
+        vacuum_errorbars[vacuum_mask] = np.sqrt(
+            np.divide(1.0, vacuum_in, out=np.zeros_like(vacuum_in), casting='unsafe', where=vacuum_in!=0) +
+            np.divide(1.0, vacuum_out, out=np.zeros_like(vacuum_out), casting='unsafe', where=vacuum_out!=0)
+        )
 
 
-        argon_transmission = np.zeros(cbins.size)
-        argon_transmission_safe = np.zeros(cbins.size)
-        argon_errorbars = np.zeros(cbins.size)
+        argon_transmission = np.zeros(cbins.size, dtype=float)
+        argon_errorbars = np.zeros(cbins.size, dtype=float)
         argon_mask = (argon_hist_all > 0)
         argon_transmission[argon_mask] = argon_hist_detected[argon_mask] / argon_hist_all[argon_mask]
-        argon_mask = (argon_hist_safe_passage > 0)
-        argon_transmission_safe[argon_mask] = argon_hist_safe_passage[argon_mask] / argon_hist_all[argon_mask]
-        argon_errorbars[argon_mask] = 1.0 / np.sqrt(len(argon_hist_detected[argon_mask]))
+        argon_in = argon_hist_detected[argon_mask].astype(float)
+        argon_out = argon_hist_all[argon_mask].astype(float) - argon_in
+        argon_errorbars[argon_mask] = np.sqrt(
+            np.divide(1.0, argon_in, out=np.zeros_like(argon_in), casting='unsafe', where=argon_in!=0) +
+            np.divide(1.0, argon_out, out=np.zeros_like(argon_out), casting='unsafe', where=argon_out!=0)
+        )
 
 
         if simulated:
-            simulated_transmission = np.zeros(cbins.size)
+            simulated_transmission = np.zeros(cbins.size, dtype=float)
             vacuum_simulated_mask = (vacuum_hist_simulated > 0)
             simulated_transmission[vacuum_simulated_mask] = argon_hist_simulated[vacuum_simulated_mask] / vacuum_hist_simulated[vacuum_simulated_mask]
 
@@ -449,7 +462,7 @@ class ArtieIAnalysis:
         axs.set_ylim(10e-3,1)
         axs.set_xlabel("Energy bin [keV]")
         axs.set_ylabel("Transmission")
-        axs.set_title("Transmission vs. Energy [keV]")
+        axs.set_title(f"Transmission vs. Energy [keV] - L={self.config['target_length']}cm")
         axs.set_yscale("log")
         plt.legend()
         plt.tight_layout()
@@ -516,50 +529,67 @@ class ArtieIAnalysis:
             )
         cbins = (ideal_edges_all[1:] + ideal_edges_all[:-1])/2.0
 
-        ideal_transmission = np.zeros(cbins.size)
-        ideal_errorbars = np.zeros(cbins.size)
+        ideal_transmission = np.zeros(cbins.size, dtype=float)
+        ideal_errorbars = np.zeros(cbins.size, dtype=float)
         ideal_mask = (ideal_hist_all > 0)
         ideal_transmission[ideal_mask] = ideal_hist_detected[ideal_mask] / ideal_hist_all[ideal_mask]
-        ideal_errorbars[ideal_mask] = 1.0 / np.sqrt(len(ideal_hist_detected[ideal_mask]))
+        ideal_in = ideal_hist_detected[ideal_mask].astype(float)
+        ideal_out = ideal_hist_all[ideal_mask].astype(float) - ideal_in
+        ideal_errorbars[ideal_mask] = np.sqrt(
+            np.divide(1.0, ideal_in, out=np.zeros_like(ideal_in), casting='unsafe', where=ideal_in!=0) +
+            np.divide(1.0, ideal_out, out=np.zeros_like(ideal_out), casting='unsafe', where=ideal_out!=0)
+        )
 
-        vacuum_transmission = np.zeros(cbins.size)
-        vacuum_errorbars = np.zeros(cbins.size)
+        vacuum_transmission = np.zeros(cbins.size, dtype=float)
+        vacuum_errorbars = np.zeros(cbins.size, dtype=float)
         vacuum_mask = (vacuum_hist_all > 0)
         vacuum_transmission[vacuum_mask] = vacuum_hist_detected[vacuum_mask] / vacuum_hist_all[vacuum_mask]
-        vacuum_errorbars[vacuum_mask] = 1.0 / np.sqrt(len(vacuum_hist_detected[vacuum_mask]))
+        vacuum_in = vacuum_hist_detected[vacuum_mask].astype(float)
+        vacuum_out = vacuum_hist_all[vacuum_mask].astype(float) - vacuum_in
+        vacuum_errorbars[vacuum_mask] = np.sqrt(
+            np.divide(1.0, vacuum_in, out=np.zeros_like(vacuum_in), casting='unsafe', where=vacuum_in!=0) +
+            np.divide(1.0, vacuum_out, out=np.zeros_like(vacuum_out), casting='unsafe', where=vacuum_out!=0)
+        )
 
-        argon_transmission = np.zeros(cbins.size)
-        argon_errorbars = np.zeros(cbins.size)
+
+        argon_transmission = np.zeros(cbins.size, dtype=float)
+        argon_errorbars = np.zeros(cbins.size, dtype=float)
         argon_mask = (argon_hist_all > 0)
         argon_transmission[argon_mask] = argon_hist_detected[argon_mask] / argon_hist_all[argon_mask]
-        argon_errorbars[argon_mask] = 1.0 / np.sqrt(len(argon_hist_detected[argon_mask]))
+        argon_in = argon_hist_detected[argon_mask].astype(float)
+        argon_out = argon_hist_all[argon_mask].astype(float) - argon_in
+        argon_errorbars[argon_mask] = np.sqrt(
+            np.divide(1.0, argon_in, out=np.zeros_like(argon_in), casting='unsafe', where=argon_in!=0) +
+            np.divide(1.0, argon_out, out=np.zeros_like(argon_out), casting='unsafe', where=argon_out!=0)
+        )
+
 
         if simulated:
-            simulated_transmission = np.zeros(cbins.size)
+            simulated_transmission = np.zeros(cbins.size, dtype=float)
             vacuum_simulated_mask = (vacuum_hist_simulated > 0)
             simulated_transmission[vacuum_simulated_mask] = argon_hist_simulated[vacuum_simulated_mask] / vacuum_hist_simulated[vacuum_simulated_mask]
 
-        ideal_cross_section = np.zeros(cbins.size)
+        ideal_cross_section = np.zeros(cbins.size, dtype=float)
         ideal_mask = (ideal_transmission > 0)
-        ideal_cross_section[ideal_mask] = -(1.0 / 4.2) * np.log(ideal_transmission[ideal_mask])
+        ideal_cross_section[ideal_mask] = -(.283) * np.log(ideal_transmission[ideal_mask])
 
-        vacuum_cross_section = np.zeros(cbins.size)
+        vacuum_cross_section = np.zeros(cbins.size, dtype=float)
         vacuum_mask = (vacuum_transmission > 0)
-        vacuum_cross_section[vacuum_mask] = -(1.0 / 4.2) * np.log(vacuum_transmission[vacuum_mask])
+        vacuum_cross_section[vacuum_mask] = -(.283) * np.log(vacuum_transmission[vacuum_mask])
 
-        argon_cross_section = np.zeros(cbins.size)
+        argon_cross_section = np.zeros(cbins.size, dtype=float)
         argon_mask = (argon_transmission > 0)
-        argon_cross_section[argon_mask] = -(1.0 / 4.2) * np.log(argon_transmission[argon_mask])
+        argon_cross_section[argon_mask] = -(.283) * np.log(argon_transmission[argon_mask])
 
         if simulated:
-            simulated_cross_section = np.zeros(cbins.size)
+            simulated_cross_section = np.zeros(cbins.size, dtype=float)
             simulated_mask = (simulated_transmission > 0)
-            simulated_cross_section[simulated_mask] = -(1.0 / 4.2) * np.log(simulated_transmission[simulated_mask])
+            simulated_cross_section[simulated_mask] = -(.283) * np.log(simulated_transmission[simulated_mask])
 
         fig, axs = plt.subplots()
         axs.errorbar(
             cbins, ideal_cross_section,
-            yerr=ideal_errorbars,
+            yerr=.283*ideal_errorbars,
             linestyle="--",
             color="b",
             label="ideal"
@@ -573,7 +603,7 @@ class ArtieIAnalysis:
         )
         axs.errorbar(
             cbins, argon_cross_section,
-            yerr=argon_errorbars,
+            yerr=.283*argon_errorbars,
             linestyle="--",
             color="r",
             label="argon"
@@ -595,7 +625,7 @@ class ArtieIAnalysis:
         axs.set_xlim(energy_min, energy_max)
         axs.set_xlabel("Energy bin [keV]")
         axs.set_ylabel("Cross Section [barn]")
-        axs.set_title("Cross Section [barn] vs. Energy [keV]")
+        axs.set_title(f"Cross Section [barn] vs. Energy [keV] - L={self.config['target_length']}cm")
         axs.set_yscale("log")
         plt.legend()
         plt.tight_layout()
