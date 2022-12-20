@@ -1,6 +1,6 @@
 # ARTIE-I manager parameters
 manager:
-    number_of_threads:  8
+    number_of_threads:  2
     number_of_runs:     1
     number_of_events:   10
     mode:               "interactive"   # interactive/run

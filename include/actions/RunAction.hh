@@ -9,7 +9,11 @@
 #include "G4UserRunAction.hh"
 #include "G4Run.hh"
 #include "G4GenericMessenger.hh"
+#ifdef ARTIE_GEANT_10
+#include "g4root.hh"
+#else
 #include "G4AnalysisManager.hh"
+#endif
 
 #include "ArtieIPrimaryGeneratorAction.hh"
 #include "EventManager.hh"

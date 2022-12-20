@@ -18,7 +18,9 @@ namespace Artie
         else if(material_name == "liquid_argon") {
             auto argon = new Argon("LAr");
             material = argon->GetMaterial();
-            //material = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");
+        }
+        else if(material_name == "g4_liquid_argon") {
+            material = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");
         }
         else if(material_name == "concrete") {
             material = G4NistManager::Instance()->FindOrBuildMaterial("G4_CONCRETE");

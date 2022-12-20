@@ -19,7 +19,11 @@
 #include "G4PVPlacement.hh"
 #include "G4LogicalVolume.hh"
 #include "G4RunManager.hh"
+#ifdef ARTIE_GEANT_10
+#include "g4root.hh"
+#else
 #include "G4AnalysisManager.hh"
+#endif
 
 namespace Artie
 {

@@ -32,6 +32,43 @@ namespace Artie
             if(mConfig["manager"]["number_of_threads"]) { sNumberOfThreads = mConfig["manager"]["number_of_threads"].as<G4int>(); }
             if(mConfig["manager"]["output_filename"])   { sOutputFileName = mConfig["manager"]["output_filename"].as<std::string>(); }
         }
+#ifdef ARTIE_ROOT
+        if(mConfig["generator"]["lanl_distribution_filename"])  { mLANLDistributionFileName = mConfig["generator"]["lanl_distribution_filename"].as<std::string>(); }
+        if(mConfig["generator"]["lanl_distribution_name"])      { mLANLDistributionName = mConfig["generator"]["lanl_distribution_name"].as<std::string>(); }
+        if(mConfig["generator"]["energy_cut_low"])  { mEnergyCutLow = mConfig["generator"]["energy_cut_low"].as<G4double>() * keV; }
+        if(mConfig["generator"]["energy_cut_high"]) { mEnergyCutHigh = mConfig["generator"]["energy_cut_high"].as<G4double>() * keV; }
+        mLANLDistributionFile = new TFile(mLANLDistributionFileName);
+        TGraph *DistributionGraph = (TGraph*)mLANLDistributionFile->Get(mLANLDistributionName);
+
+        // Make variable-bin histogram for beam energy
+        const G4int nlogbins=500;        
+        G4double xmin = 1.e-3;  //eV
+        G4double xmax = 1.e7;   //eV
+        G4double *xbins = new G4double[nlogbins+1];
+        G4double xlogmin = TMath::Log10(xmin);
+        G4double xlogmax = TMath::Log10(xmax);
+        G4double dlogx   = (xlogmax-xlogmin)/((G4double)nlogbins);
+        for (G4int i=0;i<=nlogbins;i++) 
+        {
+            G4double xlog = xlogmin+ i*dlogx;
+            xbins[i] = TMath::Exp( TMath::Log(10) * xlog ); 
+        }
+
+        mLANLDistribution = new TH1D("LANLBeamEnergy", "LANLBeamEnergy", nlogbins, xbins);
+        auto nPoints = DistributionGraph->GetN(); // number of points 
+        G4double x, y;
+        for(G4int i=0; i < nPoints; ++i) {
+            DistributionGraph->GetPoint(i, x, y); //eV
+            if( 
+                x / 1000 > mEnergyCutLow && 
+                x / 1000 < mEnergyCutHigh
+            ) 
+            {
+                mLANLDistribution->Fill(x,y);
+            }
+        }
+        mLANLDistributionFile->Close();
+#endif
     }
 #endif
 
@@ -62,6 +99,43 @@ namespace Artie
                 << " - opened successfully." << G4endl;
         }
     }
+
+    void EventManager::ConstructEnergyDistribution()
+    {
+#ifdef ARTIE_ROOT
+        mLANLDistributionFile = new TFile(mLANLDistributionFileName);
+        TGraph *DistributionGraph = (TGraph*)mLANLDistributionFile->Get(mLANLDistributionName);
+
+        // Make variable-bin histogram for beam energy
+        const G4int nlogbins=500;        
+        G4double xmin = 1.e-3;  //eV
+        G4double xmax = 1.e7;   //eV
+        G4double *xbins = new G4double[nlogbins+1];
+        G4double xlogmin = TMath::Log10(xmin);
+        G4double xlogmax = TMath::Log10(xmax);
+        G4double dlogx   = (xlogmax-xlogmin)/((G4double)nlogbins);
+        for (G4int i=0;i<=nlogbins;i++) 
+        {
+            G4double xlog = xlogmin+ i*dlogx;
+            xbins[i] = TMath::Exp( TMath::Log(10) * xlog ); 
+        }
+
+        mLANLDistribution = new TH1D("LANLBeamEnergy", "LANLBeamEnergy", nlogbins, xbins);
+        auto nPoints = DistributionGraph->GetN(); // number of points 
+        G4double x, y;
+        for(G4int i=0; i < nPoints; ++i) {
+            DistributionGraph->GetPoint(i, x, y); //eV
+            if( 
+                x / 1000 > mEnergyCutLow && 
+                x / 1000 < mEnergyCutHigh
+            ) 
+            {
+                mLANLDistribution->Fill(x,y);
+            }
+        }
+#endif
+    }
+
     void EventManager::CloseOutputFile(G4int RunID)
     {
         auto AnalysisManager = G4AnalysisManager::Instance();
@@ -113,7 +187,10 @@ namespace Artie
     {
         StartFunctionProfile();
         auto AnalysisManager = G4AnalysisManager::Instance();
+#ifdef ARTIE_GEANT_10
+#else
         AnalysisManager->SetDefaultFileType("root");
+#endif
         AnalysisManager->SetVerboseLevel(0);
         AnalysisManager->SetNtupleMerging(true);
 

@@ -14,6 +14,7 @@
 #include "G4IonTable.hh"
 #include "G4Event.hh"
 #include "Randomize.hh"
+#include "EventManager.hh"
 
 #ifdef ARTIE_ROOT
 #include "TFile.h"
@@ -59,9 +60,6 @@ namespace Artie
         G4bool mUseLANLDistribution = { false };
 
 #ifdef ARTIE_ROOT
-        G4String mLANLDistributionFileName = {"resolution13a.root"};
-        G4String mLANLDistributionName = {"tally5"};
-        TFile* mLANLDistributionFile = {0};
         TH1D* mLANLDistribution = {0};
 #endif
 

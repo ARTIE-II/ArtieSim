@@ -134,28 +134,18 @@ namespace Artie
         //         GetPressure()       // pressure
         //     )
         // );  
+        G4int NumberOfComponents = 1;
         mMaterial.reset(
             new G4Material(
                 mName,              // name
                 mNaturalArDensity,  // density
-                1,
+                NumberOfComponents,
                 mState,             // state
                 GetTemperature(),   // temperature
                 GetPressure()       // pressure
             )
         ); 
         mMaterial->AddElement(mArIsotopes.get(), 1.0);
-
-        // const G4ElementVector* elm = mMaterial->GetElementVector();
-        // const G4double* dens = mMaterial->GetAtomicNumDensityVector();
-
-        // // fill absorption length vector
-        // G4int nelm = (G4int)mMaterial->GetNumberOfElements();
-        // G4cout << dens << "\n" << nelm << G4endl;
-        // for (G4int j=0; j<nelm; ++j)
-        // {
-        //     G4cout << dens[j] << "," << (*elm)[j]->GetZasInt() << G4endl; 
-        // }
 
         // Set up refractive index with 128nm scintillation photons
         // These data are taken from LArSoft (https://github.com/LArSoft/lardataalg/blob/develop/lardataalg/DetectorInfo/larproperties.fcl)
@@ -253,6 +243,8 @@ namespace Artie
         // Add refractive index, absorption length and rayleigh scattering
         // to a new properties table.
         G4MaterialPropertiesTable* mptLAr = new G4MaterialPropertiesTable();
+#ifdef ARTIE_GEANT_10
+#else
         mptLAr->AddProperty(
             "RINDEX", 
             mRefractiveIndexEnergies, 
@@ -272,5 +264,6 @@ namespace Artie
             mRayleighScatteringEnergies.size()
         );
         mMaterial->SetMaterialPropertiesTable(mptLAr);
+#endif
     }
 }

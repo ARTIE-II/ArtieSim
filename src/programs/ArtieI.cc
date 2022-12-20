@@ -19,6 +19,7 @@
 // Neutron HP
 #include "G4ParticleHPManager.hh"
 #include "G4Types.hh"
+#include "G4GDMLParser.hh"
 
 #include "ArtieIDetectorConstruction.hh"
 #include "PhysicsList.hh"
@@ -47,7 +48,13 @@ int main(int argc, char** argv)
     auto Config = Artie::ConfigParser(ConfigFile);
     Artie::EventManager::GetEventManager()->SetConfig(Config.GetConfig());
 
-    //choose the Random engine
+    // Setting up the GDML parser
+    G4GDMLParser parser;
+    // Uncomment the following if wish to avoid names stripping
+    // parser.SetStripFlag(false);
+    parser.SetOverlapCheck(true);
+
+    // choose the Random engine
     G4Random::setTheEngine(new CLHEP::RanecuEngine);
 
     // create a user session
@@ -68,18 +75,19 @@ int main(int argc, char** argv)
     RunManager->SetUserInitialization(new Artie::ArtieIActionInitialization(Config.GetConfig()));
     
     // Replaced HP environmental variables with C++ calls                                                                                     
-    // G4ParticleHPManager::GetInstance()->SetSkipMissingIsotopes( true );
-    // G4ParticleHPManager::GetInstance()->SetDoNotAdjustFinalState( true );
+    G4ParticleHPManager::GetInstance()->SetSkipMissingIsotopes( true );
+    G4ParticleHPManager::GetInstance()->SetDoNotAdjustFinalState( true );
     // G4ParticleHPManager::GetInstance()->SetUseOnlyPhotoEvaporation( true );
     // G4ParticleHPManager::GetInstance()->SetNeglectDoppler( true );
     // G4ParticleHPManager::GetInstance()->SetProduceFissionFragments( true );
     // G4ParticleHPManager::GetInstance()->SetUseWendtFissionModel( true );
     // G4ParticleHPManager::GetInstance()->SetUseNRESP71Model( true );
 
-    UIExecutive = new G4UIExecutive(argc, argv);
+    
 
     if(Config.GetConfig()["manager"]["mode"].as<std::string>() == "interactive")
     {
+        UIExecutive = new G4UIExecutive(argc, argv);
         auto VisManager = std::make_shared<G4VisExecutive>();
         VisManager->Initialize();
         RunManager->Initialize();
@@ -103,6 +111,14 @@ int main(int argc, char** argv)
             );
         }
     }
+    parser.SetRegionExport(true);
+    // parser.SetEnergyCutsExport(true);
+    parser.SetOutputFileOverwrite(true);
+    parser.Write(
+        Config.GetConfig()["manager"]["output_filename"].as<std::string>() + ".gdml", 
+        G4TransportationManager::GetTransportationManager()
+        ->GetNavigatorForTracking()->GetWorldVolume()->GetLogicalVolume()
+    );
 
     return 0;
 }

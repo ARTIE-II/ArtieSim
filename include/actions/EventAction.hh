@@ -11,7 +11,11 @@
 #include "globals.hh"
 #include "G4UserEventAction.hh"
 #include "G4Event.hh"
+#ifdef ARTIE_GEANT_10
+#include "g4root.hh"
+#else
 #include "G4AnalysisManager.hh"
+#endif
 #include "G4RunManager.hh"
 
 #include "RunAction.hh"

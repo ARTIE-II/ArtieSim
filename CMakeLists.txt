@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
-#set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 20)
 
 project(Artie)
 
@@ -38,6 +38,22 @@ if(MULTITHREADING)
         )
     endif()
 endif()
+##############################################################
+
+##############################################################
+# Geant version
+option(GEANT4_10 "Compile with Geant4 version 10" OFF)
+if(GEANT4_10)
+    add_definitions(-DARTIE_GEANT_10)
+    message(STATUS "Compiling against Geant4 version 10.")
+    find_package(Geant4 10.07.02 EXACT REQUIRED ui_all vis_all)
+    include(${Geant4_USE_FILE})
+else()
+    message(STATUS "Compiling against Geant4 version 11.")
+    find_package(Geant4 11 REQUIRED ui_all vis_all)
+    include(${Geant4_USE_FILE})
+endif()
+message(STATUS "Geant4 installation directory -- ${Geant4_DIR}")
 ##############################################################
 
 ##############################################################
@@ -84,12 +100,6 @@ if(USE_UI)
     add_definitions(-DARTIE_USE_UI)
     message(STATUS "Compiling with the ui enabled.")
 endif()
-##############################################################
-
-##############################################################
-find_package(Geant4 REQUIRED ui_all vis_all)
-include(${Geant4_USE_FILE})
-message(STATUS "Geant4 installation directory -- ${Geant4_DIR}")
 ##############################################################
 
 ##############################################################

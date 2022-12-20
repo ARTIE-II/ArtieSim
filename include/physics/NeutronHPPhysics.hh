@@ -14,8 +14,15 @@
 #include "G4DecayPhysics.hh"
 #include "G4RadioactiveDecayPhysics.hh"
 #include "G4HadronElasticProcess.hh"
+
+#ifdef ARTIE_GEANT_10
+#include "G4HadronFissionProcess.hh"
+#include "G4HadronCaptureProcess.hh"
+#else
 #include "G4NeutronFissionProcess.hh"
 #include "G4NeutronCaptureProcess.hh"
+#endif
+
 #include "G4HadronInelasticProcess.hh"
 
 #include "G4ParticleHPThermalScatteringData.hh"

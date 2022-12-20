@@ -20,7 +20,19 @@
 #include "G4UIExecutive.hh"
 #include "G4VUserDetectorConstruction.hh"
 #include "G4VModularPhysicsList.hh"
+
+#ifdef ARTIE_ROOT
+#include "TFile.h"
+#include "TH1D.h"
+#include "TGraph.h"
+#include "TMath.h"
+#endif
+
+#ifdef ARTIE_GEANT_10
+#include "g4root.hh"
+#else
 #include "G4AnalysisManager.hh"
+#endif
 
 #ifdef ARTIE_YAML
 #include "yaml-cpp/yaml.h"
@@ -98,6 +110,11 @@ namespace Artie
         inline static thread_local G4int GetNumberOfParticles()         { return mParticleName.size(); }
         inline static thread_local G4int GetNumberOfSimulatedParticles(){ return mParticleName.size(); }
 
+        // lanl distribution
+        void ConstructEnergyDistribution();
+#ifdef ARTIE_ROOT
+        TH1D* GetLANLDistribution() { return mLANLDistribution; }
+#endif
         //*************************************************************************************************//
         // Options to save various data to root files.
         void SaveParticleMaps(G4bool save)      { sSaveParticleMaps = save; }
@@ -265,6 +282,15 @@ namespace Artie
 
         // Analysis functions
         std::vector<std::function<void()>> mAnalysisFunctions;
+
+#ifdef ARTIE_ROOT
+        inline static G4String mLANLDistributionFileName = {"resolution13a.root"};
+        inline static G4String mLANLDistributionName = {"tally5"};
+        inline static TFile* mLANLDistributionFile = {0};
+        inline static TH1D* mLANLDistribution = {0};
+        inline static G4double mEnergyCutLow = { 40 * keV };
+        inline static G4double mEnergyCutHigh = { 70 * keV };
+#endif
 
 #ifdef ARTIE_PROFILING
         inline static thread_local std::map<G4String, Profile> sFunctionProfiles = {};

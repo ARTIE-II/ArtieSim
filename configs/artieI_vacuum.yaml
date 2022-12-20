@@ -51,4 +51,4 @@ generator:
     lanl_distribution_name: "tally5"
     t_zero_location: -1.0   # m
     energy_cut_low:  20      # keV
-    energy_cut_high: 70     # keV
+    energy_cut_high: 70    # keV
