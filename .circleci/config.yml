@@ -11,7 +11,7 @@ jobs:
       - run:
           command: "echo Installing Geant4"
       - run:
-          command: "pwd"
+          command: "git clone https://github.com/ARTIE-II/ArtieSim && cd ArtieSim && source scripts/install_geant4.sh"
 
 # jobs:
 #   say-hello:
