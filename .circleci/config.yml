@@ -9,9 +9,17 @@ jobs:
     steps:
       - checkout
       - run:
-          command: "echo Installing Geant4"
+          name: "Download ArtieSim"
+          command: "git clone https://github.com/ARTIE-II/ArtieSim"
       - run:
-          command: "git clone https://github.com/ARTIE-II/ArtieSim && cd ArtieSim && source scripts/install_geant4.sh"
+          name: "Install Geant4" 
+          command: "cd ArtieSim && source scripts/install_geant4.sh"
+      - run:
+          name: "Install Git LFS"
+          command: "source scripts/install_git_lfs.sh"
+      - run:
+          name: "Install neutron data"
+          command: "source scripts/install_endf.sh"
 
 # jobs:
 #   say-hello:
