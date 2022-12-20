@@ -43,8 +43,8 @@ class ArtieAnalysis:
         }
 
         self.argon_mass = 6.6338e-26    # mass in kg
-        self.lar_density = self.config['lar_density'] * 1000
-        self.target_length = self.config['target_length'] / 100
+        self.lar_density = float(self.config['lar_density']) * 1000
+        self.target_length = float(self.config['target_length']) / 100
         self.n = self.lar_density * self.target_length / self.argon_mass
 
         endf_energy = []
@@ -145,7 +145,7 @@ class ArtieAnalysis:
         )
         axs.set_xlabel("Time of Flight [" + r"$\mu$" + "s]")
         axs.set_ylabel("Neutrons")
-        axs.set_title(f"{name} Time of Flight Distribution - L={self.config['target_length']}cm")
+        axs.set_title(f"{name} Time of Flight Distribution - L={self.target_length}m")
         plt.legend()
         plt.tight_layout()
         if(save != ''):
@@ -216,7 +216,7 @@ class ArtieAnalysis:
         axs.set_xticks(xticks)
         axs.set_xticklabels(categories, rotation=45, ha='right')
         axs.set_yscale("log")
-        axs.set_title(f"Number/Type of Scatters - L={self.config['target_length']}cm")
+        axs.set_title(f"Number/Type of Scatters - L={self.target_length}m")
         plt.legend()
         plt.tight_layout()
         plt.show()
@@ -302,7 +302,7 @@ class ArtieAnalysis:
         )
         axs.set_xlabel("Kinetic Energy [keV]")
         axs.set_ylabel("Neutrons")
-        axs.set_title(f"{name} Kinetic Energy Distribution - L={self.config['target_length']}cm")
+        axs.set_title(f"{name} Kinetic Energy Distribution - L={self.target_length}m")
         plt.legend()
         plt.tight_layout()
         if(save != ''):
@@ -466,7 +466,7 @@ class ArtieAnalysis:
         axs.set_ylim(10e-3,1)
         axs.set_xlabel("Energy bin [keV]")
         axs.set_ylabel("Transmission")
-        axs.set_title(f"Transmission vs. Energy [keV] - L={self.config['target_length']}cm")
+        axs.set_title(f"Transmission vs. Energy [keV] - L={self.target_length}m")
         axs.set_yscale("log")
         plt.legend()
         plt.tight_layout()
@@ -629,7 +629,7 @@ class ArtieAnalysis:
         axs.set_xlim(energy_min, energy_max)
         axs.set_xlabel("Energy bin [keV]")
         axs.set_ylabel("Cross Section [barn]")
-        axs.set_title(f"Cross Section [barn] vs. Energy [keV] - L={self.config['target_length']}cm")
+        axs.set_title(f"Cross Section [barn] vs. Energy [keV] - L={self.target_length}m")
         axs.set_yscale("log")
         plt.legend()
         plt.tight_layout()

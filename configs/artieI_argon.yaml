@@ -5,7 +5,7 @@ manager:
     number_of_events:   1000000
     mode:               "run"   # interactive/run
     detector:           "artieI"
-    output_filename:    "artieI_argon"
+    output_filename:    "artieI_argon_short"
     save_particle_maps: true
     save_primary_info:  true
     save_hits:          true
@@ -25,7 +25,7 @@ argon:
 detector:
     active_volume_material: "liquid_argon"
     target_radius:          1.25    # cm
-    target_length:          168     # cm
+    target_length:          20      # cm
     construct_container:    true    # bool
     container_material:     "stainless_steel"
     container_radius:       1.745   # cm
@@ -60,5 +60,5 @@ generator:
     lanl_distribution_filename: "resolution13a.root"
     lanl_distribution_name: "tally5"
     t_zero_location: -1.0   # m
-    energy_cut_low:  20      # keV
-    energy_cut_high: 70     # keV
+    energy_cut_low:  70      # keV
+    energy_cut_high: 200     # keV

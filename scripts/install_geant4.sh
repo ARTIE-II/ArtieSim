@@ -50,7 +50,7 @@ make -j $NUM_CORES
 make install
 
 # source the geant4 install script
-INSTALL_SCRIPT=$INSTALL_DIRECTORY"/share/Geant4*/geant4make/"
+export INSTALL_SCRIPT=$INSTALL_DIRECTORY"/share/Geant4*/geant4make/"
 source $INSTALL_SCRIPT/geant4make.sh
 
 # add geant4 script to bashrc

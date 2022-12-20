@@ -10,7 +10,7 @@ manager:
     save_primary_info:  true
     save_hits:          true
     save_neutron_data:  true
-    
+
 # ARTIE argon parameters 
 argon:
     use_g4_definition:  false
@@ -18,6 +18,8 @@ argon:
     argon_38_ratio:     0.063   # %
     argon_40_ratio:     99.603  # %
     lar_density:        1.3954  # g/cm^3
+    lar_temperature:    85.0    # K
+    lar_pressure:       0.952   # atm
 
 # ARTIE-I detector parameters
 detector:

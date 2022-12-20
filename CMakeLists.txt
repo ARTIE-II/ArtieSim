@@ -159,24 +159,6 @@ endif()
 
 ##############################################################
 # create programs
-# argon cube example
-# add_executable(argon_cube 
-#     src/programs/ArgonCube.cc 
-# )
-# target_link_libraries(argon_cube artie)
-
-# # detector test
-# add_executable(detector_test 
-#     src/programs/DetectorTest.cc 
-# )
-# target_link_libraries(detector_test artie)
-
-# # run test
-# add_executable(run_test 
-#     src/programs/RunTest.cc 
-# )
-# target_link_libraries(run_test artie)
-# run test
 add_executable(artie_run 
     src/programs/ArtieI.cc 
 )
@@ -194,7 +176,7 @@ file(GLOB DATA_FILES
 file(GLOB ANALYSIS_FILES
     "analysis/*.py"
 )
-file(GLOB CONFIG_FILES
+file(GLOB_RECURSE CONFIG_FILES
     "configs/*.yaml"
 )
 file(COPY ${MACRO_FILES} DESTINATION ${PROJECT_BINARY_DIR})
