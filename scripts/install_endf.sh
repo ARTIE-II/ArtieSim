@@ -14,7 +14,7 @@ git lfs install
 git submodule update --init --recursive
 
 export ARTIE_NEUTRONDATA_DIR=$ARTIE_DIR/data/ArtieENDF/
-ARTIE_NEUTRONDATA_FILE="ENDF-VIII.0.tar.gz"
+export ARTIE_NEUTRONDATA_FILE="ENDF-VIII.0.tar.gz"
 
 # if git lfs is unsuccessful then dl from site
 if [ test -d "$ARTIE_NEUTRONDATA_DIR" ]

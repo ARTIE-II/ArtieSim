@@ -42,7 +42,7 @@ class ArtieAnalysis:
             for ii in range(len(self.configuration['parameter']))
         }
 
-        self.argon_mass = 6.6338e-26    # mass in kg
+        self.argon_mass = 663.38    # mass in kg/barn
         self.lar_density = float(self.config['lar_density']) * 1000
         self.target_length = float(self.config['target_length']) / 100
         self.n = self.lar_density * self.target_length / self.argon_mass
@@ -317,6 +317,7 @@ class ArtieAnalysis:
         name:           str="Neutrons",
         simulated:      bool=False,
         endf:           bool=True,
+        log_scale:      bool=False,
         save:   str='',
         show:   bool=False
     ):
@@ -467,7 +468,8 @@ class ArtieAnalysis:
         axs.set_xlabel("Energy bin [keV]")
         axs.set_ylabel("Transmission")
         axs.set_title(f"Transmission vs. Energy [keV] - L={self.target_length}m")
-        axs.set_yscale("log")
+        if log_scale:
+            axs.set_yscale("log")
         plt.legend()
         plt.tight_layout()
         if(save != ''):

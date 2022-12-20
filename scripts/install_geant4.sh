@@ -18,11 +18,11 @@ do
 done
 
 # directory for the installation
-DL_DIRECTORY="/home/$USER/physics/geant4/"
-DOWNLOAD_PAGE="https://github.com/Geant4/geant4/archive/refs/tags/"
-VERSION="11.0.3"
-DL_FILE="v"$VERSION".tar.gz"
-DL_LINK=$DOWNLOAD_PAGE$DL_FILE
+export DL_DIRECTORY="/home/$USER/physics/geant4/"
+export DOWNLOAD_PAGE="https://github.com/Geant4/geant4/archive/refs/tags/"
+export VERSION="11.0.3"
+export DL_FILE="v"$VERSION".tar.gz"
+export DL_LINK=$DOWNLOAD_PAGE$DL_FILE
 
 mkdir -p $DL_DIRECTORY
 cd $DL_DIRECTORY
@@ -31,9 +31,9 @@ wget $DL_LINK
 tar xvzf $DL_FILE
 rm $DL_FILE
 
-SOURCE_DIRECTORY="/home/$USER/physics/geant4/geant4-"$VERSION
-BUILD_DIRECTORY=$SOURCE_DIRECTORY"-build/"
-INSTALL_DIRECTORY=$SOURCE_DIRECTORY"-install/"
+export SOURCE_DIRECTORY="/home/$USER/physics/geant4/geant4-"$VERSION
+export BUILD_DIRECTORY=$SOURCE_DIRECTORY"-build/"
+export INSTALL_DIRECTORY=$SOURCE_DIRECTORY"-install/"
 
 # create the build and installation directories
 mkdir -p $INSTALL_DIRECTORY
@@ -54,4 +54,4 @@ export INSTALL_SCRIPT=$INSTALL_DIRECTORY"/share/Geant4*/geant4make/"
 source $INSTALL_SCRIPT/geant4make.sh
 
 # add geant4 script to bashrc
-echo 'export source ${INSTALL_SCRIPT}/geant4make.sh' >> ~/.bashrc
+echo "export source ${INSTALL_SCRIPT}/geant4make.sh" >> ~/.bashrc

@@ -2,7 +2,7 @@
 manager:
     number_of_threads:  8
     number_of_runs:     1
-    number_of_events:   1000000
+    number_of_events:   5000000
     mode:               "run"   # interactive/run
     detector:           "artieI"
     output_filename:    "artieI_ideal_short"
@@ -60,5 +60,5 @@ generator:
     lanl_distribution_filename: "resolution13a.root"
     lanl_distribution_name: "tally5"
     t_zero_location: -1.0   # m
-    energy_cut_low:  70      # keV
+    energy_cut_low:  20      # keV
     energy_cut_high: 200     # keV
