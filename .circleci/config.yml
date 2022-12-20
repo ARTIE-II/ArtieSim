@@ -2,12 +2,6 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
-workflows:
-  main:
-    jobs:
-      - build
 jobs:
   say-hello:
     machine:
