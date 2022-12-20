@@ -7,7 +7,7 @@ LIST_OF_APPS="cmake gcc g++ libexpat1-dev qtbase5-dev qtchooser qt5-qmake qtbase
 sudo apt-get install $LIST_OF_APPS -y
 
 # check if certain packages are installed
-for DEP in "cmake" "gcc" "g++" "libexpat1-dev" "qtbase5-dev" "qtchooser" "qt5-qmake" "qtbase5-dev-tools" "libxmu-dev" "libmotif-dev" "libxerces-c-dev" "libopengl-dev"
+for DEP in "cmake" "gcc" "g++" "libexpat1-dev" "qtbase5-dev" "qtchooser" "qt5-qmake" "qtbase5-dev-tools" "libxmu-dev" "libmotif-dev" "libxerces-c-dev"
 do
     echo "Checking for $DEP package..."
     if [ $(dpkg-query -W -f='${Status}' $DEP 2>/dev/null | grep -c "ok installed") -eq 0 ];
