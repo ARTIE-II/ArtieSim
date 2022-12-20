@@ -46,7 +46,11 @@ make install
 where *N* is the number of cores you want to use to build.
 
 ### Installing Git LFS
-
+In order to download the neutron HP data library we use in the Artie simulation, you'll either need to install Git LFS (Large File System), or manually download the correct [ENDF-VIII.0 library](https://www-nds.iaea.org/geant4/) and copy it to the data folder.  To install Git LFS, navigate to [https://git-lfs.com/](https://git-lfs.com/) and click the download link.  Once downloaded, run the bash script,
+```bash
+cd ~/Downloads/git-lfs-1.X.X
+./install.sh
+```
 
 ### Installing ArtieSim
 To begin, first clone the repository and pull the submodules recursively,
@@ -54,7 +58,6 @@ To begin, first clone the repository and pull the submodules recursively,
 ```bash
 git clone --recursive https://github.com/ARTIE-II/ArtieSim
 ```
-
 If you've cloned without including recursive then do,
 
 ```bash
@@ -62,9 +65,25 @@ git clone https://github.com/ARTIE-II/ArtieSim
 cd ArtieSim
 git submodule update --init --recursive
 ```
+There are several scripts in the *ArtieSim/scripts/* folder which will install Geant4, Git LFS and download and set up the neutron data library for you automatically.  To install Geant4 simply run the script,
+```bash
+source <path-to-ArtieSim>/scripts/install_geant4.sh
+```
+Likewise for Git LFS (this may have a broken link if Git LFS has been updated!),
+```bash
+source <path-to-ArtieSim>/scripts/install_git_lfs.sh
+```
+and finally for the neutron library,
+```bash
+source <path-to-ArtieSim>/scripts/install_endf.sh
+```
 
 ### Neutron HP Data
+For the ARTIE simulation, we use the [ENDF-VIII.0](https://www-nds.iaea.org/geant4/libraries/ENDF-VIII.0/) neutron data library, which can be found at the International Atomic Energy Agency (IAEA) [website](https://www-nds.iaea.org/geant4/).  This dataset will be downloaded automatically if Git LFS is set up (see section above), however you will have to manually download it if it is not.  The dataset can be downloaded [here](https://www-nds.iaea.org/geant4/libraries/ENDF-VIII.0.tar.gz) and should be extracted into the data folder.
 
-
+In order to use the ENDF-VIII.0 library, we need to set the environment variable *G4NEUTRONHPDATA* to point to the folder which contains the library, i.e. *G4NEUTRONHPDATA=<path-to-ArtieSim>/data/ArtieENDF/ENDF-VIII.0/*.  If one is using the various install scripts, this is done for you automatically, however you will need to set it yourself if installing manually before running the simulation,
+```bash
+export G4NEUTRONHPDATA=<path-to-ArtieSim>/data/ArtieENDF/ENDF-VIII.0/
+```
 
 ## Configuration Files
