@@ -8,8 +8,9 @@ jobs:
       image: ubuntu-2204:edge
     steps:
       - checkout
-      - run: 
-          command: "echo Installing Geant4..."
+      - run:
+          command: "echo Installing Geant4"
+      - run:
           command: "pwd"
 
 # jobs:
