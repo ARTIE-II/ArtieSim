@@ -83,8 +83,6 @@ int main(int argc, char** argv)
     // G4ParticleHPManager::GetInstance()->SetUseWendtFissionModel( true );
     // G4ParticleHPManager::GetInstance()->SetUseNRESP71Model( true );
 
-    
-
     if(Config.GetConfig()["manager"]["mode"].as<std::string>() == "interactive")
     {
         UIExecutive = new G4UIExecutive(argc, argv);

@@ -17,7 +17,9 @@ argon:
     argon_36_ratio:     0.334   # %
     argon_38_ratio:     0.063   # %
     argon_40_ratio:     99.603  # %
-    density:            1.3954  # g/cm^3
+    lar_density:        1.3954  # g/cm^3
+    lar_temperature:    85.0    # K
+    lar_pressure:       0.952   # atm
 
 # ARTIE-I detector parameters
 detector:

@@ -9,15 +9,20 @@
 
 namespace Artie
 {
-    G4Material* CreateMaterial(G4String material_name)
+    G4Material* CreateMaterial(G4String material_name, G4String volume_name)
     {
         G4Material* material;
         if(material_name == "gaseous_argon") {
             material = G4NistManager::Instance()->FindOrBuildMaterial("G4_Ar");
         }
         else if(material_name == "liquid_argon") {
-            auto argon = new Argon("LAr");
-            material = argon->GetMaterial();
+            if(EventManager::GetEventManager()->UseG4Definition()) {
+                material = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");
+            }
+            else {
+                auto argon = new Argon("LAr");
+                material = argon->GetMaterial();
+            }
         }
         else if(material_name == "g4_liquid_argon") {
             material = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");
@@ -70,6 +75,7 @@ namespace Artie
             std::cerr << "ERROR! Material (" + material_name + ") not recognized!" << G4endl;
             exit(0);
         }
+        material->SetName(volume_name + "_" + material_name);
         return material;
     }
 }

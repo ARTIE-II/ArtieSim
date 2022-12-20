@@ -63,73 +63,20 @@ namespace Artie
 
     void ArtieIDetectorConstruction::DefineMaterials()
     {
-        G4NistManager *nist = G4NistManager::Instance();
-
-        mIAr36 = new G4Isotope(
-            "Ar36",        // name
-            18.,            // atomic number
-            36,             // atomic mass
-            mAr36MassMol
-        );  
-        
-        mIAr38 = new G4Isotope(
-            "Ar38",        // name
-            18.,            // atomic number
-            38,             // atomic mass
-            mAr38MassMol
-        );  
-
-        mIAr40 = new G4Isotope(
-            "Ar40",        // name
-            18.,            // atomic number
-            40,             // atomic mass
-            mAr40MassMol
-        );  
-
-        // add the isotopes to the definition of Ar
-        mArIsotopes = new G4Element("ArIsotopes", "Ar", 3);
-        mArIsotopes->AddIsotope(mIAr36, mAr36Ratio*perCent);
-        mArIsotopes->AddIsotope(mIAr38, mAr38Ratio*perCent);
-        mArIsotopes->AddIsotope(mIAr40, mAr40Ratio*perCent);
-
-        mAverageDensity = 1.406*g/cm3;
-        mNaturalArDensity = 1.3973*g/cm3;
-        G4double mAverageMassMol = mAr36MassMol * mAr36Ratio + mAr38MassMol * mAr38Ratio + mAr40MassMol * mAr40Ratio;
-
-        // need now the definition of LAr with the composition
-        // mLAr = new G4Material(
-        //     "LAr",          // name
-        //     mAverageDensity,// density
-        //     1,              // # om components
-        //     kStateLiquid,   // state
-        //     mTemperature,   // temperature
-        //     mPressure
-        // );     
-        mLAr = new G4Material(
-            "LAr",
-            18.0,
-            mAverageMassMol,
-            mAverageDensity,
-            kStateLiquid,
-            mTemperature,
-            mPressure
-        );
-        //mLAr->AddElement(mArIsotopes, 1);
-
-        mActiveVolumeMaterial = CreateMaterial(mActiveVolumeMaterialName);
-        mWorldMaterial = CreateMaterial(mWorldMaterialName);
-        mContainerMaterial = CreateMaterial(mContainerMaterialName); 
-        mInsulationMaterial = CreateMaterial(mInsulationMaterialName); 
-        mLeftWindowMaterial = CreateMaterial(mLeftWindowMaterialName); 
-        mRightWindowMaterial = CreateMaterial(mRightWindowMaterialName); 
-        mLeftBufferMaterial = CreateMaterial(mLeftBufferMaterialName); 
-        mRightBufferMaterial = CreateMaterial(mRightBufferMaterialName); 
-        mBeamPipeLeftBeamMaterial = CreateMaterial(mBeamPipeLeftBeamMaterialName); 
-        mBeamPipeRightBeamMaterial = CreateMaterial(mBeamPipeRightBeamMaterialName); 
-        mBeamPipeLeftPipeMaterial = CreateMaterial(mBeamPipeLeftPipeMaterialName); 
-        mBeamPipeRightPipeMaterial = CreateMaterial(mBeamPipeRightPipeMaterialName); 
-        mDetectorMaterial = CreateMaterial(mDetectorMaterialName);
-        mHallMaterial = CreateMaterial(mHallMaterialName);
+        mActiveVolumeMaterial = CreateMaterial(mActiveVolumeMaterialName, "ActiveVolume");
+        mWorldMaterial = CreateMaterial(mWorldMaterialName, "World");
+        mContainerMaterial = CreateMaterial(mContainerMaterialName, "Container"); 
+        mInsulationMaterial = CreateMaterial(mInsulationMaterialName, "Insulation"); 
+        mLeftWindowMaterial = CreateMaterial(mLeftWindowMaterialName, "LeftWindow"); 
+        mRightWindowMaterial = CreateMaterial(mRightWindowMaterialName, "RightWindow"); 
+        mLeftBufferMaterial = CreateMaterial(mLeftBufferMaterialName, "LeftBuffer"); 
+        mRightBufferMaterial = CreateMaterial(mRightBufferMaterialName, "RightBuffer"); 
+        mBeamPipeLeftBeamMaterial = CreateMaterial(mBeamPipeLeftBeamMaterialName, "LeftBeam"); 
+        mBeamPipeRightBeamMaterial = CreateMaterial(mBeamPipeRightBeamMaterialName, "RightBeam"); 
+        mBeamPipeLeftPipeMaterial = CreateMaterial(mBeamPipeLeftPipeMaterialName, "LeftPipe"); 
+        mBeamPipeRightPipeMaterial = CreateMaterial(mBeamPipeRightPipeMaterialName, "RightPipe"); 
+        mDetectorMaterial = CreateMaterial(mDetectorMaterialName, "Detector");
+        mHallMaterial = CreateMaterial(mHallMaterialName, "Hall");
     }
 
     ArtieIDetectorConstruction::~ArtieIDetectorConstruction()

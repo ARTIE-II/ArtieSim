@@ -97,6 +97,15 @@ namespace Artie
         G4int NumberOfThreads()             { return sNumberOfThreads; }
         void NumberOfThreads(G4int threads) { sNumberOfThreads = threads;}
 
+        // Argon properties
+        G4bool UseG4Definition()    { return mUseG4Definition; }
+        G4double Argon36Ratio()     { return mArgon36Ratio; }
+        G4double Argon38Ratio()     { return mArgon38Ratio; }
+        G4double Argon40Ratio()     { return mArgon40Ratio; }
+        G4double LArDensity()       { return mLArDensity; }
+        G4double LArTemperature()   { return mLArTemperature; }
+        G4double LArPressure()      { return mLArPressure; }
+
         // Tuple related functions
         G4String OutputFileName()           { return sOutputFileName; }
         void OutputFileName(G4String name)  { sOutputFileName = name; }
@@ -261,10 +270,19 @@ namespace Artie
 
         // Options to save various data to root files.
         inline static std::vector<Tuple> sTuples;
-        inline static G4bool sSaveParticleMaps = true;
-        inline static G4bool sSavePrimaryInfo = true;
-        inline static G4bool sSaveHits = true;
-        inline static G4bool sSaveNeutronData = true;
+        inline static G4bool sSaveParticleMaps = {true};
+        inline static G4bool sSavePrimaryInfo = {true};
+        inline static G4bool sSaveHits = {true};
+        inline static G4bool sSaveNeutronData = {true};
+
+        // Argon related parameters
+        inline static G4bool mUseG4Definition = {false};
+        inline static G4double mArgon36Ratio = {0.334};
+        inline static G4double mArgon38Ratio = {0.063};
+        inline static G4double mArgon40Ratio = {99.603};
+        inline static G4double mLArDensity = {1.3954 * g/cm3};
+        inline static G4double mLArTemperature = {85.0 * kelvin};
+        inline static G4double mLArPressure = {0.952 * atmosphere};
 
         // Event level maps to keep track of particle ids,
         // parent ids, ancestor ids and pdg codes.

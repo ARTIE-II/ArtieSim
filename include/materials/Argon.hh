@@ -8,11 +8,12 @@
 #pragma once
 #include <memory>
 
-#include "Argon.hh"
-#include "Material.hh"
 #include "G4NistManager.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4MaterialPropertiesTable.hh"
+
+#include "Material.hh"
+#include "EventManager.hh"
 
 namespace Artie
 {
@@ -24,26 +25,7 @@ namespace Artie
     class Argon
     {
     public:
-        /**
-         * @brief Construct a new Argon object
-         * The default parameters are Set to LAr with natural
-         * argon.
-         * 
-         * @param temperature 
-         * @param pressure 
-         * @param Ar36Ratio 
-         * @param Ar38Ratio 
-         * @param Ar40Ratio 
-         */
-        Argon(
-            G4String name,
-            G4double temperature=85.8 * kelvin, 
-            G4double pressure   =0.952 * atmosphere,
-            enum G4State state  =kStateLiquid,
-            G4double Ar36Ratio  =0.334, 
-            G4double Ar38Ratio  =0.063, 
-            G4double Ar40Ratio  =99.603
-        );
+        Argon(G4String name);
         ~Argon();
 
         void SetTemperature(G4double temperature);
@@ -93,6 +75,7 @@ namespace Artie
 
     private:
         G4String mName;
+        G4double mLArDensity;
         G4double mTemperature;
         G4double mPressure;
         enum G4State mState;

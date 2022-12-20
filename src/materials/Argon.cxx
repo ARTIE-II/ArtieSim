@@ -9,20 +9,16 @@
 
 namespace Artie
 {
-    Argon::Argon(
-        G4String name,
-        G4double temperature, G4double pressure,
-        enum G4State state,
-        G4double Ar36Ratio, G4double Ar38Ratio, G4double Ar40Ratio
-    )
+    Argon::Argon(G4String name)
     : mName(name)
-    , mTemperature(temperature)
-    , mPressure(pressure)
-    , mState(state)
-    , mAr36Ratio(Ar36Ratio)
-    , mAr38Ratio(Ar38Ratio)
-    , mAr40Ratio(Ar40Ratio)
     {
+        auto Manager = EventManager::GetEventManager();
+        mAr36Ratio = Manager->Argon36Ratio();
+        mAr38Ratio = Manager->Argon38Ratio();
+        mAr40Ratio = Manager->Argon40Ratio();
+        mLArDensity = Manager->LArDensity();
+        mTemperature = Manager->LArTemperature();
+        mPressure = Manager->LArPressure();
 
         mAverageDensity = 1.406*g/cm3;
         mNaturalArDensity = 1.3954*g/cm3;
@@ -122,23 +118,11 @@ namespace Artie
         mArIsotopes->AddIsotope(mIAr38.get(), mAr38Ratio * perCent);
         mArIsotopes->AddIsotope(mIAr40.get(), mAr40Ratio * perCent);
 
-        // need now the definition of LAr with the composition
-        // mMaterial.reset(
-        //     new G4Material(
-        //         mName,              // name
-        //         18.0,               // number
-        //         mAverageMassMol,    // # of components
-        //         mAverageDensity,    // density
-        //         mState,             // state
-        //         GetTemperature(),   // temperature
-        //         GetPressure()       // pressure
-        //     )
-        // );  
         G4int NumberOfComponents = 1;
         mMaterial.reset(
             new G4Material(
                 mName,              // name
-                mNaturalArDensity,  // density
+                mLArDensity,        // density
                 NumberOfComponents,
                 mState,             // state
                 GetTemperature(),   // temperature

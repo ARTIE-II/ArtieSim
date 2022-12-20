@@ -41,7 +41,11 @@ class ArtieAnalysis:
             self.configuration['parameter'][ii]: self.configuration['value'][ii]
             for ii in range(len(self.configuration['parameter']))
         }
-        
+
+        self.argon_mass = 6.6338e-26    # mass in kg
+        self.lar_density = self.config['lar_density'] * 1000
+        self.target_length = self.config['target_length'] / 100
+        self.n = self.lar_density * self.target_length / self.argon_mass
 
         endf_energy = []
         endf_transmission = []
@@ -50,7 +54,7 @@ class ArtieAnalysis:
             reader = csv.reader(file, delimiter=",")
             for row in reader:
                 endf_energy.append(float(row[0]))
-                endf_transmission.append(np.exp(-3.53 * float(row[1])))
+                endf_transmission.append(np.exp(-self.n * float(row[1])))
                 endf_cross_section.append(float(row[1]))
         self.endf_energy = np.array(endf_energy)
         self.endf_transmission = np.array(endf_transmission)
@@ -571,25 +575,25 @@ class ArtieAnalysis:
 
         ideal_cross_section = np.zeros(cbins.size, dtype=float)
         ideal_mask = (ideal_transmission > 0)
-        ideal_cross_section[ideal_mask] = -(.283) * np.log(ideal_transmission[ideal_mask])
+        ideal_cross_section[ideal_mask] = -(1.0/self.n) * np.log(ideal_transmission[ideal_mask])
 
         vacuum_cross_section = np.zeros(cbins.size, dtype=float)
         vacuum_mask = (vacuum_transmission > 0)
-        vacuum_cross_section[vacuum_mask] = -(.283) * np.log(vacuum_transmission[vacuum_mask])
+        vacuum_cross_section[vacuum_mask] = -(1.0/self.n) * np.log(vacuum_transmission[vacuum_mask])
 
         argon_cross_section = np.zeros(cbins.size, dtype=float)
         argon_mask = (argon_transmission > 0)
-        argon_cross_section[argon_mask] = -(.283) * np.log(argon_transmission[argon_mask])
+        argon_cross_section[argon_mask] = -(1.0/self.n) * np.log(argon_transmission[argon_mask])
 
         if simulated:
             simulated_cross_section = np.zeros(cbins.size, dtype=float)
             simulated_mask = (simulated_transmission > 0)
-            simulated_cross_section[simulated_mask] = -(.283) * np.log(simulated_transmission[simulated_mask])
+            simulated_cross_section[simulated_mask] = -(1.0/self.n) * np.log(simulated_transmission[simulated_mask])
 
         fig, axs = plt.subplots()
         axs.errorbar(
             cbins, ideal_cross_section,
-            yerr=.283*ideal_errorbars,
+            yerr=(1.0/self.n)*ideal_errorbars,
             linestyle="--",
             color="b",
             label="ideal"
@@ -603,7 +607,7 @@ class ArtieAnalysis:
         )
         axs.errorbar(
             cbins, argon_cross_section,
-            yerr=.283*argon_errorbars,
+            yerr=(1.0/self.n)*argon_errorbars,
             linestyle="--",
             color="r",
             label="argon"

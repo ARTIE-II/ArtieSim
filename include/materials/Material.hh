@@ -13,8 +13,9 @@
 #include "G4MaterialPropertiesTable.hh"
 
 #include "Argon.hh"
+#include "EventManager.hh"
 
 namespace Artie
 {
-    G4Material* CreateMaterial(G4String material);
+    G4Material* CreateMaterial(G4String material, G4String volume);
 }

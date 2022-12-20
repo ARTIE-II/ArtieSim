@@ -11,6 +11,14 @@ manager:
     save_hits:          true
     save_neutron_data:  true
 
+# ARTIE argon parameters 
+argon:
+    use_g4_definition:  false
+    argon_36_ratio:     0.334   # %
+    argon_38_ratio:     0.063   # %
+    argon_40_ratio:     99.603  # %
+    lar_density:        1.3954  # g/cm^3
+
 # ARTIE-I detector parameters
 detector:
     active_volume_material: "liquid_argon"

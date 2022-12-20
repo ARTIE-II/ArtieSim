@@ -114,25 +114,6 @@ namespace Artie
         G4double mDetectorLength = {20.0 * cm};
         G4double mDetectorEntrance = {69.0 * m};
 
-        // Argon Material
-        G4double mTemperature = {85.8 * kelvin};
-        G4double mPressure = {0.952 * atmosphere};
-
-        G4double mAr36MassMol = {35.967*g/mole};
-        G4double mAr38MassMol = {37.962*g/mole}; 
-        G4double mAr40MassMol = {39.962*g/mole};
-
-        G4double mAr36Ratio = {0.334};
-        G4double mAr38Ratio = {0.063};
-        G4double mAr40Ratio = {99.603};
-
-        G4double mAverageDensity = {1.406*g/cm3};
-        G4double mNaturalArDensity = {1.3973*g/cm3};
-
-        G4Isotope *mIAr36, *mIAr38, *mIAr40;
-        G4Element *mArIsotopes;
-        G4Material *mLAr;
-
         // Experimental Hall
         G4Material *mWorldMaterial;
         G4Box* mSolidExperimentalHall;
