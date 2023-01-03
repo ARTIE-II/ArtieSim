@@ -65,7 +65,7 @@ class ArtieAnalysis:
         self.flight_path = flight_path
         self.resolution = resolution
     
-    def calculate_transmissions(bins, hist_detected, hist_all):
+    def calculate_transmissions(self, bins, hist_detected, hist_all):
         transmission = np.zeros(bins.size, dtype=float)
         errorbars = np.zeros(bins.size, dtype=float)
         mask = (hist_all > 0)
@@ -73,9 +73,10 @@ class ArtieAnalysis:
         detector_in = hist_detected[mask].astype(float)
         detector_out = hist_all[mask].astype(float) - detector_in
         errorbars[mask] = transmission[mask] * np.sqrt(
-            np.divide(1.0, detector_in, detector_out=np.zeros_like(detector_in), casting='unsafe', where=detector_in!=0) +
-            np.divide(1.0, detector_out, detector_out=np.zeros_like(detector_out), casting='unsafe', where=detector_out!=0)
+            np.divide(1.0, detector_in, out=np.zeros_like(detector_in), casting='unsafe', where=detector_in!=0) +
+            np.divide(1.0, detector_out, out=np.zeros_like(detector_out), casting='unsafe', where=detector_out!=0)
         )
+        return transmission, errorbars
 
     def energy_from_tof(self,
         tof
@@ -219,7 +220,7 @@ class ArtieAnalysis:
             argon_hist_all,
             yerr=argon_hist_all**0.5,
             marker='.',
-            c='k',
+            c='b',
             label='argon produced'
         )
         axs.errorbar(
@@ -227,7 +228,7 @@ class ArtieAnalysis:
             argon_hist_detected,
             yerr=argon_hist_detected**0.5,
             marker='.',
-            c='r',
+            c='y',
             label='argon transmitted'
         )
         axs.hist(
@@ -235,14 +236,16 @@ class ArtieAnalysis:
             bins=number_of_bins, 
             range=[energy_min, energy_max],  
             color='k',
-            histtype="step"
+            histtype="step",
+            label="ideal energy"
         )
         axs.hist(
             self.ideal_energy[(self.ideal_num_scatters == 0)], 
             bins=number_of_bins, 
             range=[energy_min, energy_max], 
             color='r',
-            histtype="step"
+            histtype="step",
+            label="ideal energy transmitted"
         )
         axs.set_xlabel("Kinetic Energy [keV]")
         axs.set_ylabel("Neutrons")
