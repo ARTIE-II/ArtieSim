@@ -97,6 +97,14 @@ namespace Artie
         G4int NumberOfThreads()             { return sNumberOfThreads; }
         void NumberOfThreads(G4int threads) { sNumberOfThreads = threads;}
 
+        // Number of runs
+        G4int NumberOfRuns()             { return sNumberOfRuns; }
+        void NumberOfRuns(G4int Runs) { sNumberOfRuns = Runs;}
+
+        // Number of events
+        G4int NumberOfEvents()             { return sNumberOfEvents; }
+        void NumberOfEvents(G4int Events) { sNumberOfEvents = Events;}
+
         // Argon properties
         G4bool UseG4Definition()    { return mUseG4Definition; }
         G4double Argon36Ratio()     { return mArgon36Ratio; }
@@ -122,7 +130,7 @@ namespace Artie
         // lanl distribution
         void ConstructEnergyDistribution();
 #ifdef ARTIE_ROOT
-        TH1D* GetLANLDistribution() { return mLANLDistribution; }
+        TH1D* GetLANLDistribution() { return mLANLDistribution.get(); }
 #endif
         //*************************************************************************************************//
         // Options to save various data to root files.
@@ -259,6 +267,8 @@ namespace Artie
 
     private:
         inline static G4int sNumberOfThreads =  {1};
+        inline static G4int sNumberOfRuns =  {1};
+        inline static G4int sNumberOfEvents =  {1};
 
         static std::shared_ptr<EventManager> sInstance;
         static std::mutex sMutex;
@@ -305,7 +315,7 @@ namespace Artie
         inline static G4String mLANLDistributionFileName = {"resolution13a.root"};
         inline static G4String mLANLDistributionName = {"tally5"};
         inline static TFile* mLANLDistributionFile = {0};
-        inline static TH1D* mLANLDistribution = {0};
+        inline static std::shared_ptr<TH1D> mLANLDistribution = {nullptr};
         inline static G4double mEnergyCutLow = { 40 * keV };
         inline static G4double mEnergyCutHigh = { 70 * keV };
 #endif

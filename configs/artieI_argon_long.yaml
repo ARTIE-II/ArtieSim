@@ -1,11 +1,11 @@
-# ARTIE-I manager parameters
+# ARTIE manager parameters
 manager:
     number_of_threads:  8
     number_of_runs:     1
     number_of_events:   5000000
     mode:               "run"   # interactive/run
     detector:           "artieI"
-    output_filename:    "artieI_vacuum_short"
+    output_filename:    "artieI_argon_long"
     save_particle_maps: true
     save_primary_info:  true
     save_hits:          true
@@ -23,10 +23,10 @@ argon:
 
 # ARTIE-I detector parameters
 detector:
-    active_volume_material: "high_vacuum"
+    active_volume_material: "liquid_argon"
     target_radius:          1.25    # cm
-    target_length:          20      # cm
-    construct_container:    false    # bool
+    target_length:          168      # cm
+    construct_container:    true    # bool
     container_material:     "stainless_steel"
     container_radius:       1.745   # cm
     insulation_material:    "polyurethane"
@@ -35,13 +35,13 @@ detector:
     window_thickness:       0.00762 # cm
     buffer_material:        "gaseous_argon"
     buffer_length:          5.0     # cm
-    construct_beam_pipe:    false    # bool
+    construct_beam_pipe:    true    # bool
     beam_pipe_material:     "rough_vacuum"
     beam_material:          "high_vacuum"
     beam_pipe_inner_radius: 18.0    # cm
     beam_pipe_outer_radius: 20.0    # cm
     gap:                    2.5     # m
-    construct_hall:         false    # bool
+    construct_hall:         true    # bool
     hall_material:          "concrete"
     world_x:                4       # m                 
     world_y:                4       # m
@@ -56,9 +56,9 @@ detector:
     
 # ARTIE-I generator parameters
 generator:
-    use_lanl_distribution: true
+    use_lanl_distribution: false
     lanl_distribution_filename: "resolution13a.root"
     lanl_distribution_name: "tally5"
     t_zero_location: -1.0   # m
     energy_cut_low:  20      # keV
-    energy_cut_high: 200    # keV
+    energy_cut_high: 200     # keV

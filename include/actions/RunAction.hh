@@ -32,6 +32,6 @@ namespace Artie
         virtual void EndOfRunAction(const G4Run*);
 
     private:
-    
+        
     };
 }

@@ -19,7 +19,7 @@ namespace Artie
     EventAction::~EventAction()
     {}
 
-    void EventAction::BeginOfEventAction(const G4Event*)
+    void EventAction::BeginOfEventAction(const G4Event* event)
     {
         auto Manager = EventManager::GetEventManager();
         Manager->ClearEventData();

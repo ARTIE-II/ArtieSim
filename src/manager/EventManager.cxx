@@ -30,14 +30,16 @@ namespace Artie
         if(mConfig["manager"])
         {
             if(mConfig["manager"]["number_of_threads"]) { sNumberOfThreads = mConfig["manager"]["number_of_threads"].as<G4int>(); }
+            if(mConfig["manager"]["number_of_runs"])    { sNumberOfRuns = mConfig["manager"]["number_of_runs"].as<G4int>(); }
+            if(mConfig["manager"]["number_of_events"])  { sNumberOfEvents = mConfig["manager"]["number_of_events"].as<G4int>(); }
             if(mConfig["manager"]["output_filename"])   { sOutputFileName = mConfig["manager"]["output_filename"].as<std::string>(); }
             if(mConfig["argon"]["use_g4_definition"])   { mUseG4Definition = mConfig["argon"]["use_g4_definition"].as<G4bool>(); }
             if(mConfig["argon"]["argon_36_ratio"])      { mArgon36Ratio = mConfig["argon"]["argon_36_ratio"].as<G4double>(); }
             if(mConfig["argon"]["argon_38_ratio"])      { mArgon38Ratio = mConfig["argon"]["argon_38_ratio"].as<G4double>(); }
             if(mConfig["argon"]["argon_40_ratio"])      { mArgon40Ratio = mConfig["argon"]["argon_40_ratio"].as<G4double>(); }
             if(mConfig["argon"]["lar_density"])         { mLArDensity = mConfig["argon"]["lar_density"].as<G4double>() * g/cm3; }
-            if(mConfig["argon"]["lar_temperature"])     { mArgon40Ratio = mConfig["argon"]["lar_temperature"].as<G4double>() * kelvin; }
-            if(mConfig["argon"]["lar_pressure"])        { mArgon40Ratio = mConfig["argon"]["lar_pressure"].as<G4double>() * atmosphere; }
+            if(mConfig["argon"]["lar_temperature"])     { mLArTemperature = mConfig["argon"]["lar_temperature"].as<G4double>() * kelvin; }
+            if(mConfig["argon"]["lar_pressure"])        { mLArPressure = mConfig["argon"]["lar_pressure"].as<G4double>() * atmosphere; }
         }
 #ifdef ARTIE_ROOT
         if(mConfig["generator"]["lanl_distribution_filename"])  { mLANLDistributionFileName = mConfig["generator"]["lanl_distribution_filename"].as<std::string>(); }
@@ -61,7 +63,9 @@ namespace Artie
             xbins[i] = TMath::Exp( TMath::Log(10) * xlog ); 
         }
 
-        mLANLDistribution = new TH1D("LANLBeamEnergy", "LANLBeamEnergy", nlogbins, xbins);
+        mLANLDistribution.reset(
+            new TH1D("LANLBeamEnergy", "LANLBeamEnergy", nlogbins, xbins)
+        );
         auto nPoints = DistributionGraph->GetN(); // number of points 
         G4double x, y;
         for(G4int i=0; i < nPoints; ++i) {
@@ -74,7 +78,6 @@ namespace Artie
                 mLANLDistribution->Fill(x,y);
             }
         }
-        mLANLDistributionFile->Close();
 #endif
     }
 #endif
@@ -127,7 +130,9 @@ namespace Artie
             xbins[i] = TMath::Exp( TMath::Log(10) * xlog ); 
         }
 
-        mLANLDistribution = new TH1D("LANLBeamEnergy", "LANLBeamEnergy", nlogbins, xbins);
+        mLANLDistribution.reset(
+            new TH1D("LANLBeamEnergy", "LANLBeamEnergy", nlogbins, xbins)
+        );
         auto nPoints = DistributionGraph->GetN(); // number of points 
         G4double x, y;
         for(G4int i=0; i < nPoints; ++i) {
