@@ -13,6 +13,7 @@ namespace Artie
     :  G4VPhysicsConstructor(name)
     , mThermal(true)
     {
+        std::filesystem::create_directory(".physics");
     }
 
     NeutronHPPhysics::~NeutronHPPhysics()
@@ -63,7 +64,7 @@ namespace Artie
         for (std::size_t ii = 0; ii < numberOfElements; ii++)
         {
             std::ofstream ElasticOutputFile;
-            ElasticOutputFile.open((*theElementTable)[ii]->GetName() + "_elastic.csv");
+            ElasticOutputFile.open(".physics/" + (*theElementTable)[ii]->GetName() + "_elastic.csv");
             for (G4int ie = 0 ; ie < 10000 ; ++ie )
             {
                 G4double eKinetic = 1.0e-5 * G4Pow::GetInstance()->powA ( 10.0 , ie/1000.0 ) *eV;
@@ -77,7 +78,7 @@ namespace Artie
             }
             ElasticOutputFile.close();
             std::ofstream ElasticElementFile;
-            ElasticElementFile.open((*theElementTable)[ii]->GetName() + "_properties.csv");
+            ElasticElementFile.open(".physics/" + (*theElementTable)[ii]->GetName() + "_properties.csv");
             ElasticElementFile << "Property,Value\n";
             ElasticElementFile << "Symbol," << (*theElementTable)[ii]->GetSymbol() << "\n";
             ElasticElementFile << "Z," << std::to_string((*theElementTable)[ii]->GetZ()) << "\n";
@@ -142,7 +143,7 @@ namespace Artie
         for (std::size_t ii = 0; ii < numberOfElements; ii++)
         {
             std::ofstream CaptureFile;
-            CaptureFile.open((*theElementTable)[ii]->GetName() + "_capture.csv");
+            CaptureFile.open(".physics/" + (*theElementTable)[ii]->GetName() + "_capture.csv");
             for (G4int ie = 0 ; ie < 10000 ; ++ie )
             {
                 G4double eKinetic = 1.0e-5 * G4Pow::GetInstance()->powA ( 10.0 , ie/1000.0 ) *eV;

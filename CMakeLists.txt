@@ -148,13 +148,6 @@ if(USE_YAML)
         artie PUBLIC ${YAML_LIBS}
     )
 endif()
-# target_link_libraries(
-#     artie PUBLIC 
-#     ${Geant4_LIBRARIES} 
-#     ROOT::Core 
-#     ${ROOT_LIBRARIES}
-#     ${YAML_LIBS}
-# )
 ##############################################################
 
 ##############################################################
@@ -164,6 +157,16 @@ add_executable(artie_run
 )
 target_link_libraries(artie_run artie)
 ##############################################################
+
+##############################################################
+# create directories
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/macros/)
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/data/)
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/analysis/)
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/configs/)
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/plots/)
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/gdml/)
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/outputs/)
 
 ##############################################################
 # copy macro and data files
@@ -179,10 +182,10 @@ file(GLOB ANALYSIS_FILES
 file(GLOB_RECURSE CONFIG_FILES
     "configs/*.yaml"
 )
-file(COPY ${MACRO_FILES} DESTINATION ${PROJECT_BINARY_DIR})
-file(COPY ${DATA_FILES} DESTINATION ${PROJECT_BINARY_DIR})
-file(COPY ${ANALYSIS_FILES} DESTINATION ${PROJECT_BINARY_DIR})
-file(COPY ${CONFIG_FILES} DESTINATION ${PROJECT_BINARY_DIR})
+file(COPY ${MACRO_FILES} DESTINATION ${PROJECT_BINARY_DIR}/macros/)
+file(COPY ${DATA_FILES} DESTINATION ${PROJECT_BINARY_DIR}/data/)
+file(COPY ${ANALYSIS_FILES} DESTINATION ${PROJECT_BINARY_DIR}/analysis/)
+file(COPY ${CONFIG_FILES} DESTINATION ${PROJECT_BINARY_DIR}/configs/)
 ##############################################################
 
 ##############################################################

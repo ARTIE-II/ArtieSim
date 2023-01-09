@@ -4,6 +4,7 @@ import numpy as np
 import uproot
 from matplotlib import pyplot as plt
 import csv
+import os
 
 
 artieI_cfg = {
@@ -63,7 +64,7 @@ class ArtieAnalysis:
         endf_energy = []
         endf_transmission = []
         endf_cross_section = []
-        with open("endf_natar.csv", "r") as file:
+        with open("../data/endf_natar.csv", "r") as file:
             reader = csv.reader(file, delimiter=",")
             for row in reader:
                 endf_energy.append(float(row[0]))
@@ -77,6 +78,9 @@ class ArtieAnalysis:
         self.speed_of_light  = 2.99792458 * 100.0   # m / mus
         self.flight_path = flight_path
         self.resolution = resolution
+
+        if not os.path.isdir("plots/"):
+            os.mkdir("plots/")
 
     def bin_with_errors(self,
         data:       None,
@@ -110,13 +114,26 @@ class ArtieAnalysis:
 
         bin_means = np.zeros(hist.size, dtype=float)
         bin_stds = np.zeros(hist.size, dtype=float)
-        hist_errors = np.zeros(hist.size, dtype=float)
         
         for bin_id in unique_bin_ids:
             bin_means[bin_id] = np.mean(data[(bin_ids == bin_id)])
             bin_stds[bin_id] = np.std(data[(bin_ids == bin_id)])
-        hist_errors[(hist > 0)] = 1.0 / np.sqrt(hist[(hist > 0)])
+
+        hist_errors = np.sqrt(hist)
         return bin_means, bin_stds, hist, hist_errors, edges
+
+    def compute_pull_hist(self,
+        hist,
+    ):
+        pull_hist = np.zeros(hist.size, dtype=float)
+        means = np.zeros(hist.size, dtype=float)
+        means[0] = 0.5 * (hist[0] + hist[1])
+        means[-1] = 0.5 * (hist[-1] + hist[-2])
+        for ii in range(1,len(hist)-1):
+            means[ii] = (1./3.) * (hist[ii-1] + hist[ii] + hist[ii+1])
+        stds = np.sqrt(means)
+        pull_hist[(stds > 0)] = (hist[(stds > 0)] - means[(stds > 0)]) / stds[(stds > 0)]
+        return pull_hist
 
     def compute_transmission_with_errors(self,
         total_hist,
@@ -204,19 +221,23 @@ class ArtieAnalysis:
         number_of_bins: int=200,
         name:           str="Neutrons",
         save:   str='',
-        show:   bool=False
+        show:   bool=False,
+        make_pull:  bool=True
     ):
         fig, axs = plt.subplots(figsize=(10, 6))
+        pull_hist = {}
         for input in inputs:
             bin_means, bin_stds, hist, hist_errors, edges = self.bin_with_errors(
                 data=self.data[input]["arrival_time"][(self.data[input]["arrival_time"] > 0)],
                 number_of_bins=number_of_bins
             )
             bin_centers = 0.5*(edges[1:] + edges[:-1])
+            pull_hist[input] = self.compute_pull_hist(hist)
             axs.errorbar(
                 bin_centers, hist,
                 #xerr=bin_stds, 
                 yerr=hist_errors,
+                #linestyle='',
                 marker='.', label=input
             )
         axs.set_xlabel("Time of Flight [" + r"$\mu$" + "s]")
@@ -225,10 +246,28 @@ class ArtieAnalysis:
         plt.legend()
         plt.tight_layout()
         if(save != ''):
-            plt.savefig(f"{save}_neutron_time_of_flight.png")
+            plt.savefig(f"plots/{save}_neutron_time_of_flight.png")
         if(show):
             plt.show()
         plt.close()
+        if(make_pull):
+            pull_fig, pull_axs = plt.subplots()
+            for input in inputs:
+                pull_axs.hist(
+                    pull_hist[input], 
+                    bins=20, range=[-3,3],
+                    histtype='step', stacked=True,
+                    label=f'{input} ({np.mean(pull_hist[input]):.2f},{np.std(pull_hist[input]):.2f})'
+                )
+            pull_axs.set_xlabel(r"$(X_i - \bar{X}_i)/\sqrt{\bar{X}_i}$")
+            pull_axs.set_title(f"{name} Time of Flight Pull Distribution - L={self.target_length}m")
+            plt.legend()
+            plt.tight_layout()
+            if(save != ''):
+                plt.savefig(f"plots/{save}_neutron_time_of_flight_pull.png")
+            if(show):
+                plt.show()
+            plt.close()
 
     def plot_energy(self,
         inputs:         list=[""],
@@ -237,9 +276,11 @@ class ArtieAnalysis:
         energy_max:     float=-1,
         name:           str="Neutrons",
         save:   str='',
-        show:   bool=False
+        show:   bool=False,
+        make_pull:  bool=True
     ):
         fig, axs = plt.subplots(figsize=(10, 6))
+        pull_hist = {}
         if energy_min == -1 or energy_max == -1:
             range = []
         else:
@@ -251,10 +292,12 @@ class ArtieAnalysis:
                 number_of_bins=number_of_bins, range=range
             )
             bin_centers = 0.5*(edges[1:] + edges[:-1])
+            pull_hist[input] = self.compute_pull_hist(hist)
             axs.errorbar(
                 bin_centers, hist,
                 #xerr=bin_stds, 
                 yerr=hist_errors,
+                #linestyle='',
                 marker='.', label=input
             ) 
         axs.set_xlabel("Kinetic Energy [keV]")
@@ -263,10 +306,28 @@ class ArtieAnalysis:
         plt.legend()
         plt.tight_layout()
         if(save != ''):
-            plt.savefig(f"{save}_neutron_energy.png")
+            plt.savefig(f"plots/{save}_neutron_energy.png")
         if(show):
             plt.show()
         plt.close()
+        if(make_pull):
+            pull_fig, pull_axs = plt.subplots()
+            for input in inputs:
+                pull_axs.hist(
+                    pull_hist[input], 
+                    bins=20, range=[-3,3],
+                    histtype='step', stacked=True,
+                    label=f'{input} ({np.mean(pull_hist[input]):.2f},{np.std(pull_hist[input]):.2f})'
+                )
+            pull_axs.set_xlabel(r"$(X_i - \bar{X}_i)/\sqrt{\bar{X}_i}$")
+            pull_axs.set_title(f"{name} Kinetic Energy Distribution - L={self.target_length}m")
+            plt.legend()
+            plt.tight_layout()
+            if(save != ''):
+                plt.savefig(f"plots/{save}_neutron_energy_pull.png")
+            if(show):
+                plt.show()
+            plt.close()
     
     def plot_transmission(self,
         inputs:         list=[""],
@@ -307,7 +368,7 @@ class ArtieAnalysis:
             axs.errorbar(
                 bin_centers, transmission,
                 #xerr=total_stds, 
-                yerr=transmission_errors,
+                #yerr=transmission_errors,
                 marker='.', label=input
             ) 
         axs.set_xlabel("Energy bin [keV]")
@@ -318,7 +379,7 @@ class ArtieAnalysis:
         plt.legend()
         plt.tight_layout()
         if(save != ''):
-            plt.savefig(f"{save}_neutron_transmission.png")
+            plt.savefig(f"plots/{save}_neutron_transmission.png")
         if(show):
             plt.show()
         plt.close()
@@ -365,7 +426,7 @@ class ArtieAnalysis:
             axs.errorbar(
                 bin_centers, cross_section,
                 #xerr=total_stds, 
-                yerr=cross_section_errors,
+                #yerr=cross_section_errors,
                 marker='.', label=input
             ) 
         if endf:
@@ -382,7 +443,7 @@ class ArtieAnalysis:
         plt.legend()
         plt.tight_layout()
         if(save != ''):
-            plt.savefig(f"{save}_neutron_cross_section.png")
+            plt.savefig(f"plots/{save}_neutron_cross_section.png")
         if(show):
             plt.show()
         plt.close()

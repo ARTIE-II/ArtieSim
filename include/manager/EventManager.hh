@@ -20,6 +20,7 @@
 #include "G4UIExecutive.hh"
 #include "G4VUserDetectorConstruction.hh"
 #include "G4VModularPhysicsList.hh"
+#include "G4GDMLParser.hh"
 
 #ifdef ARTIE_ROOT
 #include "TFile.h"
@@ -245,6 +246,8 @@ namespace Artie
         void AddAnalysisFunction(std::function<void()> func) { mAnalysisFunctions.emplace_back(func); }
         //*************************************************************************************************//
 
+        void SaveGDML();
+
 #ifdef ARTIE_PROFILING
         std::map<G4String, Profile> GetFunctionProfiles()     { return sFunctionProfiles; }
         inline void EndFunctionProfile(G4String func)   { 
@@ -310,6 +313,9 @@ namespace Artie
 
         // Analysis functions
         std::vector<std::function<void()>> mAnalysisFunctions;
+
+        // GDML parser
+        G4GDMLParser* mGDMLParser;
 
 #ifdef ARTIE_ROOT
         inline static G4String mLANLDistributionFileName = {"resolution13a.root"};

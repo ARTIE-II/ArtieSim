@@ -48,12 +48,6 @@ int main(int argc, char** argv)
     auto Config = Artie::ConfigParser(ConfigFile);
     Artie::EventManager::GetEventManager()->SetConfig(Config.GetConfig());
 
-    // Setting up the GDML parser
-    G4GDMLParser parser;
-    // Uncomment the following if wish to avoid names stripping
-    // parser.SetStripFlag(false);
-    parser.SetOverlapCheck(true);
-
     // choose the Random engine
     G4Random::setTheEngine(new CLHEP::RanecuEngine);
 
@@ -90,7 +84,7 @@ int main(int argc, char** argv)
         VisManager->Initialize();
         RunManager->Initialize();
         G4UImanager* UIManager = G4UImanager::GetUIpointer();
-        UIManager->ApplyCommand("/control/execute vis.mac");
+        UIManager->ApplyCommand("/control/execute macros/vis.mac");
         UIManager->ApplyCommand("/run/verbose 1");
         UIManager->ApplyCommand("/event/verbose 0");
         UIExecutive->SessionStart();
@@ -109,14 +103,7 @@ int main(int argc, char** argv)
             );
         }
     }
-    parser.SetRegionExport(true);
-    // parser.SetEnergyCutsExport(true);
-    parser.SetOutputFileOverwrite(true);
-    parser.Write(
-        Config.GetConfig()["manager"]["output_filename"].as<std::string>() + ".gdml", 
-        G4TransportationManager::GetTransportationManager()
-        ->GetNavigatorForTracking()->GetWorldVolume()->GetLogicalVolume()
-    );
+    Artie::EventManager::GetEventManager()->SaveGDML();
 
     return 0;
 }

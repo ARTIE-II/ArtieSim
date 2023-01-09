@@ -4,9 +4,9 @@ if __name__ == "__main__":
 
     artieI_cfg = {
         "inputs":   {
-            "ideal":    "artieI_ideal_long_0.root",
-            "argon":    "artieI_argon_long_0.root",
-            "vacuum":   "artieI_vacuum_long_0.root"
+            "ideal":    "../outputs/artieI_ideal_long_0.root",
+            "argon":    "../outputs/artieI_argon_long_0.root",
+            "vacuum":   "../outputs/artieI_vacuum_long_0.root"
         }
     }
 

@@ -41,7 +41,7 @@ namespace Artie
             if(mConfig["argon"]["lar_temperature"])     { mLArTemperature = mConfig["argon"]["lar_temperature"].as<G4double>() * kelvin; }
             if(mConfig["argon"]["lar_pressure"])        { mLArPressure = mConfig["argon"]["lar_pressure"].as<G4double>() * atmosphere; }
         }
-#ifdef ARTIE_ROOT
+    #ifdef ARTIE_ROOT
         if(mConfig["generator"]["lanl_distribution_filename"])  { mLANLDistributionFileName = mConfig["generator"]["lanl_distribution_filename"].as<std::string>(); }
         if(mConfig["generator"]["lanl_distribution_name"])      { mLANLDistributionName = mConfig["generator"]["lanl_distribution_name"].as<std::string>(); }
         if(mConfig["generator"]["energy_cut_low"])  { mEnergyCutLow = mConfig["generator"]["energy_cut_low"].as<G4double>() * keV; }
@@ -78,9 +78,25 @@ namespace Artie
                 mLANLDistribution->Fill(x,y);
             }
         }
+    #endif
+        // Setting up the GDML parser
+        G4GDMLParser* mGDMLParser;
+        mGDMLParser->SetStripFlag(false);
+        mGDMLParser->SetOverlapCheck(true);
 #endif
     }
-#endif
+
+    void EventManager::SaveGDML()
+    {
+        mGDMLParser->SetRegionExport(true);
+        mGDMLParser->SetOutputFileOverwrite(true);
+        mGDMLParser->Write(
+            "gdml/" + OutputFileName() + ".gdml", 
+            G4TransportationManager::GetTransportationManager()
+            ->GetNavigatorForTracking()->GetWorldVolume()->GetLogicalVolume()
+        );
+    }
+
 
     G4int EventManager::GetIndex(G4String tuple)
     {
@@ -97,8 +113,9 @@ namespace Artie
 
     void EventManager::OpenOutputFile(G4int RunID)
     {
+        std::filesystem::create_directory("outputs");
         auto AnalysisManager = G4AnalysisManager::Instance();
-        G4String OutputFile = OutputFileName() + "_" + std::to_string(RunID) + ".root";
+        G4String OutputFile = "outputs/" + OutputFileName() + "_" + std::to_string(RunID) + ".root";
         G4bool fileopen = AnalysisManager->OpenFile(OutputFile);
         if (!fileopen) {
             G4cout << "File - " + OutputFile 
