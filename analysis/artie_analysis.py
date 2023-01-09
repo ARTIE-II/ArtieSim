@@ -136,30 +136,29 @@ class ArtieAnalysis:
         return pull_hist
 
     def compute_transmission_with_errors(self,
-        total_hist,
-        passage_hist,
-        passage_hist_errors,
-        non_passage_hist,
-        non_passage_hist_errors,
+        argon_hist,
+        argon_hist_errors,
+        vacuum_hist,
+        vacuum_hist_errors
     ):
-        transmission = np.zeros(total_hist.size, dtype=float)
-        transmission_errors = np.zeros(total_hist.size, dtype=float)
+        transmission = np.zeros(vacuum_hist.size, dtype=float)
+        transmission_errors = np.zeros(vacuum_hist.size, dtype=float)
 
-        transmission_mask = (total_hist > 0)
-        passage_mask = (passage_hist > 0)
-        non_passage_mask = (non_passage_hist > 0)
-        transmission[transmission_mask] = passage_hist[transmission_mask] / total_hist[transmission_mask]
+        transmission_mask = (vacuum_hist > 0)
+        argon_mask = (argon_hist > 0)
+        vacuum_mask = (vacuum_hist > 0)
+        transmission[transmission_mask] = argon_hist[transmission_mask] / vacuum_hist[transmission_mask]
 
         # error in transmission is given by the equation
         # delta T / T = sqrt((delta C_in/C_in)^2 + (delta C_out/C_out)^2)
         # where C_in and C_out are the counts for scatter in/scatter out respectively,
         # (i.e. the bin counts for total_hist and passage_hist), and the errors
         # are the statistical errors (passage_hist_errors and non_passage_hist_errors).
-        transmission_errors[passage_mask] += np.power(
-            passage_hist_errors[passage_mask] / passage_hist[passage_mask], 2
+        transmission_errors[argon_mask] += np.power(
+            argon_hist_errors[argon_mask] / argon_hist[argon_mask], 2
         )
-        transmission_errors[non_passage_mask] += np.power(
-            non_passage_hist_errors[non_passage_mask] / non_passage_hist[non_passage_mask], 2
+        transmission_errors[vacuum_mask] += np.power(
+            vacuum_hist_errors[vacuum_mask] / vacuum_hist[vacuum_mask], 2
         )
         transmission_errors = transmission * np.sqrt(transmission_errors)
 
@@ -347,32 +346,30 @@ class ArtieAnalysis:
             range = [energy_min, energy_max]
             axs.set_xlim(energy_min, energy_max)
         for input in inputs:
-            total_means, total_stds, total_hist, total_hist_errors, total_edges = self.bin_with_errors(
-                data=self.data[input]["neutron_energy"],
-                number_of_bins=number_of_bins, range=range
-            )
-            passage_means, passage_stds, passage_hist, passage_hist_errors, passage_edges = self.bin_with_errors(
+            if input == "vacuum":
+                continue
+            argon_means, argon_stds, argon_hist, argon_hist_errors, argon_edges = self.bin_with_errors(
                 data=self.data[input]["neutron_energy"][(self.data[input]["safe_passage"] == 1)],
                 number_of_bins=number_of_bins, range=range
             )
-            non_passage_means, non_passage_stds, non_passage_hist, non_passage_hist_errors, non_passage_edges = self.bin_with_errors(
-                data=self.data[input]["neutron_energy"][(self.data[input]["safe_passage"] == 0)],
+            vacuum_means, vacuum_stds, vacuum_hist, vacuum_hist_errors, vacuum_edges = self.bin_with_errors(
+                data=self.data["vacuum"]["neutron_energy"][(self.data[input]["safe_passage"] == 1)],
                 number_of_bins=number_of_bins, range=range
             )
-            bin_centers = 0.5*(total_edges[1:] + total_edges[:-1])
+            bin_centers = 0.5*(argon_edges[1:] + argon_edges[:-1])
 
             transmission, transmission_errors = self.compute_transmission_with_errors(
-                total_hist, passage_hist, passage_hist_errors, non_passage_hist, non_passage_hist_errors
+                argon_hist, argon_hist_errors, vacuum_hist, vacuum_hist_errors
             )
 
             axs.errorbar(
                 bin_centers, transmission,
                 #xerr=total_stds, 
-                #yerr=transmission_errors,
+                yerr=transmission_errors,
                 marker='.', label=input
             ) 
         axs.set_xlabel("Energy bin [keV]")
-        axs.set_ylabel("Transmission")
+        axs.set_ylabel("Transmission C({input})/C(vacuum)")
         axs.set_title(f"Transmission vs. Energy [keV] - L={self.target_length:.2f}m")
         if log_scale:
             axs.set_yscale("log")
@@ -401,22 +398,20 @@ class ArtieAnalysis:
             range = [energy_min, energy_max]
             axs.set_xlim(energy_min, energy_max)
         for input in inputs:
-            total_means, total_stds, total_hist, total_hist_errors, total_edges = self.bin_with_errors(
-                data=self.data[input]["neutron_energy"],
-                number_of_bins=number_of_bins, range=range
-            )
-            passage_means, passage_stds, passage_hist, passage_hist_errors, passage_edges = self.bin_with_errors(
+            if input == "vacuum":
+                continue
+            argon_means, argon_stds, argon_hist, argon_hist_errors, argon_edges = self.bin_with_errors(
                 data=self.data[input]["neutron_energy"][(self.data[input]["safe_passage"] == 1)],
                 number_of_bins=number_of_bins, range=range
             )
-            non_passage_means, non_passage_stds, non_passage_hist, non_passage_hist_errors, non_passage_edges = self.bin_with_errors(
-                data=self.data[input]["neutron_energy"][(self.data[input]["safe_passage"] == 0)],
+            vacuum_means, vacuum_stds, vacuum_hist, vacuum_hist_errors, vacuum_edges = self.bin_with_errors(
+                data=self.data["vacuum"]["neutron_energy"][(self.data[input]["safe_passage"] == 1)],
                 number_of_bins=number_of_bins, range=range
             )
-            bin_centers = 0.5*(total_edges[1:] + total_edges[:-1])
+            bin_centers = 0.5*(argon_edges[1:] + argon_edges[:-1])
 
             transmission, transmission_errors = self.compute_transmission_with_errors(
-                total_hist, passage_hist, passage_hist_errors, non_passage_hist, non_passage_hist_errors
+                argon_hist, argon_hist_errors, vacuum_hist, vacuum_hist_errors
             )
 
             cross_section, cross_section_errors = self.compute_cross_section_with_errors(
@@ -426,7 +421,7 @@ class ArtieAnalysis:
             axs.errorbar(
                 bin_centers, cross_section,
                 #xerr=total_stds, 
-                #yerr=cross_section_errors,
+                yerr=cross_section_errors,
                 marker='.', label=input
             ) 
         if endf:

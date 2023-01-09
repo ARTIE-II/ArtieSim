@@ -1,3 +1,6 @@
 [submodule "vendor/yaml-cpp"]
 	path = vendor/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
+[submodule "data/ArtieENDF"]
+	path = data/ArtieENDF
+	url = https://github.com/ARTIE-II/ArtieENDF.git
