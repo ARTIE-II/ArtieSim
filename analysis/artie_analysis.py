@@ -82,7 +82,7 @@ class ArtieAnalysis:
         if not os.path.isdir("plots/"):
             os.mkdir("plots/")
 
-    def bin_with_errors(self,
+    def bin_with_poisson_errors(self,
         data:       None,
         dataset:    str="",
         variable:   str="",
@@ -121,6 +121,54 @@ class ArtieAnalysis:
 
         hist_errors = np.sqrt(hist)
         return bin_means, bin_stds, hist, hist_errors, edges
+    
+    def bin_with_binomial_errors(self,
+        counts:         None,
+        total_counts:   None,
+        number_of_bins: int=200,
+        range:          list=[],
+    ):
+        if len(range) == 0:
+            hist, edges = np.histogram(
+                counts, 
+                bins=number_of_bins,
+            )
+            total_hist, total_edges = np.histogram(
+                total_counts,
+                bins=number_of_bins,
+            )
+        else:
+            hist, edges = np.histogram(
+                counts, 
+                bins=number_of_bins,
+                range=range
+            )
+            total_hist, total_edges = np.histogram(
+                total_counts,
+                bins=number_of_bins,
+                range=range
+            )
+        bin_ids = np.digitize(
+            counts, 
+            edges
+        )
+        # numpy.digitize only considers bin[ii] <= x < bin[ii+1]
+        # so we need to take all the entries outside the last bin and
+        # shift them to be included into the last bin.
+        bin_ids[(bin_ids == len(edges))] = len(edges) - 1
+        unique_bin_ids = np.unique(bin_ids) - 1
+
+        bin_means = np.zeros(hist.size, dtype=float)
+        bin_stds = np.zeros(hist.size, dtype=float)
+        p = np.zeros(hist.size, dtype=float)
+        
+        for bin_id in unique_bin_ids:
+            bin_means[bin_id] = np.mean(counts[(bin_ids == bin_id)])
+            bin_stds[bin_id] = np.std(counts[(bin_ids == bin_id)])
+
+        p = hist[(total_hist > 0)]/total_hist[(total_hist > 0)]
+        hist_errors = np.sqrt(hist * p * (1 - p))
+        return bin_means, bin_stds, hist, hist_errors, edges
 
     def compute_pull_hist(self,
         hist,
@@ -139,15 +187,29 @@ class ArtieAnalysis:
         argon_hist,
         argon_hist_errors,
         vacuum_hist,
-        vacuum_hist_errors
+        vacuum_hist_errors,
+        argon_total_hist, 
+        argon_total_hist_errors, 
+        vacuum_total_hist, 
+        vacuum_total_hist_errors,
     ):
+        q_argon = np.zeros(argon_total_hist.size, dtype=float)
+        q_vacuum = np.zeros(vacuum_total_hist.size, dtype=float)
+        q_argon[(argon_total_hist > 0)] = argon_total_hist[(argon_total_hist > 0)]
+        q_vacuum[(vacuum_total_hist > 0)] = vacuum_total_hist[(vacuum_total_hist > 0)]
+
         transmission = np.zeros(vacuum_hist.size, dtype=float)
         transmission_errors = np.zeros(vacuum_hist.size, dtype=float)
 
-        transmission_mask = (vacuum_hist > 0)
+        transmission_mask = (vacuum_hist > 0) & (argon_total_hist > 0)
         argon_mask = (argon_hist > 0)
+        argon_total_mask = (argon_total_hist > 0)
         vacuum_mask = (vacuum_hist > 0)
-        transmission[transmission_mask] = argon_hist[transmission_mask] / vacuum_hist[transmission_mask]
+        vacuum_total_mask = (vacuum_total_hist > 0)
+        transmission[transmission_mask] = (
+            (argon_hist[transmission_mask] * q_vacuum[transmission_mask]) / 
+            (vacuum_hist[transmission_mask] * q_argon[transmission_mask])
+        )
 
         # error in transmission is given by the equation
         # delta T / T = sqrt((delta C_in/C_in)^2 + (delta C_out/C_out)^2)
@@ -159,6 +221,12 @@ class ArtieAnalysis:
         )
         transmission_errors[vacuum_mask] += np.power(
             vacuum_hist_errors[vacuum_mask] / vacuum_hist[vacuum_mask], 2
+        )
+        transmission_errors[argon_total_mask] += np.power(
+            argon_total_hist_errors[argon_total_mask] / argon_total_hist[argon_total_mask], 2
+        )
+        transmission_errors[vacuum_total_mask] += np.power(
+            vacuum_total_hist_errors[vacuum_total_mask] / vacuum_total_hist[vacuum_total_mask], 2
         )
         transmission_errors = transmission * np.sqrt(transmission_errors)
 
@@ -226,7 +294,7 @@ class ArtieAnalysis:
         fig, axs = plt.subplots(figsize=(10, 6))
         pull_hist = {}
         for input in inputs:
-            bin_means, bin_stds, hist, hist_errors, edges = self.bin_with_errors(
+            bin_means, bin_stds, hist, hist_errors, edges = self.bin_with_poisson_errors(
                 data=self.data[input]["arrival_time"][(self.data[input]["arrival_time"] > 0)],
                 number_of_bins=number_of_bins
             )
@@ -286,7 +354,7 @@ class ArtieAnalysis:
             range = [energy_min, energy_max]
             axs.set_xlim(energy_min, energy_max)
         for input in inputs:
-            bin_means, bin_stds, hist, hist_errors, edges = self.bin_with_errors(
+            bin_means, bin_stds, hist, hist_errors, edges = self.bin_with_poisson_errors(
                 data=self.data[input]["neutron_energy"][(self.data[input]["arrival_time"] > 0)],
                 number_of_bins=number_of_bins, range=range
             )
@@ -348,18 +416,27 @@ class ArtieAnalysis:
         for input in inputs:
             if input == "vacuum":
                 continue
-            argon_means, argon_stds, argon_hist, argon_hist_errors, argon_edges = self.bin_with_errors(
+            argon_total_means, argon_total_stds, argon_total_hist, argon_total_hist_errors, argon_total_edges = self.bin_with_poisson_errors(
+                data=self.data[input]["neutron_energy"],
+                number_of_bins=number_of_bins, range=range
+            )
+            argon_means, argon_stds, argon_hist, argon_hist_errors, argon_edges = self.bin_with_poisson_errors(
                 data=self.data[input]["neutron_energy"][(self.data[input]["safe_passage"] == 1)],
                 number_of_bins=number_of_bins, range=range
             )
-            vacuum_means, vacuum_stds, vacuum_hist, vacuum_hist_errors, vacuum_edges = self.bin_with_errors(
-                data=self.data["vacuum"]["neutron_energy"][(self.data[input]["safe_passage"] == 1)],
+            vacuum_total_means, vacuum_total_stds, vacuum_total_hist, vacuum_total_hist_errors, vacuum_total_edges = self.bin_with_poisson_errors(
+                data=self.data["vacuum"]["neutron_energy"],
+                number_of_bins=number_of_bins, range=range
+            )
+            vacuum_means, vacuum_stds, vacuum_hist, vacuum_hist_errors, vacuum_edges = self.bin_with_poisson_errors(
+                data=self.data["vacuum"]["neutron_energy"][(self.data["vacuum"]["safe_passage"] == 1)],
                 number_of_bins=number_of_bins, range=range
             )
             bin_centers = 0.5*(argon_edges[1:] + argon_edges[:-1])
 
             transmission, transmission_errors = self.compute_transmission_with_errors(
-                argon_hist, argon_hist_errors, vacuum_hist, vacuum_hist_errors
+                argon_hist, argon_hist_errors, vacuum_hist, vacuum_hist_errors,
+                argon_total_hist, argon_total_hist_errors, vacuum_total_hist, vacuum_total_hist_errors
             )
 
             axs.errorbar(
@@ -369,7 +446,7 @@ class ArtieAnalysis:
                 marker='.', label=input
             ) 
         axs.set_xlabel("Energy bin [keV]")
-        axs.set_ylabel("Transmission C({input})/C(vacuum)")
+        axs.set_ylabel(f"Transmission C({input})/C(vacuum)")
         axs.set_title(f"Transmission vs. Energy [keV] - L={self.target_length:.2f}m")
         if log_scale:
             axs.set_yscale("log")
@@ -400,18 +477,27 @@ class ArtieAnalysis:
         for input in inputs:
             if input == "vacuum":
                 continue
-            argon_means, argon_stds, argon_hist, argon_hist_errors, argon_edges = self.bin_with_errors(
+            argon_total_means, argon_total_stds, argon_total_hist, argon_total_hist_errors, argon_total_edges = self.bin_with_poisson_errors(
+                data=self.data[input]["neutron_energy"],
+                number_of_bins=number_of_bins, range=range
+            )
+            argon_means, argon_stds, argon_hist, argon_hist_errors, argon_edges = self.bin_with_poisson_errors(
                 data=self.data[input]["neutron_energy"][(self.data[input]["safe_passage"] == 1)],
                 number_of_bins=number_of_bins, range=range
             )
-            vacuum_means, vacuum_stds, vacuum_hist, vacuum_hist_errors, vacuum_edges = self.bin_with_errors(
-                data=self.data["vacuum"]["neutron_energy"][(self.data[input]["safe_passage"] == 1)],
+            vacuum_total_means, vacuum_total_stds, vacuum_total_hist, vacuum_total_hist_errors, vacuum_total_edges = self.bin_with_poisson_errors(
+                data=self.data["vacuum"]["neutron_energy"],
+                number_of_bins=number_of_bins, range=range
+            )
+            vacuum_means, vacuum_stds, vacuum_hist, vacuum_hist_errors, vacuum_edges = self.bin_with_poisson_errors(
+                data=self.data["vacuum"]["neutron_energy"][(self.data["vacuum"]["safe_passage"] == 1)],
                 number_of_bins=number_of_bins, range=range
             )
             bin_centers = 0.5*(argon_edges[1:] + argon_edges[:-1])
 
             transmission, transmission_errors = self.compute_transmission_with_errors(
-                argon_hist, argon_hist_errors, vacuum_hist, vacuum_hist_errors
+                argon_hist, argon_hist_errors, vacuum_hist, vacuum_hist_errors,
+                argon_total_hist, argon_total_hist_errors, vacuum_total_hist, vacuum_total_hist_errors
             )
 
             cross_section, cross_section_errors = self.compute_cross_section_with_errors(
