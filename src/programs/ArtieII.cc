@@ -21,7 +21,7 @@
 #include "G4Types.hh"
 #include "G4GDMLParser.hh"
 
-#include "ArtieIDetectorConstruction.hh"
+#include "ArtieIIDetectorConstruction.hh"
 #include "PhysicsList.hh"
 #include "EventManager.hh"
 #include "ArtieIActionInitialization.hh"
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
         ConfigFile = argv[1];
     }
     else if(argc == 1) {
-        ConfigFile = "artieI_argon.yaml";
+        ConfigFile = "artieII_v1.yaml";
     }
     else 
     {
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 #endif
     
     // apply the detector, physics list and initialization
-    RunManager->SetUserInitialization(new Artie::ArtieIDetectorConstruction(Config.GetConfig()));
+    RunManager->SetUserInitialization(new Artie::ArtieIIDetectorConstruction(Config.GetConfig()));
     RunManager->SetUserInitialization(new Artie::PhysicsList());
     RunManager->SetUserInitialization(new Artie::ArtieIActionInitialization(Config.GetConfig()));
     

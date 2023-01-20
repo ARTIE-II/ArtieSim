@@ -193,22 +193,18 @@ class ArtieAnalysis:
         vacuum_total_hist, 
         vacuum_total_hist_errors,
     ):
-        q_argon = np.zeros(argon_total_hist.size, dtype=float)
-        q_vacuum = np.zeros(vacuum_total_hist.size, dtype=float)
-        q_argon[(argon_total_hist > 0)] = argon_total_hist[(argon_total_hist > 0)]
-        q_vacuum[(vacuum_total_hist > 0)] = vacuum_total_hist[(vacuum_total_hist > 0)]
+        q_argon = np.sum(argon_total_hist)
+        q_vacuum = np.sum(vacuum_total_hist)
 
         transmission = np.zeros(vacuum_hist.size, dtype=float)
         transmission_errors = np.zeros(vacuum_hist.size, dtype=float)
 
-        transmission_mask = (vacuum_hist > 0) & (argon_total_hist > 0)
+        transmission_mask = (vacuum_hist > 0)
         argon_mask = (argon_hist > 0)
-        argon_total_mask = (argon_total_hist > 0)
         vacuum_mask = (vacuum_hist > 0)
-        vacuum_total_mask = (vacuum_total_hist > 0)
         transmission[transmission_mask] = (
-            (argon_hist[transmission_mask] * q_vacuum[transmission_mask]) / 
-            (vacuum_hist[transmission_mask] * q_argon[transmission_mask])
+            (argon_hist[transmission_mask] * q_vacuum) / 
+            (vacuum_hist[transmission_mask] * q_argon)
         )
 
         # error in transmission is given by the equation
@@ -221,12 +217,6 @@ class ArtieAnalysis:
         )
         transmission_errors[vacuum_mask] += np.power(
             vacuum_hist_errors[vacuum_mask] / vacuum_hist[vacuum_mask], 2
-        )
-        transmission_errors[argon_total_mask] += np.power(
-            argon_total_hist_errors[argon_total_mask] / argon_total_hist[argon_total_mask], 2
-        )
-        transmission_errors[vacuum_total_mask] += np.power(
-            vacuum_total_hist_errors[vacuum_total_mask] / vacuum_total_hist[vacuum_total_mask], 2
         )
         transmission_errors = transmission * np.sqrt(transmission_errors)
 
@@ -305,11 +295,12 @@ class ArtieAnalysis:
                 #xerr=bin_stds, 
                 yerr=hist_errors,
                 #linestyle='',
-                marker='.', label=input
+                marker='.', label=f"{input}\n"+r"$N = $"+f"{np.sum(hist)}"
             )
+        axs.plot([],[],linestyle='',marker='x',c='k',label=f"bins = {number_of_bins}")
         axs.set_xlabel("Time of Flight [" + r"$\mu$" + "s]")
         axs.set_ylabel("Neutrons")
-        axs.set_title(f"{name} Time of Flight Distribution - L={self.target_length}m")
+        axs.set_title(f"{name} Time of Flight Distribution - L={self.target_length}")
         plt.legend()
         plt.tight_layout()
         if(save != ''):
@@ -338,6 +329,7 @@ class ArtieAnalysis:
 
     def plot_energy(self,
         inputs:         list=[""],
+        transmitted:    bool=False,
         number_of_bins: int=200,
         energy_min:     float=-1,
         energy_max:     float=-1,
@@ -354,10 +346,16 @@ class ArtieAnalysis:
             range = [energy_min, energy_max]
             axs.set_xlim(energy_min, energy_max)
         for input in inputs:
-            bin_means, bin_stds, hist, hist_errors, edges = self.bin_with_poisson_errors(
-                data=self.data[input]["neutron_energy"][(self.data[input]["arrival_time"] > 0)],
-                number_of_bins=number_of_bins, range=range
-            )
+            if transmitted:
+                bin_means, bin_stds, hist, hist_errors, edges = self.bin_with_poisson_errors(
+                    data=self.data[input]["neutron_energy"][(self.data[input]["arrival_time"] > 0)],
+                    number_of_bins=number_of_bins, range=range
+                )
+            else:
+                bin_means, bin_stds, hist, hist_errors, edges = self.bin_with_poisson_errors(
+                    data=self.data[input]["neutron_energy"],
+                    number_of_bins=number_of_bins, range=range
+                )
             bin_centers = 0.5*(edges[1:] + edges[:-1])
             pull_hist[input] = self.compute_pull_hist(hist)
             axs.errorbar(
@@ -365,15 +363,22 @@ class ArtieAnalysis:
                 #xerr=bin_stds, 
                 yerr=hist_errors,
                 #linestyle='',
-                marker='.', label=input
+                marker='.', label=f"{input}\n"+r"$N = $"+f"{np.sum(hist)}"
             ) 
+        axs.plot([],[],linestyle='',marker='x',c='k',label=f"bins = {number_of_bins}")
         axs.set_xlabel("Kinetic Energy [keV]")
         axs.set_ylabel("Neutrons")
-        axs.set_title(f"{name} Kinetic Energy Distribution - L={self.target_length}m")
+        if transmitted:
+            axs.set_title(f"{name} Transmitted Kinetic Energy Distribution - L={self.target_length}m")
+        else:
+            axs.set_title(f"{name} Generated Kinetic Energy Distribution - L={self.target_length}m")
         plt.legend()
         plt.tight_layout()
         if(save != ''):
-            plt.savefig(f"plots/{save}_neutron_energy.png")
+            if transmitted:
+                plt.savefig(f"plots/{save}_transmitted_neutron_energy.png")
+            else:
+                plt.savefig(f"plots/{save}_generated_neutron_energy.png")
         if(show):
             plt.show()
         plt.close()
@@ -387,11 +392,17 @@ class ArtieAnalysis:
                     label=f'{input} ({np.mean(pull_hist[input]):.2f},{np.std(pull_hist[input]):.2f})'
                 )
             pull_axs.set_xlabel(r"$(X_i - \bar{X}_i)/\sqrt{\bar{X}_i}$")
-            pull_axs.set_title(f"{name} Kinetic Energy Distribution - L={self.target_length}m")
+            if transmitted:
+                pull_axs.set_title(f"{name} Transmitted Kinetic Energy Distribution - L={self.target_length}m")
+            else:
+                pull_axs.set_title(f"{name} Generated Kinetic Energy Distribution - L={self.target_length}m")
             plt.legend()
             plt.tight_layout()
             if(save != ''):
-                plt.savefig(f"plots/{save}_neutron_energy_pull.png")
+                if transmitted:
+                    plt.savefig(f"plots/{save}_transmitted_neutron_energy_pull.png")
+                else:
+                    plt.savefig(f"plots/{save}_generated_neutron_energy_pull.png")
             if(show):
                 plt.show()
             plt.close()
@@ -443,8 +454,9 @@ class ArtieAnalysis:
                 bin_centers, transmission,
                 #xerr=total_stds, 
                 yerr=transmission_errors,
-                marker='.', label=input
+                marker='.', label=f"{input}\n"+r"$Q($"+f"{input}"+r"$) = $"+f"{np.sum(argon_total_hist)}\n"+r"$Q($"+f"vacuum"+r"$) = $"+f"{np.sum(vacuum_total_hist)}"
             ) 
+        axs.plot([],[],linestyle='',marker='x',c='k',label=f"bins = {number_of_bins}")
         axs.set_xlabel("Energy bin [keV]")
         axs.set_ylabel(f"Transmission C({input})/C(vacuum)")
         axs.set_title(f"Transmission vs. Energy [keV] - L={self.target_length:.2f}m")
@@ -508,7 +520,7 @@ class ArtieAnalysis:
                 bin_centers, cross_section,
                 #xerr=total_stds, 
                 yerr=cross_section_errors,
-                marker='.', label=input
+                marker='.', label=f"{input}\n"+r"$Q($"+f"{input}"+r"$) = $"+f"{np.sum(argon_total_hist)}\n"+r"$Q($"+f"vacuum"+r"$) = $"+f"{np.sum(vacuum_total_hist)}"
             ) 
         if endf:
             axs.errorbar(
@@ -517,6 +529,7 @@ class ArtieAnalysis:
                 color='k',
                 label='endf'
             )
+        axs.plot([],[],linestyle='',marker='x',c='k',label=f"bins = {number_of_bins}")
         axs.set_xlabel("Energy bin [keV]")
         axs.set_ylabel("Cross Section [barn]")
         axs.set_title(f"Cross Section [barn] vs. Energy [keV] - L={self.target_length}m")
@@ -547,6 +560,17 @@ class ArtieAnalysis:
         )
         self.plot_energy(
             inputs=inputs,
+            transmitted=False,
+            number_of_bins=number_of_bins,
+            energy_min=energy_min,
+            energy_max=energy_max,
+            name=name,
+            save=save,
+            show=show
+        )
+        self.plot_energy(
+            inputs=inputs,
+            transmitted=True,
             number_of_bins=number_of_bins,
             energy_min=energy_min,
             energy_max=energy_max,

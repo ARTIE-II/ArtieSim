@@ -4,9 +4,8 @@ if __name__ == "__main__":
 
     artieI_cfg = {
         "inputs":   {
-            "ideal":    "../outputs/artieI_ideal_short_0.root",
-            "argon":    "../outputs/artieI_argon_short_0.root",
-            "vacuum":   "../outputs/artieI_vacuum_short_0.root"
+            "argon":    "../outputs/artieI_ideal_argon_short_0.root",
+            "vacuum":   "../outputs/artieI_ideal_vacuum_short_0.root"
         }
     }
 
@@ -14,7 +13,7 @@ if __name__ == "__main__":
         artieI_cfg
     )
 
-    number_of_bins=200
+    number_of_bins=100
     energy_min=70
     energy_max=200
     save='artieI_short_high'

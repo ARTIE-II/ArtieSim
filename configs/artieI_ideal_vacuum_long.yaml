@@ -2,10 +2,11 @@
 manager:
     number_of_threads:  8
     number_of_runs:     1
-    number_of_events:   5000000
+    number_of_events:   10000000
+    seed:               10943
     mode:               "run"   # interactive/run
     detector:           "artieI"
-    output_filename:    "artieI_ideal_long"
+    output_filename:    "artieI_ideal_vacuum_long"
     save_particle_maps: true
     save_primary_info:  true
     save_hits:          true
@@ -23,7 +24,7 @@ argon:
 
 # ARTIE-I detector parameters
 detector:
-    active_volume_material: "liquid_argon"
+    active_volume_material: "high_vacuum"
     target_radius:          1.25    # cm
     target_length:          168      # cm
     construct_container:    false   # bool
