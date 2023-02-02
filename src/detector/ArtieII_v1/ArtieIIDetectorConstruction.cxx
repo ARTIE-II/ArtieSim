@@ -1,5 +1,5 @@
 /**
- * @file ArtieIDetectorConstruction.cxx
+ * @file ArtieIIDetectorConstruction.cxx
  * @author Nicholas Carrara [nmcarrara@ucdavis.edu]
  * @brief 
  * @version 0.0
@@ -8,39 +8,83 @@
  *      2022/09/20 - Initial creation of the file.
  * @date 2022-09-23
  */
-#include "ArtieIDetectorConstruction.hh"
+#include "ArtieIIDetectorConstruction.hh"
 
 namespace Artie
 {
-    ArtieIDetectorConstruction::ArtieIDetectorConstruction()
+    ArtieIIDetectorConstruction::ArtieIIDetectorConstruction()
     : G4VUserDetectorConstruction()
     {
         DefineMaterials();
     }
 
 #ifdef ARTIE_YAML
-    ArtieIDetectorConstruction::ArtieIDetectorConstruction(YAML::Node config)
+    ArtieIIDetectorConstruction::ArtieIIDetectorConstruction(YAML::Node config)
     : G4VUserDetectorConstruction()
     , mConfig(config["detector"])
     {
-        if(mConfig["gdml"]) { mGDML = mConfig["gdml"].as<std::string>(); }
-        if(mConfig["active_volume"]) { mActiveVolumeName = mConfig["active_volume"].as<std::string>(); }
         if(mConfig["active_volume_material"]) { mActiveVolumeMaterialName = mConfig["active_volume_material"].as<std::string>(); }
+        if(mConfig["target_radius"])          { mTargetRadius = mConfig["target_radius"].as<G4double>() * cm; }
+        if(mConfig["target_length"])          { mTargetLength = mConfig["target_length"].as<G4double>() * cm; }
         
+        if(mConfig["construct_container"])  { mConstructContainer = mConfig["construct_container"].as<G4bool>(); }
+        if(mConfig["container_material"])   { mContainerMaterialName = mConfig["container_material"].as<std::string>(); }
+        if(mConfig["container_radius"])     { mContainerRadius = mConfig["container_radius"].as<G4double>() * cm; }
+
+        if(mConfig["construct_inner_flange_left_side"]) { mConstructInnerFlangeLeftSide = mConfig["construct_inner_flange_left_side"].as<G4bool>(); }
+        if(mConfig["inner_flange_left_side_material"])  { mInnerFlangeLeftSideMaterialName = mConfig["inner_flange_left_side_material"].as<std::string>(); }
+        if(mConfig["inner_flange_left_side_radius"])    { mInnerFlangeLeftSideRadius = mConfig["inner_flange_left_side_radius"].as<G4double>() * cm; }
+        if(mConfig["inner_flange_left_side_thickness"]) { mInnerFlangeLeftSideThickness = mConfig["inner_flange_left_side_thickness"].as<G4double>() * cm; } 
+        
+        if(mConfig["construct_inner_flange_right_side"]) { mConstructInnerFlangeRightSide = mConfig["construct_inner_flange_right_side"].as<G4bool>(); }
+        if(mConfig["inner_flange_right_side_material"])  { mInnerFlangeRightSideMaterialName = mConfig["inner_flange_right_side_material"].as<std::string>(); }
+        if(mConfig["inner_flange_right_side_radius"])    { mInnerFlangeRightSideRadius = mConfig["inner_flange_right_side_radius"].as<G4double>() * cm; }
+        if(mConfig["inner_flange_right_side_thickness"]) { mInnerFlangeRightSideThickness = mConfig["inner_flange_right_side_thickness"].as<G4double>() * cm; }
+        
+        if(mConfig["construct_inner_flange_left_side_gap"]) { mConstructInnerFlangeLeftSideGap = mConfig["construct_inner_flange_left_side_gap"].as<G4bool>(); }
+        if(mConfig["inner_flange_left_side_gap_material"])  { mInnerFlangeLeftSideGapMaterialName = mConfig["inner_flange_left_side_gap_material"].as<std::string>(); }
+        if(mConfig["inner_flange_left_side_gap_thickness"]) { mInnerFlangeLeftSideGapThickness = mConfig["inner_flange_left_side_gap_thickness"].as<G4double>() * cm; } 
+        
+        if(mConfig["construct_inner_flange_left_side_gap"]) { mConstructInnerFlangeLeftSideGap = mConfig["construct_inner_flange_left_side_gap"].as<G4bool>(); }
+        if(mConfig["inner_flange_right_side_gap_material"])  { mInnerFlangeRightSideGapMaterialName = mConfig["inner_flange_right_side_gap_material"].as<std::string>(); }
+        if(mConfig["inner_flange_right_side_gap_thickness"]) { mInnerFlangeRightSideGapThickness = mConfig["inner_flange_right_side_gap_thickness"].as<G4double>() * cm; } 
+
+        if(mConfig["construct_outer_flange_left_side"]) { mConstructOuterFlangeLeftSide = mConfig["construct_outer_flange_left_side"].as<G4bool>(); }
+        if(mConfig["outer_flange_left_side_material"])  { mOuterFlangeLeftSideMaterialName = mConfig["outer_flange_left_side_material"].as<std::string>(); }
+        if(mConfig["outer_flange_left_side_radius"])    { mOuterFlangeLeftSideRadius = mConfig["outer_flange_left_side_radius"].as<G4double>() * cm; }
+        if(mConfig["outer_flange_left_side_thickness"]) { mOuterFlangeLeftSideThickness = mConfig["outer_flange_left_side_thickness"].as<G4double>() * cm; }
+        
+        if(mConfig["construct_outer_flange_right_side"]) { mConstructOuterFlangeRightSide = mConfig["construct_outer_flange_right_side"].as<G4bool>(); }
+        if(mConfig["outer_flange_right_side_material"])  { mOuterFlangeRightSideMaterialName = mConfig["outer_flange_right_side_material"].as<std::string>(); }
+        if(mConfig["outer_flange_right_side_radius"])    { mOuterFlangeRightSideRadius = mConfig["outer_flange_right_side_radius"].as<G4double>() * cm; }
+        if(mConfig["outer_flange_right_side_thickness"]) { mOuterFlangeRightSideThickness = mConfig["outer_flange_right_side_thickness"].as<G4double>() * cm; }
+
+        if(mConfig["world_x"])          { mWorldX = mConfig["world_x"].as<G4double>() * m; }
+        if(mConfig["world_y"])          { mWorldY = mConfig["world_y"].as<G4double>() * m; }
+        if(mConfig["world_z"])          { mWorldZ = mConfig["world_z"].as<G4double>() * m; }
+
         DefineMaterials();
     }
 #endif
 
-    void ArtieIDetectorConstruction::DefineMaterials()
+    void ArtieIIDetectorConstruction::DefineMaterials()
     {
         mActiveVolumeMaterial = CreateMaterial(mActiveVolumeMaterialName, "ActiveVolume");
+        mWorldMaterial = CreateMaterial(mWorldMaterialName, "World");
+        mContainerMaterial = CreateMaterial(mContainerMaterialName, "Container"); 
+        mInnerFlangeLeftSideMaterial = CreateMaterial(mInnerFlangeLeftSideMaterialName, "InnerFlangeLeftSide");
+        mInnerFlangeRightSideMaterial = CreateMaterial(mInnerFlangeRightSideMaterialName, "InnerFlangeRightSide");
+        mInnerFlangeLeftSideGapMaterial = CreateMaterial(mInnerFlangeLeftSideGapMaterialName, "InnerFlangeLeftSideGap");
+        mInnerFlangeRightSideGapMaterial = CreateMaterial(mInnerFlangeRightSideGapMaterialName, "InnerFlangeRightSideGap");
+        mOuterFlangeLeftSideMaterial = CreateMaterial(mOuterFlangeLeftSideMaterialName, "OuterFlangeLeftSide");
+        mOuterFlangeRightSideMaterial = CreateMaterial(mOuterFlangeRightSideMaterialName, "OuterFlangeRightSide");
     }
 
-    ArtieIDetectorConstruction::~ArtieIDetectorConstruction()
+    ArtieIIDetectorConstruction::~ArtieIIDetectorConstruction()
     {
     }
 
-    G4VPhysicalVolume* ArtieIDetectorConstruction::Construct()
+    G4VPhysicalVolume* ArtieIIDetectorConstruction::Construct()
     {
         DefineMaterials();
         // create the world volume
@@ -65,122 +109,122 @@ namespace Artie
             0
         );
 
-        // Construct the beampipe
-        if(mConstructBeamPipe)
-        {
-            mBeamPipeLeftHalfLength = (-mGap / 2.0 + mWorldZ / 2.0) / 2.0;
-            mBeamPipeRightHalfLength = (mDetectorEntrance - mGap / 2.0) / 2.0;
-            mBeamPipeLeftPosition = {
-                0., 
-                0., 
-                (-mWorldZ / 2.0 - mGap / 2.0) / 2.0
-            };
-            mBeamPipeRightPosition = {
-                0., 
-                0., 
-                (mDetectorEntrance + mGap / 2.0) / 2.0
-            };
+        // // Construct the beampipe
+        // if(mConstructBeamPipe)
+        // {
+        //     mBeamPipeLeftHalfLength = (-mGap / 2.0 + mWorldZ / 2.0) / 2.0;
+        //     mBeamPipeRightHalfLength = (mDetectorEntrance - mGap / 2.0) / 2.0;
+        //     mBeamPipeLeftPosition = {
+        //         0., 
+        //         0., 
+        //         (-mWorldZ / 2.0 - mGap / 2.0) / 2.0
+        //     };
+        //     mBeamPipeRightPosition = {
+        //         0., 
+        //         0., 
+        //         (mDetectorEntrance + mGap / 2.0) / 2.0
+        //     };
 
-            // Left Beam
-            mSolidBeamPipeLeftBeam = new G4Tubs(
-                "Solid_ArtieIBeamPipeLeftBeam", 
-                0,
-                mBeamPipeInnerRadius, 
-                mBeamPipeLeftHalfLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalBeamPipeLeftBeam = new G4LogicalVolume(
-                mSolidBeamPipeLeftBeam, 
-                mBeamPipeLeftBeamMaterial, 
-                "Logical_ArtieIBeamPipeLeftBeam"
-            );
-            mPhysicalBeamPipeLeftBeam = new G4PVPlacement(
-                0, 
-                mBeamPipeLeftPosition, 
-                mLogicalBeamPipeLeftBeam, 
-                "Physical_ArtieIBeamPipeLeftBeam", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
+        //     // Left Beam
+        //     mSolidBeamPipeLeftBeam = new G4Tubs(
+        //         "Solid_ArtieIBeamPipeLeftBeam", 
+        //         0,
+        //         mBeamPipeInnerRadius, 
+        //         mBeamPipeLeftHalfLength, 
+        //         0,
+        //         2*M_PI
+        //     );
+        //     mLogicalBeamPipeLeftBeam = new G4LogicalVolume(
+        //         mSolidBeamPipeLeftBeam, 
+        //         mBeamPipeLeftBeamMaterial, 
+        //         "Logical_ArtieIBeamPipeLeftBeam"
+        //     );
+        //     mPhysicalBeamPipeLeftBeam = new G4PVPlacement(
+        //         0, 
+        //         mBeamPipeLeftPosition, 
+        //         mLogicalBeamPipeLeftBeam, 
+        //         "Physical_ArtieIBeamPipeLeftBeam", 
+        //         mLogicalExperimentalHall, 
+        //         false, 
+        //         0, 
+        //         true
+        //     );
 
-            // Right Beam
-            mSolidBeamPipeRightBeam = new G4Tubs(
-                "Solid_ArtieIBeamPipeRightBeam", 
-                0,
-                mBeamPipeInnerRadius, 
-                mBeamPipeRightHalfLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalBeamPipeRightBeam = new G4LogicalVolume(
-                mSolidBeamPipeRightBeam, 
-                mBeamPipeRightBeamMaterial, 
-                "Logical_ArtieIBeamPipeRightBeam"
-            );
-            mPhysicalBeamPipeRightBeam = new G4PVPlacement(
-                0, 
-                mBeamPipeRightPosition, 
-                mLogicalBeamPipeRightBeam, 
-                "Physical_ArtieIBeamPipeRightBeam", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
+        //     // Right Beam
+        //     mSolidBeamPipeRightBeam = new G4Tubs(
+        //         "Solid_ArtieIBeamPipeRightBeam", 
+        //         0,
+        //         mBeamPipeInnerRadius, 
+        //         mBeamPipeRightHalfLength, 
+        //         0,
+        //         2*M_PI
+        //     );
+        //     mLogicalBeamPipeRightBeam = new G4LogicalVolume(
+        //         mSolidBeamPipeRightBeam, 
+        //         mBeamPipeRightBeamMaterial, 
+        //         "Logical_ArtieIBeamPipeRightBeam"
+        //     );
+        //     mPhysicalBeamPipeRightBeam = new G4PVPlacement(
+        //         0, 
+        //         mBeamPipeRightPosition, 
+        //         mLogicalBeamPipeRightBeam, 
+        //         "Physical_ArtieIBeamPipeRightBeam", 
+        //         mLogicalExperimentalHall, 
+        //         false, 
+        //         0, 
+        //         true
+        //     );
 
-            // Left Pipe
-            mSolidBeamPipeLeftPipe = new G4Tubs(
-                "Solid_ArtieIBeamPipeLeftPipe", 
-                mBeamPipeInnerRadius,
-                mBeamPipeOuterRadius, 
-                mBeamPipeLeftHalfLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalBeamPipeLeftPipe = new G4LogicalVolume(
-                mSolidBeamPipeLeftPipe, 
-                mBeamPipeLeftPipeMaterial, 
-                "Logical_ArtieIBeamPipeLeftPipe"
-            );
-            mPhysicalBeamPipeLeftPipe = new G4PVPlacement(
-                0, 
-                mBeamPipeLeftPosition, 
-                mLogicalBeamPipeLeftPipe, 
-                "Physical_ArtieIBeamPipeLeftPipe", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
+        //     // Left Pipe
+        //     mSolidBeamPipeLeftPipe = new G4Tubs(
+        //         "Solid_ArtieIBeamPipeLeftPipe", 
+        //         mBeamPipeInnerRadius,
+        //         mBeamPipeOuterRadius, 
+        //         mBeamPipeLeftHalfLength, 
+        //         0,
+        //         2*M_PI
+        //     );
+        //     mLogicalBeamPipeLeftPipe = new G4LogicalVolume(
+        //         mSolidBeamPipeLeftPipe, 
+        //         mBeamPipeLeftPipeMaterial, 
+        //         "Logical_ArtieIBeamPipeLeftPipe"
+        //     );
+        //     mPhysicalBeamPipeLeftPipe = new G4PVPlacement(
+        //         0, 
+        //         mBeamPipeLeftPosition, 
+        //         mLogicalBeamPipeLeftPipe, 
+        //         "Physical_ArtieIBeamPipeLeftPipe", 
+        //         mLogicalExperimentalHall, 
+        //         false, 
+        //         0, 
+        //         true
+        //     );
 
-            // Right Pipe
-            mSolidBeamPipeRightPipe = new G4Tubs(
-                "Solid_ArtieIBeamPipeRightPipe", 
-                mBeamPipeInnerRadius,
-                mBeamPipeOuterRadius, 
-                mBeamPipeRightHalfLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalBeamPipeRightPipe = new G4LogicalVolume(
-                mSolidBeamPipeRightPipe, 
-                mBeamPipeRightPipeMaterial, 
-                "Logical_ArtieIBeamPipeRightPipe"
-            );
-            mPhysicalBeamPipeRightPipe = new G4PVPlacement(
-                0, 
-                mBeamPipeRightPosition, 
-                mLogicalBeamPipeRightPipe, 
-                "Physical_ArtieIBeamPipeRightPipe", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
-        }
+        //     // Right Pipe
+        //     mSolidBeamPipeRightPipe = new G4Tubs(
+        //         "Solid_ArtieIBeamPipeRightPipe", 
+        //         mBeamPipeInnerRadius,
+        //         mBeamPipeOuterRadius, 
+        //         mBeamPipeRightHalfLength, 
+        //         0,
+        //         2*M_PI
+        //     );
+        //     mLogicalBeamPipeRightPipe = new G4LogicalVolume(
+        //         mSolidBeamPipeRightPipe, 
+        //         mBeamPipeRightPipeMaterial, 
+        //         "Logical_ArtieIBeamPipeRightPipe"
+        //     );
+        //     mPhysicalBeamPipeRightPipe = new G4PVPlacement(
+        //         0, 
+        //         mBeamPipeRightPosition, 
+        //         mLogicalBeamPipeRightPipe, 
+        //         "Physical_ArtieIBeamPipeRightPipe", 
+        //         mLogicalExperimentalHall, 
+        //         false, 
+        //         0, 
+        //         true
+        //     );
+        // }
 
         // Construct the container
         if(mConstructContainer)
@@ -210,211 +254,255 @@ namespace Artie
                 true
             );
 
-            // Insulation
-            mSolidInsulation = new G4Tubs(
-                "Solid_ArtieITargetInsulation", 
-                mContainerRadius,
-                mContainerRadius + mInsulationThickness, 
-                0.5 * mTargetLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalInsulation = new G4LogicalVolume(
-                mSolidInsulation, 
-                mInsulationMaterial, 
-                "Logical_ArtieITargetInsulation"
-            );
-            mPhysicalInsulation = new G4PVPlacement(
-                0, 
-                G4ThreeVector(0.,0.,0.),
-                mLogicalInsulation, 
-                "Physical_ArtieITargetInsulation", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
-
-            // Left Window
-            mSolidLeftWindow = new G4Tubs(
-                "Solid_ArtieITargetLeftWindow", 
-                0,
-                mContainerRadius, 
-                0.5 * mWindowThickness, 
-                0,
-                2*M_PI
-            );
-            mLogicalLeftWindow = new G4LogicalVolume(
-                mSolidLeftWindow, 
-                mLeftWindowMaterial, 
-                "Logical_ArtieITargetLeftWindow"
-            );
-            mPhysicalLeftWindow = new G4PVPlacement(
-                0, 
-                G4ThreeVector(
-                    0.,
-                    0., 
-                    -(mTargetLength + mWindowThickness) * 0.5),
-                mLogicalLeftWindow, 
-                "Physical_ArtieITargetLeftWindow", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
-            
-            // Right Window
-            mSolidRightWindow = new G4Tubs(
-                "Solid_ArtieITargetRightWindow", 
-                0,
-                mContainerRadius, 
-                0.5 * mWindowThickness, 
-                0,
-                2*M_PI
-            );
-            mLogicalRightWindow = new G4LogicalVolume(
-                mSolidRightWindow, 
-                mRightWindowMaterial, 
-                "Logical_ArtieITargetRightWindow"
-            );
-            mPhysicalRightWindow = new G4PVPlacement(
-                0, 
-                G4ThreeVector(
-                    0.,
-                    0., 
-                    +(mTargetLength + mWindowThickness) * 0.5),
-                mLogicalRightWindow, 
-                "Physical_ArtieITargetRightWindow", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
-
-            // Left Buffer
-            mSolidLeftBuffer = new G4Tubs(
-                "Solid_ArtieITargetLeftBuffer", 
-                0,
-                mTargetRadius, 
-                0.5 * mBufferLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalLeftBuffer = new G4LogicalVolume(
-                mSolidLeftBuffer, 
-                mLeftBufferMaterial, 
-                "Logical_ArtieITargetLeftBuffer"
-            );
-            mPhysicalLeftBuffer = new G4PVPlacement(
-                0, 
-                G4ThreeVector(
-                    0.,
-                    0., 
-                    -(mTargetLength + 2 * mWindowThickness + mBufferLength) * 0.5),
-                mLogicalLeftBuffer, 
-                "Physical_ArtieITargetLeftBuffer", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
-
-            // Right Buffer
-            mSolidRightBuffer = new G4Tubs(
-                "Solid_ArtieITargetRightBuffer", 
-                0,
-                mTargetRadius, 
-                0.5 * mBufferLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalRightBuffer = new G4LogicalVolume(
-                mSolidRightBuffer, 
-                mRightBufferMaterial, 
-                "Logical_ArtieITargetRightBuffer"
-            );
-            mPhysicalRightBuffer = new G4PVPlacement(
-                0, 
-                G4ThreeVector(
-                    0.,
-                    0., 
-                    +(mTargetLength + 2 * mWindowThickness + mBufferLength) * 0.5),
-                mLogicalRightBuffer, 
-                "Physical_ArtieITargetRightBuffer", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
+            // left side inner flange
+            if(mConstructInnerFlangeLeftSide)
+            {
+                mSolidInnerFlangeLeftSide = new G4Tubs(
+                    "Solid_ArtieIITargetInnerFlangeLeftSide",
+                    0,
+                    mInnerFlangeLeftSideRadius,
+                    0.5 * mInnerFlangeLeftSideThickness,
+                    0,
+                    2*M_PI
+                );
+                mLogicalInnerFlangeLeftSide = new G4LogicalVolume(
+                    mSolidInnerFlangeLeftSide,
+                    mInnerFlangeLeftSideMaterial,
+                    "Logical_ArtieIITargetInnerFlangeLeftSide"
+                );
+                mPhysicalInnerFlangeLeftSide = new G4PVPlacement(
+                    0,
+                    G4ThreeVector(
+                        0.,
+                        0.,
+                        -(mTargetLength + mInnerFlangeLeftSideThickness) * 0.5),
+                    mLogicalInnerFlangeLeftSide,
+                    "Physical_ArtieIITargetInnerFlangeLeftSide",
+                    mLogicalExperimentalHall,
+                    false,
+                    0,
+                    true 
+                );
+            }
+            // right side inner flange
+            if(mConstructInnerFlangeRightSide)
+            {
+                mSolidInnerFlangeRightSide = new G4Tubs(
+                    "Solid_ArtieIITargetInnerFlangeRightSide",
+                    0,
+                    mInnerFlangeRightSideRadius,
+                    0.5 * mInnerFlangeRightSideThickness,
+                    0,
+                    2*M_PI
+                );
+                mLogicalInnerFlangeRightSide = new G4LogicalVolume(
+                    mSolidInnerFlangeRightSide,
+                    mInnerFlangeRightSideMaterial,
+                    "Logical_ArtieIITargetInnerFlangeRightSide"
+                );
+                mPhysicalInnerFlangeRightSide = new G4PVPlacement(
+                    0,
+                    G4ThreeVector(
+                        0.,
+                        0.,
+                        +(mTargetLength + mInnerFlangeRightSideThickness) * 0.5),
+                    mLogicalInnerFlangeRightSide,
+                    "Physical_ArtieIITargetInnerFlangeRightSide",
+                    mLogicalExperimentalHall,
+                    false,
+                    0,
+                    true 
+                );
+            }
+            // left side inner flange gap
+            if(mConstructInnerFlangeLeftSideGap)
+            {
+                mSolidInnerFlangeLeftSideGap = new G4Tubs(
+                    "Solid_ArtieIITargetInnerFlangeLeftSideGap",
+                    0,
+                    mInnerFlangeLeftSideRadius,
+                    0.5 * mInnerFlangeLeftSideGapThickness,
+                    0,
+                    2*M_PI
+                );
+                mLogicalInnerFlangeLeftSideGap = new G4LogicalVolume(
+                    mSolidInnerFlangeLeftSideGap,
+                    mInnerFlangeLeftSideGapMaterial,
+                    "Logical_ArtieIITargetInnerFlangeLeftSideGap"
+                );
+                mPhysicalInnerFlangeLeftSideGap = new G4PVPlacement(
+                    0,
+                    G4ThreeVector(
+                        0.,
+                        0.,
+                        -(mTargetLength + 2 * mInnerFlangeLeftSideThickness + mInnerFlangeLeftSideGapThickness) * 0.5),
+                    mLogicalInnerFlangeLeftSideGap,
+                    "Physical_ArtieIITargetInnerFlangeLeftSideGap",
+                    mLogicalExperimentalHall,
+                    false,
+                    0,
+                    true 
+                );
+            }
+            // right sideGap inner flange gap
+            if(mConstructInnerFlangeRightSideGap)
+            {
+                mSolidInnerFlangeRightSideGap = new G4Tubs(
+                    "Solid_ArtieIITargetInnerFlangeRightSideGap",
+                    0,
+                    mInnerFlangeRightSideRadius,
+                    0.5 * mInnerFlangeRightSideGapThickness,
+                    0,
+                    2*M_PI
+                );
+                mLogicalInnerFlangeRightSideGap = new G4LogicalVolume(
+                    mSolidInnerFlangeRightSideGap,
+                    mInnerFlangeRightSideGapMaterial,
+                    "Logical_ArtieIITargetInnerFlangeRightSideGap"
+                );
+                mPhysicalInnerFlangeRightSideGap = new G4PVPlacement(
+                    0,
+                    G4ThreeVector(
+                        0.,
+                        0.,
+                        +(mTargetLength + 2 * mInnerFlangeRightSideThickness + mInnerFlangeRightSideGapThickness) * 0.5),
+                    mLogicalInnerFlangeRightSideGap,
+                    "Physical_ArtieIITargetInnerFlangeRightSideGap",
+                    mLogicalExperimentalHall,
+                    false,
+                    0,
+                    true 
+                );
+            }
+            // left side Outer flange
+            if(mConstructOuterFlangeLeftSide)
+            {
+                mSolidOuterFlangeLeftSide = new G4Tubs(
+                    "Solid_ArtieIITargetOuterFlangeLeftSide",
+                    0,
+                    mOuterFlangeLeftSideRadius,
+                    0.5 * mOuterFlangeLeftSideThickness,
+                    0,
+                    2*M_PI
+                );
+                mLogicalOuterFlangeLeftSide = new G4LogicalVolume(
+                    mSolidOuterFlangeLeftSide,
+                    mOuterFlangeLeftSideMaterial,
+                    "Logical_ArtieIITargetOuterFlangeLeftSide"
+                );
+                mPhysicalOuterFlangeLeftSide = new G4PVPlacement(
+                    0,
+                    G4ThreeVector(
+                        0.,
+                        0.,
+                        -(mTargetLength + 2 * mInnerFlangeLeftSideThickness + 2 * mInnerFlangeLeftSideGapThickness + mOuterFlangeLeftSideThickness) * 0.5),
+                    mLogicalOuterFlangeLeftSide,
+                    "Physical_ArtieIITargetOuterFlangeLeftSide",
+                    mLogicalExperimentalHall,
+                    false,
+                    0,
+                    true 
+                );
+            }
+            // right side Outer flange
+            if(mConstructOuterFlangeRightSide)
+            {
+                mSolidOuterFlangeRightSide = new G4Tubs(
+                    "Solid_ArtieIITargetOuterFlangeRightSide",
+                    0,
+                    mOuterFlangeRightSideRadius,
+                    0.5 * mOuterFlangeRightSideThickness,
+                    0,
+                    2*M_PI
+                );
+                mLogicalOuterFlangeRightSide = new G4LogicalVolume(
+                    mSolidOuterFlangeRightSide,
+                    mOuterFlangeRightSideMaterial,
+                    "Logical_ArtieIITargetOuterFlangeRightSide"
+                );
+                mPhysicalOuterFlangeRightSide = new G4PVPlacement(
+                    0,
+                    G4ThreeVector(
+                        0.,
+                        0.,
+                        +(mTargetLength + 2 * mInnerFlangeRightSideThickness + 2 * mInnerFlangeRightSideGapThickness + mOuterFlangeRightSideThickness) * 0.5),
+                    mLogicalOuterFlangeRightSide,
+                    "Physical_ArtieIITargetOuterFlangeRightSide",
+                    mLogicalExperimentalHall,
+                    false,
+                    0,
+                    true 
+                );
+            }
         }
 
-        // Construct the detector
-        if(mConstructDetector)
-        {
-            mSolidDetector = new G4Tubs(
-                "Solid_ArtieITargetDetector", 
-                0,
-                mDetectorRadius, 
-                0.5 * mDetectorLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalDetector = new G4LogicalVolume(
-                mSolidDetector, 
-                mDetectorMaterial, 
-                "Logical_ArtieITargetDetector"
-            );
-            mPhysicalDetector = new G4PVPlacement(
-                0, 
-                G4ThreeVector(
-                    0.,
-                    0., 
-                    + mDetectorEntrance + mDetectorLength * 0.5),
-                mLogicalDetector, 
-                "Physical_ArtieITargetDetector", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
-        }
+        // // Construct the detector
+        // if(mConstructDetector)
+        // {
+        //     mSolidDetector = new G4Tubs(
+        //         "Solid_ArtieITargetDetector", 
+        //         0,
+        //         mDetectorRadius, 
+        //         0.5 * mDetectorLength, 
+        //         0,
+        //         2*M_PI
+        //     );
+        //     mLogicalDetector = new G4LogicalVolume(
+        //         mSolidDetector, 
+        //         mDetectorMaterial, 
+        //         "Logical_ArtieITargetDetector"
+        //     );
+        //     mPhysicalDetector = new G4PVPlacement(
+        //         0, 
+        //         G4ThreeVector(
+        //             0.,
+        //             0., 
+        //             + mDetectorEntrance + mDetectorLength * 0.5),
+        //         mLogicalDetector, 
+        //         "Physical_ArtieITargetDetector", 
+        //         mLogicalExperimentalHall, 
+        //         false, 
+        //         0, 
+        //         true
+        //     );
+        // }
 
-        // Construct the hall
-        if(mConstructHall)
-        {
-            G4Box* OuterWall = new G4Box(
-                "Solid_ArtieIHall_OuterWall",
-                mWorldX / 2.0,
-                mWorldY / 2.0,
-                mWorldZ / 2.0
-            );
-            G4Box* InnerWall = new G4Box(
-                "Solid_ArtieIHall_InnerWall",
-                mWorldX / 2.0 - mWallThickness,
-                mWorldY / 2.0 - mWallThickness,
-                mWorldZ / 2.0 - mWallThickness
-            );
-            mSolidHall = new G4SubtractionSolid(
-                "Solid_ArtieIHall", 
-                OuterWall,
-                InnerWall
-            );
-            mLogicalHall = new G4LogicalVolume(
-                mSolidHall, 
-                mHallMaterial, 
-                "Logical_ArtieIHall"
-            );
-            mPhysicalHall = new G4PVPlacement(
-                0, 
-                G4ThreeVector(), 
-                mLogicalHall, 
-                "Physical_ArtieIHall", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
-        }        
+        // // Construct the hall
+        // if(mConstructHall)
+        // {
+        //     G4Box* OuterWall = new G4Box(
+        //         "Solid_ArtieIHall_OuterWall",
+        //         mWorldX / 2.0,
+        //         mWorldY / 2.0,
+        //         mWorldZ / 2.0
+        //     );
+        //     G4Box* InnerWall = new G4Box(
+        //         "Solid_ArtieIHall_InnerWall",
+        //         mWorldX / 2.0 - mWallThickness,
+        //         mWorldY / 2.0 - mWallThickness,
+        //         mWorldZ / 2.0 - mWallThickness
+        //     );
+        //     mSolidHall = new G4SubtractionSolid(
+        //         "Solid_ArtieIHall", 
+        //         OuterWall,
+        //         InnerWall
+        //     );
+        //     mLogicalHall = new G4LogicalVolume(
+        //         mSolidHall, 
+        //         mHallMaterial, 
+        //         "Logical_ArtieIHall"
+        //     );
+        //     mPhysicalHall = new G4PVPlacement(
+        //         0, 
+        //         G4ThreeVector(), 
+        //         mLogicalHall, 
+        //         "Physical_ArtieIHall", 
+        //         mLogicalExperimentalHall, 
+        //         false, 
+        //         0, 
+        //         true
+        //     );
+        // }        
 
         // Construct the active volume
         mSolidActiveVolume = new G4Tubs(
@@ -444,7 +532,7 @@ namespace Artie
         return mPhysicalExperimentalHall;
     }
 
-    void ArtieIDetectorConstruction::ConstructSDandField()
+    void ArtieIIDetectorConstruction::ConstructSDandField()
     {
     }
 }

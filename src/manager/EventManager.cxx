@@ -88,6 +88,7 @@ namespace Artie
 
     void EventManager::SaveGDML()
     {
+        G4GDMLParser* mGDMLParser;
         mGDMLParser->SetRegionExport(true);
         mGDMLParser->SetOutputFileOverwrite(true);
         mGDMLParser->Write(
