@@ -6,11 +6,12 @@ manager:
     seed:               10942
     mode:               "run"   # interactive/run
     detector:           "artieII"
-    output_filename:    "artieII_argon_long"
+    output_filename:    "artieII_ideal_long"
     save_particle_maps: true
     save_primary_info:  true
     save_hits:          true
-    save_neutron_data:  true
+    save_generator_info: true
+    save_neutron_data:   true
 
 # ARTIE argon parameters 
 argon:
@@ -81,9 +82,12 @@ detector:
     
 # ARTIE-I generator parameters
 generator:
-    use_lanl_distribution: false
+    use_lanl_distribution: true
     lanl_distribution_filename: "resolution13a.root"
     lanl_distribution_name: "tally5"
-    t_zero_location: -1.0   # m
-    energy_cut_low:  20      # keV
-    energy_cut_high: 200     # keV
+    lanl_beam_profile_filename: "resolution13a.root"
+    lanl_beam_profile_name: "tally15"
+    flight_path:     64.11   # m
+    t_zero_location: -1.0    # m
+    energy_cut_low:  55      # keV
+    energy_cut_high: 56     # keV

@@ -19,6 +19,7 @@
 #ifdef ARTIE_ROOT
 #include "TFile.h"
 #include "TH1D.h"
+#include "TH2D.h"
 #include "TGraph.h"
 #include "TMath.h"
 #endif
@@ -38,6 +39,7 @@ namespace Artie
         virtual void GeneratePrimaries(G4Event* event);
         void ConstructEnergyDistribution();
         G4double SampleBeamEnergy();
+        G4double SampleModeratorFunction(G4double beam_energy);
 
 #ifdef ARTIE_YAML
         ArtieIPrimaryGeneratorAction(YAML::Node config);
@@ -53,6 +55,7 @@ namespace Artie
         G4ThreeVector mParticlePosition;
         G4ThreeVector mParticleMomentumDirection;
 
+        G4double mFlightPath = { 64.11 * m };
         G4double mTZeroLocation = { -1.0 * m };
         G4double mEnergyCutLow = { 40 * keV };
         G4double mEnergyCutHigh = { 70 * keV };
@@ -60,7 +63,8 @@ namespace Artie
         G4bool mUseLANLDistribution = { false };
 
 #ifdef ARTIE_ROOT
-        TH1D* mLANLDistribution = {0};
+        TH1D* mLANLEnergyDistribution = {0};
+        TH2D* mLANLBeamProfile = {0};
 #endif
 
 #ifdef ARTIE_YAML

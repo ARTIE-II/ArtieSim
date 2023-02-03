@@ -33,6 +33,7 @@ namespace Artie
             if(mConfig["manager"]["number_of_runs"])    { sNumberOfRuns = mConfig["manager"]["number_of_runs"].as<G4int>(); }
             if(mConfig["manager"]["number_of_events"])  { sNumberOfEvents = mConfig["manager"]["number_of_events"].as<G4int>(); }
             if(mConfig["manager"]["output_filename"])   { sOutputFileName = mConfig["manager"]["output_filename"].as<std::string>(); }
+            if(mConfig["manager"]["save_generator_info"])   { sSaveGeneratorInfo = mConfig["manager"]["save_generator_info"].as<G4bool>(); }
             if(mConfig["argon"]["use_g4_definition"])   { mUseG4Definition = mConfig["argon"]["use_g4_definition"].as<G4bool>(); }
             if(mConfig["argon"]["argon_36_ratio"])      { mArgon36Ratio = mConfig["argon"]["argon_36_ratio"].as<G4double>(); }
             if(mConfig["argon"]["argon_38_ratio"])      { mArgon38Ratio = mConfig["argon"]["argon_38_ratio"].as<G4double>(); }
@@ -42,12 +43,15 @@ namespace Artie
             if(mConfig["argon"]["lar_pressure"])        { mLArPressure = mConfig["argon"]["lar_pressure"].as<G4double>() * atmosphere; }
         }
     #ifdef ARTIE_ROOT
-        if(mConfig["generator"]["lanl_distribution_filename"])  { mLANLDistributionFileName = mConfig["generator"]["lanl_distribution_filename"].as<std::string>(); }
-        if(mConfig["generator"]["lanl_distribution_name"])      { mLANLDistributionName = mConfig["generator"]["lanl_distribution_name"].as<std::string>(); }
+        if(mConfig["generator"]["lanl_distribution_filename"])  { mLANLEnergyDistributionFileName = mConfig["generator"]["lanl_distribution_filename"].as<std::string>(); }
+        if(mConfig["generator"]["lanl_distribution_name"])      { mLANLEnergyDistributionName = mConfig["generator"]["lanl_distribution_name"].as<std::string>(); }
+        if(mConfig["generator"]["lanl_beam_profile_filename"])  { mLANLBeamProfileFileName = mConfig["generator"]["lanl_beam_profile_filename"].as<std::string>(); }
+        if(mConfig["generator"]["lanl_beam_profile_name"])      { mLANLBeamProfileName = mConfig["generator"]["lanl_beam_profile_name"].as<std::string>(); }
         if(mConfig["generator"]["energy_cut_low"])  { mEnergyCutLow = mConfig["generator"]["energy_cut_low"].as<G4double>() * keV; }
         if(mConfig["generator"]["energy_cut_high"]) { mEnergyCutHigh = mConfig["generator"]["energy_cut_high"].as<G4double>() * keV; }
-        mLANLDistributionFile = new TFile(mLANLDistributionFileName);
-        TGraph *DistributionGraph = (TGraph*)mLANLDistributionFile->Get(mLANLDistributionName);
+        mLANLEnergyDistributionFile = new TFile(mLANLEnergyDistributionFileName);
+        mLANLBeamProfileFile = new TFile(mLANLBeamProfileFileName);
+        TGraph *DistributionGraph = (TGraph*)mLANLEnergyDistributionFile->Get(mLANLEnergyDistributionName);
 
         // Make variable-bin histogram for beam energy
         const G4int nlogbins=500;        
@@ -62,8 +66,7 @@ namespace Artie
             G4double xlog = xlogmin+ i*dlogx;
             xbins[i] = TMath::Exp( TMath::Log(10) * xlog ); 
         }
-
-        mLANLDistribution.reset(
+        mLANLEnergyDistribution.reset(
             new TH1D("LANLBeamEnergy", "LANLBeamEnergy", nlogbins, xbins)
         );
         auto nPoints = DistributionGraph->GetN(); // number of points 
@@ -75,8 +78,22 @@ namespace Artie
                 x / 1000 < mEnergyCutHigh
             ) 
             {
-                mLANLDistribution->Fill(x,y);
+                mLANLEnergyDistribution->Fill(x,y);
             }
+        }
+
+        // Set up beam profile and projections
+        mLANLBeamProfile.reset((TH2D*)mLANLBeamProfileFile->Get(mLANLBeamProfileName));
+        auto beam_x = mLANLBeamProfile->GetXaxis();
+        auto num_bins = beam_x->GetNbins();
+        for(G4int ii = 0; ii < num_bins; ii++)
+        {
+            std::string projection_name = "profile_" + std::to_string(ii);
+            TH1D* projection = (TH1D*)mLANLBeamProfile->ProjectionY(
+                projection_name.c_str(),
+                ii, ii+1
+            );
+            mLANLBeamProjections.emplace_back(projection);
         }
     #endif
         // Setting up the GDML parser
@@ -131,8 +148,8 @@ namespace Artie
     void EventManager::ConstructEnergyDistribution()
     {
 #ifdef ARTIE_ROOT
-        mLANLDistributionFile = new TFile(mLANLDistributionFileName);
-        TGraph *DistributionGraph = (TGraph*)mLANLDistributionFile->Get(mLANLDistributionName);
+        mLANLEnergyDistributionFile = new TFile(mLANLEnergyDistributionFileName);
+        TGraph *DistributionGraph = (TGraph*)mLANLEnergyDistributionFile->Get(mLANLEnergyDistributionName);
 
         // Make variable-bin histogram for beam energy
         const G4int nlogbins=500;        
@@ -148,7 +165,7 @@ namespace Artie
             xbins[i] = TMath::Exp( TMath::Log(10) * xlog ); 
         }
 
-        mLANLDistribution.reset(
+        mLANLEnergyDistribution.reset(
             new TH1D("LANLBeamEnergy", "LANLBeamEnergy", nlogbins, xbins)
         );
         auto nPoints = DistributionGraph->GetN(); // number of points 
@@ -160,7 +177,7 @@ namespace Artie
                 x / 1000 < mEnergyCutHigh
             ) 
             {
-                mLANLDistribution->Fill(x,y);
+                mLANLEnergyDistribution->Fill(x,y);
             }
         }
 #endif
@@ -290,6 +307,17 @@ namespace Artie
             AnalysisManager->CreateNtupleDColumn("pz_particle");
             AnalysisManager->CreateNtupleDColumn("energy");
             AnalysisManager->CreateNtupleIColumn("detected");
+            AnalysisManager->FinishNtuple(index);
+        }
+        if(SaveGeneratorInfo())
+        {
+            G4int index = GetIndex("Generator");
+            AnalysisManager->CreateNtuple("Generator", "Generator");
+            AnalysisManager->CreateNtupleIColumn("event");
+            AnalysisManager->CreateNtupleDColumn("energy");
+            AnalysisManager->CreateNtupleDColumn("length");
+            AnalysisManager->CreateNtupleDColumn("nominal_tof");
+            AnalysisManager->CreateNtupleDColumn("delta_tof");
             AnalysisManager->FinishNtuple(index);
         }
         if(SaveNeutronData())
@@ -422,6 +450,26 @@ namespace Artie
             AnalysisManager->AddNtupleRow(index);
         }
         EndFunctionProfile("FillHits");
+    }
+    void EventManager::FillGeneratorInfo(G4int EventID)
+    {
+        if (!SaveGeneratorInfo()) {
+            return;
+        }
+        StartFunctionProfile();
+
+        auto AnalysisManager = G4AnalysisManager::Instance();
+        G4int index = GetIndex("Generator");
+        for(size_t ii = 0; ii < mGenerators.size(); ii++)
+        {
+            AnalysisManager->FillNtupleIColumn(index, 0, EventID);
+            AnalysisManager->FillNtupleDColumn(index, 1, mGenerators[ii].energy);
+            AnalysisManager->FillNtupleDColumn(index, 2, mGenerators[ii].length);
+            AnalysisManager->FillNtupleDColumn(index, 3, mGenerators[ii].nominal_tof);
+            AnalysisManager->FillNtupleDColumn(index, 4, mGenerators[ii].delta_tof);
+            AnalysisManager->AddNtupleRow(index);
+        }
+        EndFunctionProfile("FillGeneratorInfo");
     }
 
     void EventManager::FillNeutronEventData(G4int EventID)
@@ -746,6 +794,19 @@ namespace Artie
         }
 
         EndFunctionProfile("AddNeutronInfoFromStep");
+    }
+
+    void EventManager::AddGeneratorInfoFromGenerator(
+        G4double energy, G4double length, 
+        G4double nominal_tof, G4double deltaT
+    )
+    {
+        AddGeneratorInfo(
+            Generator(
+                energy, length,
+                nominal_tof, deltaT
+            )
+        );
     }
 
     void EventManager::EvaluateEvent()

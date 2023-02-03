@@ -32,11 +32,13 @@ namespace Artie
     , mConfig(config["generator"])
     {
         if(mConfig["use_lanl_distribution"]) { mUseLANLDistribution = mConfig["use_lanl_distribution"].as<G4bool>(); }
-        if(mConfig["t_zero_location"]) { mTZeroLocation = mConfig["t_zero_location"].as<G4double>() * m; }
-        if(mConfig["energy_cut_low"])  { mEnergyCutLow = mConfig["energy_cut_low"].as<G4double>() * keV; }
-        if(mConfig["energy_cut_high"]) { mEnergyCutHigh = mConfig["energy_cut_high"].as<G4double>() * keV; }
+        if(mConfig["flight_path"])      { mFlightPath = mConfig["flight_path"].as<G4double>() * m; }
+        if(mConfig["t_zero_location"])  { mTZeroLocation = mConfig["t_zero_location"].as<G4double>() * m; }
+        if(mConfig["energy_cut_low"])   { mEnergyCutLow = mConfig["energy_cut_low"].as<G4double>() * keV; }
+        if(mConfig["energy_cut_high"])  { mEnergyCutHigh = mConfig["energy_cut_high"].as<G4double>() * keV; }
 #ifdef ARTIE_ROOT
-        mLANLDistribution = EventManager::GetEventManager()->GetLANLDistribution();
+        mLANLEnergyDistribution = EventManager::GetEventManager()->GetLANLEnergyDistribution();
+        mLANLBeamProfile = EventManager::GetEventManager()->GetLANLBeamProfile();
 #endif
         mParticleGun = new G4ParticleGun();
         G4ParticleDefinition* particle = G4ParticleTable::GetParticleTable()->FindParticle("neutron");
@@ -52,16 +54,35 @@ namespace Artie
     {
 #ifdef ARTIE_ROOT
         if(mUseLANLDistribution) {
-            return mLANLDistribution->GetRandom() * keV;
+            return mLANLEnergyDistribution->GetRandom() * keV;
         }
 #endif
         return (mEnergyCutLow + (mEnergyCutHigh - mEnergyCutLow) * G4UniformRand());
+    }
+
+    G4double ArtieIPrimaryGeneratorAction::SampleModeratorFunction(G4double beam_energy)
+    {
+#ifdef ARTIE_ROOT
+        if(mUseLANLDistribution) {
+            Int_t energy_bin = mLANLBeamProfile->GetXaxis()->FindBin(beam_energy * MeV);
+            TH1D* TOF = EventManager::GetEventManager()->GetLANLBeamProjection(energy_bin);
+            Double_t deltaT = TOF->GetRandom();       
+            return deltaT;
+        }
+#endif
+        return 0.0;
     }
 
     void ArtieIPrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
     {
         mParticleGun->SetNumberOfParticles(1);
         G4double BeamEnergy = SampleBeamEnergy();
+        Double_t nominalTOF = GetNominalTOF(BeamEnergy, mFlightPath);
+        G4double Moderator = SampleModeratorFunction(BeamEnergy);
+        EventManager::GetEventManager()->AddGeneratorInfoFromGenerator(
+            BeamEnergy, mFlightPath, nominalTOF, Moderator
+        );
+        mParticleGun->SetParticleTime(Moderator * nominalTOF);
         mParticleGun->SetParticleEnergy(BeamEnergy);
         mParticleGun->GeneratePrimaryVertex(event);
     }

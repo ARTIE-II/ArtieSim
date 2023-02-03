@@ -13,7 +13,7 @@ namespace Artie
     : G4UserEventAction()
     {
         auto Manager = EventManager::GetEventManager();
-        Manager->ClearEventData();
+        // Manager->ClearEventData();
     }
 
     EventAction::~EventAction()
@@ -22,7 +22,7 @@ namespace Artie
     void EventAction::BeginOfEventAction(const G4Event* event)
     {
         auto Manager = EventManager::GetEventManager();
-        Manager->ClearEventData();
+        // Manager->ClearEventData();
     }
 
     void EventAction::EndOfEventAction(const G4Event* event)
@@ -31,6 +31,7 @@ namespace Artie
         Manager->FillParticleMaps(event->GetEventID());
         Manager->FillPrimaryInfo(event->GetEventID());
         Manager->FillHits(event->GetEventID());
+        Manager->FillGeneratorInfo(event->GetEventID());
         Manager->FillNeutronEventData(event->GetEventID());
         
         // Send out tuples to analysis functions
