@@ -43,7 +43,6 @@
 #include "Core.hh"
 #include "Hit.hh"
 #include "Neutron.hh"
-#include "Generator.hh"
 
 class PhysicsList;
 
@@ -117,6 +116,16 @@ namespace Artie
         G4double LArTemperature()   { return mLArTemperature; }
         G4double LArPressure()      { return mLArPressure; }
 
+        G4double FlightPath()       { return mDetectorEntrance - mTZeroLocation; }
+        inline static G4double GetNominalTOF(G4double energy)
+        {
+            //G4double kinetic_energy = keVToJoules(energy);
+            G4double kinetic_mass = energy/NeutronMassMeV();
+            G4double denominator = 1.0 - 1.0/((kinetic_mass + 1.0)*(kinetic_mass + 1.0));
+            G4double correction_factor = sqrt(1.0 / denominator);
+            return ((mDetectorEntrance - mTZeroLocation) / SpeedOfLight()) * correction_factor;
+        }
+
         // Tuple related functions
         G4String OutputFileName()           { return sOutputFileName; }
         void OutputFileName(G4String name)  { sOutputFileName = name; }
@@ -142,20 +151,17 @@ namespace Artie
         void SaveParticleMaps(G4bool save)      { sSaveParticleMaps = save; }
         void SavePrimaryInfo(G4bool save)       { sSavePrimaryInfo = save; }
         void SaveHits(G4bool save)              { sSaveHits = save; }
-        void SaveGeneratorInfo(G4bool save)     { sSaveGeneratorInfo = save; }
         void SaveNeutronData(G4bool save)       { sSaveNeutronData = save; }
 
         G4bool SaveParticleMaps()       { return sSaveParticleMaps; }
         G4bool SavePrimaryInfo()        { return sSavePrimaryInfo; }
         G4bool SaveHits()               { return sSaveHits; }
-        G4bool SaveGeneratorInfo()      { return sSaveGeneratorInfo; }
         G4bool SaveNeutronData()        { return sSaveNeutronData; }
 
         void CreateTuples();
         void FillParticleMaps(G4int EventID = -1);
         void FillPrimaryInfo(G4int EventID = -1);
         void FillHits(G4int EventID = -1);
-        void FillGeneratorInfo(G4int EventID = -1);
         void FillNeutronEventData(G4int EventID = -1);
         void FillNeutronRunData();
         inline static thread_local void ClearEventData()
@@ -167,7 +173,6 @@ namespace Artie
             mParticleAncestorTrackID.clear();
             mPrimaryData.clear();
             mHits.clear();
-            mGenerators.clear();
             mNeutronEventData.clear();
             mNeutronEventDataMap.clear();
         }
@@ -240,15 +245,6 @@ namespace Artie
         //*************************************************************************************************//
 
         //*************************************************************************************************//
-        // Generator level info to keep track of
-        inline static thread_local void AddGeneratorInfo(Generator generator) { mGenerators.emplace_back(generator); }
-        void AddGeneratorInfoFromGenerator(
-            G4double energy, G4double length,
-            G4double nominal_tof, G4double deltaT
-        );
-        //*************************************************************************************************//
-
-        //*************************************************************************************************//
         // Neutron level info to keep track of
         void AddNeutronInfoFromTrackBegin(const G4Track* track);
         void AddNeutronInfoFromTrackEnd(const G4Track* track);
@@ -303,7 +299,6 @@ namespace Artie
         inline static G4bool sSaveParticleMaps = {true};
         inline static G4bool sSavePrimaryInfo = {true};
         inline static G4bool sSaveHits = {true};
-        inline static G4bool sSaveGeneratorInfo = {true};
         inline static G4bool sSaveNeutronData = {true};
 
         // Argon related parameters
@@ -325,7 +320,6 @@ namespace Artie
 
         inline static thread_local std::vector<PrimaryData>    mPrimaryData;
         inline static thread_local std::vector<Hit> mHits;
-        inline static thread_local std::vector<Generator> mGenerators;
         inline static thread_local std::vector<NeutronEventData> mNeutronEventData;
         inline static thread_local std::map<G4int, G4int> mNeutronEventDataMap;
         inline static NeutronRunData sNeutronRunData;
@@ -349,6 +343,9 @@ namespace Artie
         inline static TFile* mLANLBeamProfileFile = {0};
         inline static std::shared_ptr<TH2D> mLANLBeamProfile = {nullptr};
         inline static std::vector<std::shared_ptr<TH1D>> mLANLBeamProjections = {};
+
+        inline static G4double mTZeroLocation = {-1 * m};
+        inline static G4double mDetectorEntrance = {30.0 * m};
 #endif
 
 #ifdef ARTIE_PROFILING

@@ -63,7 +63,7 @@ namespace Artie
         virtual void ConstructSDandField();
 
     private:
-        G4String mWorldMaterialName = {"air"};
+        G4String mWorldMaterialName = {"high_vacuum"};
         G4double mExperimentalHallX = {500 * m};
         G4double mExperimentalHallY = {500 * m};
         G4double mExperimentalHallZ = {500 * m};
@@ -109,6 +109,13 @@ namespace Artie
         G4String mOuterFlangeRightSideMaterialName = {"aluminum"};
         G4double mOuterFlangeRightSideRadius = {17.10436 / 2.0 * cm};
         G4double mOuterFlangeRightSideThickness = {0.20066};
+
+        // Detector
+        G4bool mConstructDetector = {true};
+        G4String mDetectorMaterialName = {"water"};
+        G4double mDetectorRadius = {2.0 * cm};
+        G4double mDetectorLength = {20.0 * cm};
+        G4double mDetectorEntrance = {30.0 * m};
 
         G4double mWorldX = {4 * m};
         G4double mWorldY = {4 * m};
@@ -167,6 +174,12 @@ namespace Artie
         G4Tubs *mSolidOuterFlangeRightSide;
         G4LogicalVolume* mLogicalOuterFlangeRightSide;
         G4VPhysicalVolume* mPhysicalOuterFlangeRightSide;
+
+        // Detector
+        G4Material* mDetectorMaterial;
+        G4Tubs *mSolidDetector;
+        G4LogicalVolume* mLogicalDetector;
+        G4VPhysicalVolume* mPhysicalDetector;
 
 #ifdef ARTIE_YAML
         YAML::Node mConfig;

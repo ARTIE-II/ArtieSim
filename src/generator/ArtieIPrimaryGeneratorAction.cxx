@@ -32,6 +32,7 @@ namespace Artie
     , mConfig(config["generator"])
     {
         if(mConfig["use_lanl_distribution"]) { mUseLANLDistribution = mConfig["use_lanl_distribution"].as<G4bool>(); }
+        if(mConfig["use_lanl_beam_profile"]) { mUseLANLBeamProfile = mConfig["use_lanl_beam_profile"].as<G4bool>(); }
         if(mConfig["flight_path"])      { mFlightPath = mConfig["flight_path"].as<G4double>() * m; }
         if(mConfig["t_zero_location"])  { mTZeroLocation = mConfig["t_zero_location"].as<G4double>() * m; }
         if(mConfig["energy_cut_low"])   { mEnergyCutLow = mConfig["energy_cut_low"].as<G4double>() * keV; }
@@ -63,7 +64,7 @@ namespace Artie
     G4double ArtieIPrimaryGeneratorAction::SampleModeratorFunction(G4double beam_energy)
     {
 #ifdef ARTIE_ROOT
-        if(mUseLANLDistribution) {
+        if(mUseLANLBeamProfile) {
             Int_t energy_bin = mLANLBeamProfile->GetXaxis()->FindBin(beam_energy * MeV);
             TH1D* TOF = EventManager::GetEventManager()->GetLANLBeamProjection(energy_bin);
             Double_t deltaT = TOF->GetRandom();       
@@ -77,12 +78,10 @@ namespace Artie
     {
         mParticleGun->SetNumberOfParticles(1);
         G4double BeamEnergy = SampleBeamEnergy();
-        Double_t nominalTOF = GetNominalTOF(BeamEnergy, mFlightPath);
+        Double_t nominalTOF = EventManager::GetEventManager()->GetNominalTOF(BeamEnergy);
         G4double Moderator = SampleModeratorFunction(BeamEnergy);
-        EventManager::GetEventManager()->AddGeneratorInfoFromGenerator(
-            BeamEnergy, mFlightPath, nominalTOF, Moderator
-        );
         mParticleGun->SetParticleTime(Moderator * nominalTOF);
+        mParticleGun->SetParticlePosition(G4ThreeVector(0.,0., mTZeroLocation));
         mParticleGun->SetParticleEnergy(BeamEnergy);
         mParticleGun->GeneratePrimaryVertex(event);
     }

@@ -183,12 +183,6 @@ namespace Artie
             std::cout << "'manager:save_hits' does not exist!" << std::endl;
             exit(0);
         }
-        if(!mConfig["manager"]["save_generator_info"]) 
-        {
-            std::cout << "CONFIG ERROR! the parameter ";
-            std::cout << "'manager:save_generator_info' does not exist!" << std::endl;
-            exit(0);
-        }
         if(!mConfig["manager"]["save_neutron_data"]) 
         {
             std::cout << "CONFIG ERROR! the parameter ";
@@ -201,15 +195,4 @@ namespace Artie
     {
     }
 #endif 
-
-    G4double GetNominalTOF(G4double energy, G4double length)
-    {
-        //G4double kinetic_energy = keVToJoules(energy);
-        G4double kinetic_mass = energy/NeutronMassMeV();
-        G4double denominator = 1.0 - 1.0/((kinetic_mass + 1.0)*(kinetic_mass + 1.0));
-        G4double correction_factor = sqrt(1.0 / denominator);
-        G4double t = (length / SpeedOfLight()) * correction_factor;
-        return t;
-    }
-
 }

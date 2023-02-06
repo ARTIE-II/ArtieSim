@@ -31,7 +31,6 @@ namespace Artie
         Manager->FillParticleMaps(event->GetEventID());
         Manager->FillPrimaryInfo(event->GetEventID());
         Manager->FillHits(event->GetEventID());
-        Manager->FillGeneratorInfo(event->GetEventID());
         Manager->FillNeutronEventData(event->GetEventID());
         
         // Send out tuples to analysis functions

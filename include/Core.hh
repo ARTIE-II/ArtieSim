@@ -31,8 +31,8 @@
 namespace Artie
 {
 
-    inline G4double NeutronMassSI() { return 1.674927498e-27 * kg; }
-    inline G4double NeutronMassMeV() { return 939.56542052 * MeV; }
+    inline G4double NeutronMassSI()    { return 1.674927498e-27 * kg; }
+    inline G4double NeutronMassMeV()   { return 939.56542052 * MeV; }
     inline G4double keVToJoules(G4double energy) { return energy * 1.60218e-16; }
     inline G4double SpeedOfLight()  { return 299792458 * m / s; }
 

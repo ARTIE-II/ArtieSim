@@ -18,6 +18,8 @@ artieI_cfg = {
 default_simulation_parameters = {
     'lar_density':      1.39,   #
     'target_length':    1.68,   # cm
+    't_zero_location':  -1.0,   # m
+    'detector_entrance':30.0,   # m
 }
 
 class ArtieAnalysis:
@@ -38,6 +40,7 @@ class ArtieAnalysis:
                 self.data[key] = self.files[key]['NeutronEventData'].arrays(library="np")
                 self.data[key]["neutron_energy"] *= 1000.0    # MeV -> keV
                 self.data[key]["arrival_time"] /= 1000.0      # ns -> us
+                self.data[key]["nominal_tof"] /= 1000.0
 
                 self.configuration[key] = self.files[key]["Configuration"].arrays(library="np")
                 temp_config = {
@@ -55,7 +58,6 @@ class ArtieAnalysis:
                             )
             except:
                 raise FileNotFoundError(value)
-
         self.argon_mass = 663.38    # mass in kg/barn
         self.lar_density = float(self.simulation_parameters['lar_density']) * 1000
         self.target_length = float(self.simulation_parameters['target_length']) / 100
@@ -76,7 +78,7 @@ class ArtieAnalysis:
 
         self.neutron_mass = 939.5654133 * 1000.0    # keV 
         self.speed_of_light  = 2.99792458 * 100.0   # m / mus
-        self.flight_path = flight_path
+        self.flight_path = float(self.simulation_parameters['detector_entrance']) - float(self.simulation_parameters['t_zero_location'])
         self.resolution = resolution
 
         if not os.path.isdir("plots/"):
@@ -117,7 +119,7 @@ class ArtieAnalysis:
         
         for bin_id in unique_bin_ids:
             bin_means[bin_id] = np.mean(data[(bin_ids == bin_id)])
-            bin_stds[bin_id] = np.std(data[(bin_ids == bin_id)])
+            bin_stds[bin_id] = np.std(data[(bin_ids == bin_id)])/np.sqrt(len(data[(bin_ids == bin_id)]))
 
         hist_errors = np.sqrt(hist)
         return bin_means, bin_stds, hist, hist_errors, edges
@@ -164,7 +166,7 @@ class ArtieAnalysis:
         
         for bin_id in unique_bin_ids:
             bin_means[bin_id] = np.mean(counts[(bin_ids == bin_id)])
-            bin_stds[bin_id] = np.std(counts[(bin_ids == bin_id)])
+            bin_stds[bin_id] = np.std(counts[(bin_ids == bin_id)])/np.sqrt(len(counts[(bin_ids == bin_id)]))
 
         p = hist[(total_hist > 0)]/total_hist[(total_hist > 0)]
         hist_errors = np.sqrt(hist * p * (1 - p))
@@ -241,6 +243,35 @@ class ArtieAnalysis:
         cross_section_errors[transmission_mask] = (1.0/self.n) * transmission_errors[transmission_mask] / transmission[transmission_mask]
 
         return cross_section, cross_section_errors
+
+    def compute_tof_from_energy_bins(self,
+        input, mask,
+        bin_means, bin_stds, 
+        hist, hist_errors, edges
+    ):
+        
+        tof_mask = mask
+        tof = self.data[input]["arrival_time"][tof_mask]
+        nominal_tof = self.data[input]["nominal_tof"][tof_mask]
+
+        tof_means = np.zeros(hist.size, dtype=float)
+        tof_errors = np.zeros(hist.size, dtype=float)
+        nominal_tof_means = np.zeros(hist.size, dtype=float)
+        nominal_tof_errors = np.zeros(hist.size, dtype=float)
+        energies = self.data[input]["neutron_energy"][tof_mask]
+
+        for ii in range(len(edges)-1):
+            if ii < len(tof_means)-1:
+                energy_mask = (energies >= edges[ii]) & (energies < edges[ii+1])
+            else:
+                energy_mask = (energies >= edges[ii]) & (energies <= edges[ii+1])
+
+            tof_means[ii] = np.mean(tof[energy_mask])
+            tof_errors[ii] = np.std(tof[energy_mask])/np.sqrt(len(tof[energy_mask]))
+            nominal_tof_means[ii] = np.mean(nominal_tof[energy_mask])
+            nominal_tof_errors[ii] = np.std(nominal_tof[energy_mask])/np.sqrt(len(nominal_tof[energy_mask]))
+
+        return tof_means, tof_errors, nominal_tof_means, nominal_tof_errors
 
     def energy_from_tof(self,
         tof
@@ -326,6 +357,62 @@ class ArtieAnalysis:
             if(show):
                 plt.show()
             plt.close()
+        
+    def plot_tof_vs_energy(self,
+        inputs:         list=[""],
+        number_of_bins: int=200,
+        energy_min:     float=-1,
+        energy_max:     float=-1,
+        name:           str="Neutrons",
+        save:   str='',
+        show:   bool=False,
+        make_pull:  bool=True
+    ):
+        fig, axs = plt.subplots(2, 1, figsize=(10, 6), gridspec_kw={'height_ratios': [3,1]})
+        pull_hist = {}
+        if energy_min == -1 or energy_max == -1:
+            range = []
+        else:
+            range = [energy_min, energy_max]
+            axs[0].set_xlim(energy_min, energy_max)
+        for input in inputs:
+            bin_means, bin_stds, hist, hist_errors, edges = self.bin_with_poisson_errors(
+                data=self.data[input]["neutron_energy"][(self.data[input]["arrival_time"] > 0)],
+                number_of_bins=number_of_bins, range=range
+            )
+            tof_means, tof_errors, nominal_tof_means, nominal_tof_errors = self.compute_tof_from_energy_bins(
+                input, (self.data[input]["arrival_time"] > 0), bin_means, bin_stds, hist, hist_errors, edges
+            )
+            bin_centers = 0.5*(edges[1:] + edges[:-1])
+            pull_hist[input] = self.compute_pull_hist(hist)
+            axs[0].errorbar(
+                bin_centers, tof_means,
+                xerr=bin_stds, 
+                yerr=tof_errors,
+                linestyle='',
+                marker='.', label=f"{input}\n"+r"$N = $"+f"{np.sum(hist)}"
+            )
+            axs[0].errorbar(
+                bin_centers, nominal_tof_means,
+                yerr=nominal_tof_errors,
+                linestyle='--',
+                marker=',',
+                label=f"{input} nominal tof"
+            )
+            axs[1].errorbar(
+                bin_centers, tof_errors
+            )
+        axs[0].plot([],[],linestyle='',marker='x',c='k',label=f"bins = {number_of_bins}")
+        axs[0].set_xlabel("Kinetic Energy [keV]")
+        axs[0].set_ylabel("Time of Flight ["+r"$\mu$"+f"s]")
+        axs[1].set_ylabel(r"$\sigma_{\mathrm{tof}}/\sqrt{N_{E_i}}$")
+        axs[0].set_title(f"{name} TOF vs. Generated Kinetic Energy Distribution - L={self.target_length}m")
+        axs[0].legend()
+        plt.tight_layout()
+        if(save != ''):
+            plt.savefig(f"plots/{save}_tof_vs_neutron_energy.png")
+        if(show):
+            plt.show()
 
     def plot_energy(self,
         inputs:         list=[""],
@@ -432,7 +519,7 @@ class ArtieAnalysis:
                 number_of_bins=number_of_bins, range=range
             )
             argon_means, argon_stds, argon_hist, argon_hist_errors, argon_edges = self.bin_with_poisson_errors(
-                data=self.data[input]["neutron_energy"][(self.data[input]["safe_passage"] == 1)],
+                data=self.data[input]["neutron_energy"][(self.data[input]["arrival_time"] > 0)],
                 number_of_bins=number_of_bins, range=range
             )
             vacuum_total_means, vacuum_total_stds, vacuum_total_hist, vacuum_total_hist_errors, vacuum_total_edges = self.bin_with_poisson_errors(
@@ -440,7 +527,7 @@ class ArtieAnalysis:
                 number_of_bins=number_of_bins, range=range
             )
             vacuum_means, vacuum_stds, vacuum_hist, vacuum_hist_errors, vacuum_edges = self.bin_with_poisson_errors(
-                data=self.data["vacuum"]["neutron_energy"][(self.data["vacuum"]["safe_passage"] == 1)],
+                data=self.data["vacuum"]["neutron_energy"][(self.data["vacuum"]["arrival_time"] > 0)],
                 number_of_bins=number_of_bins, range=range
             )
             bin_centers = 0.5*(argon_edges[1:] + argon_edges[:-1])
@@ -494,7 +581,7 @@ class ArtieAnalysis:
                 number_of_bins=number_of_bins, range=range
             )
             argon_means, argon_stds, argon_hist, argon_hist_errors, argon_edges = self.bin_with_poisson_errors(
-                data=self.data[input]["neutron_energy"][(self.data[input]["safe_passage"] == 1)],
+                data=self.data[input]["neutron_energy"][(self.data[input]["arrival_time"] > 0)],
                 number_of_bins=number_of_bins, range=range
             )
             vacuum_total_means, vacuum_total_stds, vacuum_total_hist, vacuum_total_hist_errors, vacuum_total_edges = self.bin_with_poisson_errors(
@@ -502,7 +589,7 @@ class ArtieAnalysis:
                 number_of_bins=number_of_bins, range=range
             )
             vacuum_means, vacuum_stds, vacuum_hist, vacuum_hist_errors, vacuum_edges = self.bin_with_poisson_errors(
-                data=self.data["vacuum"]["neutron_energy"][(self.data["vacuum"]["safe_passage"] == 1)],
+                data=self.data["vacuum"]["neutron_energy"][(self.data["vacuum"]["arrival_time"] > 0)],
                 number_of_bins=number_of_bins, range=range
             )
             bin_centers = 0.5*(argon_edges[1:] + argon_edges[:-1])
@@ -554,6 +641,15 @@ class ArtieAnalysis:
         self.plot_time_of_flight(
             inputs=inputs,
             number_of_bins=number_of_bins,
+            name=name,
+            save=save,
+            show=show
+        )
+        self.plot_tof_vs_energy(
+            inputs=inputs,
+            number_of_bins=number_of_bins,
+            energy_min=energy_min,
+            energy_max=energy_max,
             name=name,
             save=save,
             show=show

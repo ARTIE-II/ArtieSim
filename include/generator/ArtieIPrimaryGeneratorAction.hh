@@ -61,6 +61,7 @@ namespace Artie
         G4double mEnergyCutHigh = { 70 * keV };
 
         G4bool mUseLANLDistribution = { false };
+        G4bool mUseLANLBeamProfile =  { false };
 
 #ifdef ARTIE_ROOT
         TH1D* mLANLEnergyDistribution = {0};

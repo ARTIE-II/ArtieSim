@@ -59,6 +59,12 @@ namespace Artie
         if(mConfig["outer_flange_right_side_radius"])    { mOuterFlangeRightSideRadius = mConfig["outer_flange_right_side_radius"].as<G4double>() * cm; }
         if(mConfig["outer_flange_right_side_thickness"]) { mOuterFlangeRightSideThickness = mConfig["outer_flange_right_side_thickness"].as<G4double>() * cm; }
 
+        if(mConfig["construct_detector"])   { mConstructDetector = mConfig["construct_detector"].as<G4bool>(); }
+        if(mConfig["detector_radius"])      { mDetectorRadius = mConfig["detector_radius"].as<G4double>() * cm; }
+        if(mConfig["detector_length"])      { mDetectorLength = mConfig["detector_length"].as<G4double>() * cm; }
+        if(mConfig["detector_entrance"])    { mDetectorEntrance = mConfig["detector_entrance"].as<G4double>() * m; }   
+
+        if(mConfig["world_material"])   { mWorldMaterialName = mConfig["world_material"].as<std::string>(); }
         if(mConfig["world_x"])          { mWorldX = mConfig["world_x"].as<G4double>() * m; }
         if(mConfig["world_y"])          { mWorldY = mConfig["world_y"].as<G4double>() * m; }
         if(mConfig["world_z"])          { mWorldZ = mConfig["world_z"].as<G4double>() * m; }
@@ -78,6 +84,7 @@ namespace Artie
         mInnerFlangeRightSideGapMaterial = CreateMaterial(mInnerFlangeRightSideGapMaterialName, "InnerFlangeRightSideGap");
         mOuterFlangeLeftSideMaterial = CreateMaterial(mOuterFlangeLeftSideMaterialName, "OuterFlangeLeftSide");
         mOuterFlangeRightSideMaterial = CreateMaterial(mOuterFlangeRightSideMaterialName, "OuterFlangeRightSide");
+        mDetectorMaterial = CreateMaterial(mDetectorMaterialName, "Detector");
     }
 
     ArtieIIDetectorConstruction::~ArtieIIDetectorConstruction()
@@ -231,7 +238,7 @@ namespace Artie
         {
             // Container
             mSolidContainer = new G4Tubs(
-                "Solid_ArtieITargetContainer", 
+                "Solid_ArtieIITargetContainer", 
                 mTargetRadius,
                 mContainerRadius, 
                 0.5 * mTargetLength, 
@@ -241,13 +248,13 @@ namespace Artie
             mLogicalContainer = new G4LogicalVolume(
                 mSolidContainer, 
                 mContainerMaterial, 
-                "Logical_ArtieITargetContainer"
+                "Logical_ArtieIITargetContainer"
             );
             mPhysicalContainer = new G4PVPlacement(
                 0, 
                 G4ThreeVector(0.,0.,0.),
                 mLogicalContainer, 
-                "Physical_ArtieITargetContainer", 
+                "Physical_ArtieIITargetContainer", 
                 mLogicalExperimentalHall, 
                 false, 
                 0, 
@@ -436,36 +443,36 @@ namespace Artie
             }
         }
 
-        // // Construct the detector
-        // if(mConstructDetector)
-        // {
-        //     mSolidDetector = new G4Tubs(
-        //         "Solid_ArtieITargetDetector", 
-        //         0,
-        //         mDetectorRadius, 
-        //         0.5 * mDetectorLength, 
-        //         0,
-        //         2*M_PI
-        //     );
-        //     mLogicalDetector = new G4LogicalVolume(
-        //         mSolidDetector, 
-        //         mDetectorMaterial, 
-        //         "Logical_ArtieITargetDetector"
-        //     );
-        //     mPhysicalDetector = new G4PVPlacement(
-        //         0, 
-        //         G4ThreeVector(
-        //             0.,
-        //             0., 
-        //             + mDetectorEntrance + mDetectorLength * 0.5),
-        //         mLogicalDetector, 
-        //         "Physical_ArtieITargetDetector", 
-        //         mLogicalExperimentalHall, 
-        //         false, 
-        //         0, 
-        //         true
-        //     );
-        // }
+        // Construct the detector
+        if(mConstructDetector)
+        {
+            mSolidDetector = new G4Tubs(
+                "Solid_ArtieIITargetDetector", 
+                0,
+                mDetectorRadius, 
+                0.5 * mDetectorLength, 
+                0,
+                2*M_PI
+            );
+            mLogicalDetector = new G4LogicalVolume(
+                mSolidDetector, 
+                mDetectorMaterial, 
+                "Logical_ArtieIITargetDetector"
+            );
+            mPhysicalDetector = new G4PVPlacement(
+                0, 
+                G4ThreeVector(
+                    0.,
+                    0., 
+                    + mDetectorEntrance + mDetectorLength * 0.5),
+                mLogicalDetector, 
+                "Physical_ArtieIITargetDetector", 
+                mLogicalExperimentalHall, 
+                false, 
+                0, 
+                true
+            );
+        }
 
         // // Construct the hall
         // if(mConstructHall)
@@ -506,7 +513,7 @@ namespace Artie
 
         // Construct the active volume
         mSolidActiveVolume = new G4Tubs(
-            "Solid_ArtieIActiveVolume", 
+            "Solid_ArtieIIActiveVolume", 
             0,
             mTargetRadius, 
             0.5 * mTargetLength, 
@@ -516,13 +523,13 @@ namespace Artie
         mLogicalActiveVolume = new G4LogicalVolume(
             mSolidActiveVolume, 
             mActiveVolumeMaterial, 
-            "Logical_ArtieIActiveVolume"
+            "Logical_ArtieIIActiveVolume"
         );
         mPhysicalActiveVolume = new G4PVPlacement(
             0, 
             G4ThreeVector(0., 0., 0.), 
             mLogicalActiveVolume, 
-            "Physical_ArtieIActiveVolume", 
+            "Physical_ArtieIIActiveVolume", 
             mLogicalExperimentalHall, 
             false, 
             0, 

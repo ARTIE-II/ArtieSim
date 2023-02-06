@@ -18,6 +18,8 @@ namespace Artie
         G4int event = {0};
         G4int track_id = {0};
         G4double neutron_energy = {0};
+        G4double nominal_tof = {0};
+        G4double start_time = {0};
         G4double arrival_time = {0};
         G4double arrival_energy = {0};
         G4int num_elastic = {0};
@@ -28,6 +30,7 @@ namespace Artie
         G4int num_scatter_out = {0};
         G4int gas_first = {0};
         G4double first_scatter_z = {0};
+        G4double first_scatter_t = {0};
         G4double max_dphi = {0};
         G4double max_dp = {0};
         G4double max_dE = {0};
@@ -43,16 +46,21 @@ namespace Artie
 
         NeutronEventData(
             G4int _event, G4int _track_id,
-            G4double _neutron_energy
+            G4double _neutron_energy,
+            G4double _nominal_tof,
+            G4double _start_time
         )
         : event(_event), track_id(_track_id)
         , neutron_energy(_neutron_energy)
+        , nominal_tof(_nominal_tof)
+        , start_time(_start_time)
         {
         }
 
         NeutronEventData(
             G4int _event, G4int _track_id,
-            G4double _neutron_energy, G4double _arrival_time,
+            G4double _neutron_energy, G4double _nominal_tof,
+            G4double _start_time, G4double _arrival_time,
             G4double _arrival_energy, G4int _num_elastic, G4int _num_inelastic,
             G4int _num_capture, G4int _num_fission,
             G4int _num_scatter, G4int _num_scatter_out,
@@ -60,7 +68,8 @@ namespace Artie
             G4double _max_dphi, G4double _max_dp, G4double _max_dE
         )
         : event(_event), track_id(_track_id)
-        , neutron_energy(_neutron_energy), arrival_time(_arrival_time)
+        , neutron_energy(_neutron_energy), nominal_tof(_nominal_tof)
+        , start_time(_start_time), arrival_time(_arrival_time)
         , arrival_energy(_arrival_energy), num_elastic(_num_elastic), num_inelastic(_num_inelastic)
         , num_capture(_num_capture), num_fission(_num_fission)
         , num_scatter(_num_scatter), num_scatter_out(_num_scatter_out)
