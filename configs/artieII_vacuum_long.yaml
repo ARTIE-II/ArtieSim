@@ -2,7 +2,7 @@
 manager:
     number_of_threads:  8
     number_of_runs:     1
-    number_of_events:   500000
+    number_of_events:   100
     seed:               10942
     mode:               "run"   # interactive/run
     detector:           "artieII"
@@ -80,15 +80,22 @@ detector:
     detector_entrance:      30.0    # m
 
     world_material:         "high_vacuum"
+
+    # #ARTIE Filters
+    # construct_filters:  true #bool
+    # filter_materials:   ["aluminum", "carbon"]
+    # filter_z_position:  [100.0, 120.0] # cm
+    # filter_thickness:   [10.0, 5.0] # cm
+    # filter_radius:      [8.55218, 8.55218] # cm
     
 # ARTIE-I generator parameters
 generator:
     use_lanl_distribution: false
-    lanl_distribution_filename: "resolution13a.root"
+    lanl_distribution_filename: "data/resolution13a.root"
     lanl_distribution_name: "tally5"
 
     use_lanl_beam_profile:  true
-    lanl_beam_profile_filename: "resolution13a.root"
+    lanl_beam_profile_filename: "data/resolution13a.root"
     lanl_beam_profile_name: "tally15"
     
     t_zero_location: -30.0    # m

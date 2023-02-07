@@ -121,6 +121,13 @@ namespace Artie
         G4double mWorldY = {4 * m};
         G4double mWorldZ = {200 * m};
 
+        //Filters
+        G4bool mConstructFilters = {true};
+        std::vector<std::string> mFilterMaterialNames;
+        std::vector<G4double> mFilterZPos;
+        std::vector<G4double> mFilterThickness;
+        std::vector<G4double> mFilterRadius;
+
         // Experimental Hall
         G4Material *mWorldMaterial;
         G4Box* mSolidExperimentalHall;
@@ -180,6 +187,14 @@ namespace Artie
         G4Tubs *mSolidDetector;
         G4LogicalVolume* mLogicalDetector;
         G4VPhysicalVolume* mPhysicalDetector;
+
+        // Filters
+        std::vector<G4Material *> mFilterMaterials;
+        std::vector<G4Tubs *> mSolidFilters;
+        std::vector<G4LogicalVolume *> mLogicalFilters;
+        std::vector<G4VPhysicalVolume *> mPhysicalFilters;
+
+        
 
 #ifdef ARTIE_YAML
         YAML::Node mConfig;

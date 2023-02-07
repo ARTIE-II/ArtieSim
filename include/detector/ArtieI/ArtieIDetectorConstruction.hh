@@ -67,6 +67,9 @@ namespace Artie
         G4double mExperimentalHallY = {500 * m};
         G4double mExperimentalHallZ = {500 * m};
 
+        G4String mGDML = {"gdml"};
+        G4String mActiveVolumeName = {"ARTIE_central tube_1"};
+
         // Artie-I target
         G4String mActiveVolumeMaterialName = {"liquid_argon"};
         G4double mTargetRadius = {2.5 / 2.0 * cm};

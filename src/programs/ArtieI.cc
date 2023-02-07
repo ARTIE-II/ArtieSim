@@ -19,7 +19,7 @@
 // Neutron HP
 #include "G4ParticleHPManager.hh"
 #include "G4Types.hh"
-#include "G4GDMLParser.hh"
+// #include "G4GDMLParser.hh"
 
 #include "ArtieIDetectorConstruction.hh"
 #include "PhysicsList.hh"
@@ -109,7 +109,7 @@ int main(int argc, char** argv)
             );
         }
     }
-    Artie::EventManager::GetEventManager()->SaveGDML();
+    // Artie::EventManager::GetEventManager()->SaveGDML();
 
     return 0;
 }
