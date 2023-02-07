@@ -1,11 +1,11 @@
 """
 """
-import numpy as np
-import uproot
-from matplotlib import pyplot as plt
 import csv
 import os
 
+import numpy as np
+import uproot
+from matplotlib import pyplot as plt
 
 artieI_cfg = {
     "inputs":   {
@@ -629,6 +629,132 @@ class ArtieAnalysis:
             plt.show()
         plt.close()
 
+    def plot_beam_efficiency(self,
+        inputs:         list=[""],
+        number_of_bins: int=200,
+        energy_min:     float=-1,
+        energy_max:     float=-1,
+        endf:           bool=True,
+        name:           str="Neutrons",
+        save:   str='',
+        show:   bool=False                     
+    ):
+        fig, axs = plt.subplots(figsize=(10, 6))
+        if energy_min == -1 or energy_max == -1:
+            range = []
+        else:
+            range = [energy_min, energy_max]
+        for input in inputs:        
+            energy_mask = (self.data[input]["neutron_energy"] >= energy_min) & (self.data[input]["neutron_energy"] <= energy_max)
+            x_means, x_stds, x_hist, x_hist_errors, x_edges = self.bin_with_poisson_errors(
+                data=self.data[input]["start_x"][energy_mask],
+                number_of_bins=number_of_bins
+            )
+            bin_centers = 0.5*(x_edges[1:] + x_edges[:-1])
+            axs.errorbar(
+                bin_centers, x_hist,
+                #xerr=total_stds, 
+                yerr=x_hist_errors,
+                marker='.', label=f"{input} (generated)"
+            )
+            energy_mask = (self.data[input]["neutron_energy"] >= energy_min) & (self.data[input]["neutron_energy"] <= energy_max) & (self.data[input]["arrival_time"] > 0)
+            transmitted_x_means, transmitted_x_stds, transmitted_x_hist, transmitted_x_hist_errors, transmitted_x_edges = self.bin_with_poisson_errors(
+                data=self.data[input]["start_x"][energy_mask],
+                number_of_bins=number_of_bins
+            )
+            bin_centers = 0.5*(transmitted_x_edges[1:] + transmitted_x_edges[:-1])
+            axs.errorbar(
+                bin_centers, transmitted_x_hist,
+                #xerr=total_stds, 
+                yerr=transmitted_x_hist_errors,
+                marker='.', label=f"{input} (transmitted)"
+            )
+            x_efficiency = sum(transmitted_x_hist)/sum(x_hist)
+            axs.plot(
+                [], [],
+                label=f"{input} efficiency = {x_efficiency}"
+            )
+        axs.set_xlabel("Starting x position [mm]")
+        axs.set_ylabel("Neutrons")
+        axs.set_title(f"{name} Generated/Transmitted Starting x position [mm]")
+        plt.legend()
+        plt.tight_layout()
+        if(save != ''):
+            plt.savefig(f"plots/{save}_neutron_starting_x.png")
+        if(show):
+            plt.show()
+        plt.close()
+
+        for input in inputs:        
+            fig, axs = plt.subplots(1, 2, figsize=(15, 6))
+            energy_mask = (self.data[input]["neutron_energy"] >= energy_min) & (self.data[input]["neutron_energy"] <= energy_max)
+            axs[0].hist2d(
+                self.data[input]["start_x"][energy_mask],
+                self.data[input]["start_y"][energy_mask],
+                bins=20,
+            )
+            axs[0].set_xlabel("Starting x position [mm]")
+            axs[0].set_ylabel("Starting y position [mm]")
+            axs[0].set_title("Generated starting position")
+            energy_mask = (self.data[input]["neutron_energy"] >= energy_min) & (self.data[input]["neutron_energy"] <= energy_max) & (self.data[input]["arrival_time"] > 0)
+            axs[1].hist2d(
+                self.data[input]["start_x"][energy_mask],
+                self.data[input]["start_y"][energy_mask],
+                bins=20,
+            )
+            axs[1].set_xlabel("Starting x position [mm]")
+            axs[1].set_ylabel("Starting y position [mm]")
+            axs[1].set_title("Transmitted starting position")
+            plt.suptitle(f"{name} - {input} Starting Positions")
+            plt.tight_layout()
+            if(save != ''):
+                plt.savefig(f"plots/{save}_{input}_neutron_starting.png")
+            if(show):
+                plt.show()
+            plt.close()
+
+        fig, axs = plt.subplots(figsize=(10, 6))
+        for input in inputs:        
+            energy_mask = (self.data[input]["neutron_energy"] >= energy_min) & (self.data[input]["neutron_energy"] <= energy_max)
+            y_means, y_stds, y_hist, y_hist_errors, y_edges = self.bin_with_poisson_errors(
+                data=self.data[input]["start_y"][energy_mask],
+                number_of_bins=number_of_bins
+            )
+            bin_centers = 0.5*(y_edges[1:] + y_edges[:-1])
+            axs.errorbar(
+                bin_centers, y_hist,
+                #xerr=total_stds, 
+                yerr=y_hist_errors,
+                marker='.', label=f"{input} (generated)"
+            )
+            energy_mask = (self.data[input]["neutron_energy"] >= energy_min) & (self.data[input]["neutron_energy"] <= energy_max) & (self.data[input]["arrival_time"] > 0)
+            transmitted_y_means, transmitted_y_stds, transmitted_y_hist, transmitted_y_hist_errors, transmitted_y_edges = self.bin_with_poisson_errors(
+                data=self.data[input]["start_y"][energy_mask],
+                number_of_bins=number_of_bins
+            )
+            bin_centers = 0.5*(transmitted_y_edges[1:] + transmitted_y_edges[:-1])
+            axs.errorbar(
+                bin_centers, transmitted_y_hist,
+                #xerr=total_stds, 
+                yerr=transmitted_y_hist_errors,
+                marker='.', label=f"{input} (transmitted)"
+            )
+            y_efficiency = sum(transmitted_y_hist)/sum(y_hist)
+            axs.plot(
+                [], [],
+                label=f"{input} efficiency = {y_efficiency}"
+            )
+        axs.set_xlabel("Starting y position [mm]")
+        axs.set_ylabel("Neutrons")
+        axs.set_title(f"{name} Generated/Transmitted Starting y position [mm]")
+        plt.legend()
+        plt.tight_layout()
+        if(save != ''):
+            plt.savefig(f"plots/{save}_neutron_starting_y.png")
+        if(show):
+            plt.show()
+        plt.close()
+
     def plot_all(self,
         inputs:         list=[""],
         number_of_bins: int=200,
@@ -684,6 +810,15 @@ class ArtieAnalysis:
             show=show
         )
         self.plot_cross_section(
+            inputs=inputs,
+            number_of_bins=number_of_bins,
+            energy_min=energy_min,
+            energy_max=energy_max,
+            name=name,
+            save=save,
+            show=show
+        )
+        self.plot_beam_efficiency(
             inputs=inputs,
             number_of_bins=number_of_bins,
             energy_min=energy_min,

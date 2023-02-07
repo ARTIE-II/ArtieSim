@@ -119,11 +119,16 @@ namespace Artie
         G4double FlightPath()       { return mDetectorEntrance - mTZeroLocation; }
         inline static G4double GetNominalTOF(G4double energy)
         {
-            //G4double kinetic_energy = keVToJoules(energy);
             G4double kinetic_mass = energy/NeutronMassMeV();
             G4double denominator = 1.0 - 1.0/((kinetic_mass + 1.0)*(kinetic_mass + 1.0));
             G4double correction_factor = sqrt(1.0 / denominator);
             return ((mDetectorEntrance - mTZeroLocation) / SpeedOfLight()) * correction_factor;
+        }
+        inline static G4double GetNominalVelocity(G4double energy)
+        {
+            G4double kinetic_mass = energy/NeutronMassMeV();
+            G4double factor = sqrt(1.0 - 1.0/((kinetic_mass + 1.0)*(kinetic_mass + 1.0)));
+            return SpeedOfLight() * factor;
         }
 
         // Tuple related functions
@@ -143,8 +148,12 @@ namespace Artie
         void ConstructEnergyDistribution();
 #ifdef ARTIE_ROOT
         TH1D* GetLANLEnergyDistribution()       { return mLANLEnergyDistribution.get(); }
-        TH2D* GetLANLBeamProfile()              { return mLANLBeamProfile.get(); }
-        TH1D* GetLANLBeamProjection(G4int ii)   { return mLANLBeamProjections[ii].get(); }
+        TH2D* GetLANLTOF()                      { return mLANLTOF.get(); }
+        TH1D* GetLANLTOFProjection(G4int ii)    { return mLANLTOFProjections[ii].get(); }
+
+        TH2D* GetnTOFTOF()                      { return mnTOFTOF.get(); }
+        TH1D* GetnTOFTOFProjection(G4int ii)    { return mnTOFTOFProjections[ii].get(); }
+        TH2D* GetnTOFBeamProfile()              { return mnTOFBeamProfile.get(); }
 #endif
         //*************************************************************************************************//
         // Options to save various data to root files.
@@ -331,18 +340,38 @@ namespace Artie
         G4GDMLParser* mGDMLParser;
 
 #ifdef ARTIE_ROOT
+        inline static G4bool mUseLANLDistribution = { false };
+        inline static G4bool mUseLANLTOF =  { false };
+
+        inline static G4bool mUsenTOFTOF =  { false };
+        inline static G4bool mUsenTOFBeamProfile =  { false };
+        
+        
+        // LANL energy distribution
         inline static G4String mLANLEnergyDistributionFileName = {"resolution13a.root"};
         inline static G4String mLANLEnergyDistributionName = {"tally5"};
         inline static TFile* mLANLEnergyDistributionFile = {0};
         inline static std::shared_ptr<TH1D> mLANLEnergyDistribution = {nullptr};
         inline static G4double mEnergyCutLow = { 40 * keV };
         inline static G4double mEnergyCutHigh = { 70 * keV };
+        // LANL tof distribution
+        inline static G4String mLANLTOFFileName = {"resolution13a.root"};
+        inline static G4String mLANLTOFName = {"tally15"};
+        inline static TFile* mLANLTOFFile = {0};
+        inline static std::shared_ptr<TH2D> mLANLTOF = {nullptr};
+        inline static std::vector<std::shared_ptr<TH1D>> mLANLTOFProjections = {};
 
-        inline static G4String mLANLBeamProfileFileName = {"resolution13a.root"};
-        inline static G4String mLANLBeamProfileName = {"tally15"};
-        inline static TFile* mLANLBeamProfileFile = {0};
-        inline static std::shared_ptr<TH2D> mLANLBeamProfile = {nullptr};
-        inline static std::vector<std::shared_ptr<TH1D>> mLANLBeamProjections = {};
+        // nTOF tof distribution
+        inline static G4String mnTOFTOFFileName = {"RF.root"};
+        inline static G4String mnTOFTOFName = {"histfluka"};
+        inline static TFile* mnTOFTOFFile = {0};
+        inline static std::shared_ptr<TH2D> mnTOFTOF = {nullptr};
+        inline static std::vector<std::shared_ptr<TH1D>> mnTOFTOFProjections = {};
+        // nTOF beam profile
+        inline static G4String mnTOFBeamProfileFileName = {"Profile_188m.root"};
+        inline static G4String mnTOFBeamProfileName = {"histfluka"};
+        inline static TFile* mnTOFBeamProfileFile = {0};
+        inline static std::shared_ptr<TH2D> mnTOFBeamProfile = {nullptr};
 
         inline static G4double mTZeroLocation = {-1 * m};
         inline static G4double mDetectorEntrance = {30.0 * m};

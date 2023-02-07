@@ -1,0 +1,105 @@
+# ARTIE manager parameters
+manager:
+    number_of_threads:  8
+    number_of_runs:     1
+    number_of_events:   500000
+    seed:               10942
+    mode:               "run"   # interactive/run
+    detector:           "artieII"
+    output_filename:    "artieII_lanl_ideal_long"
+    save_particle_maps: true
+    save_primary_info:  true
+    save_hits:          true
+    save_neutron_data:   true
+
+# ARTIE argon parameters 
+argon:
+    use_g4_definition:  false
+    argon_36_ratio:     0.334   # %
+    argon_38_ratio:     0.063   # %
+    argon_40_ratio:     99.603  # %
+    lar_density:        1.3954  # g/cm^3
+    lar_temperature:    85.0    # K
+    lar_pressure:       0.952   # atm
+
+# ARTIE-I detector parameters
+detector:
+    active_volume_material: "liquid_argon"
+    target_radius:          1.104    # cm
+    target_length:          168      # cm
+
+    construct_container:    true    # bool
+    container_material:     "stainless_steel"
+    container_radius:       1.77   # cm
+
+    construct_inner_flange_left_side:   false
+    inner_flange_left_side_material:    "aluminum"
+    inner_flange_left_side_radius:      2.40665 #cm
+    inner_flange_left_side_thickness:   0.20066 # cm
+
+    construct_inner_flange_right_side:  false
+    inner_flange_right_side_material:   "aluminum"
+    inner_flange_right_side_radius:     2.40665 #cm
+    inner_flange_right_side_thickness:  0.20066 # cm
+
+    construct_inner_flange_left_side_gap:   false
+    inner_flange_left_side_gap_material:    "high_vacuum"
+    inner_flange_left_side_gap_thickness:   1.87706 # cm
+
+    construct_inner_flange_right_side_gap:  false
+    inner_flange_right_side_gap_material:   "high_vacuum"
+    inner_flange_right_side_gap_thickness:  1.87706 # cm
+
+    construct_outer_flange_left_side:   false
+    outer_flange_left_side_material:    "aluminum"
+    outer_flange_left_side_radius:      8.55218 #cm
+    outer_flange_left_side_thickness:   0.20066 # cm
+
+    construct_outer_flange_right_side:  false
+    outer_flange_right_side_material:   "aluminum"
+    outer_flange_right_side_radius:     8.55218 #cm
+    outer_flange_right_side_thickness:  0.20066 # cm
+    
+    # construct_beam_pipe:    true    # bool
+    # beam_pipe_material:     "rough_vacuum"
+    # beam_material:          "high_vacuum"
+    # beam_pipe_inner_radius: 18.0    # cm
+    # beam_pipe_outer_radius: 20.0    # cm
+    # gap:                    2.5     # m
+    # construct_hall:         true    # bool
+    # hall_material:          "concrete"
+    world_x:                4       # m                 
+    world_y:                4       # m
+    world_z:                200     # m
+    # wall_thickness:         1.0     # m
+
+    construct_detector:     true    # bool
+    detector_material:      "water"
+    detector_radius:        2.0     # cm
+    detector_length:        20.0    # cm
+    detector_entrance:      30.0    # m
+
+    world_material:         "high_vacuum"
+    
+# ARTIE-I generator parameters
+generator:
+    # wether to use the LANL energy distribution
+    use_lanl_distribution: false
+    lanl_distribution_filename: "data/resolution13a.root"
+    lanl_distribution_name: "tally5"
+    
+    # wether to use the LANL tof for the 
+    # moderator function.
+    use_lanl_tof:  true
+    lanl_tof_filename: "data/resolution13a.root"
+    lanl_tof_name: "tally15"
+
+    # wether to use the nTOF tof for the 
+    # moderator function.
+    use_ntof_tof:  false
+    ntof_tof_filename: "data/RF.root"
+    ntof_tof_name: "histfluka"
+    
+    t_zero_location: -30.0    # m
+    energy_cut_low:  20      # keV
+    energy_cut_high: 70     # keV

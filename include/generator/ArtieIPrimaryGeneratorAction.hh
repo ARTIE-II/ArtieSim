@@ -22,6 +22,7 @@
 #include "TH2D.h"
 #include "TGraph.h"
 #include "TMath.h"
+#include "TRandom3.h"
 #endif
 
 #ifdef ARTIE_YAML
@@ -39,7 +40,8 @@ namespace Artie
         virtual void GeneratePrimaries(G4Event* event);
         void ConstructEnergyDistribution();
         G4double SampleBeamEnergy();
-        G4double SampleModeratorFunction(G4double beam_energy);
+        G4double SampleTOF(G4double beam_energy);
+        G4ThreeVector SampleBeamProfile(G4double t_zero_location);
 
 #ifdef ARTIE_YAML
         ArtieIPrimaryGeneratorAction(YAML::Node config);
@@ -61,11 +63,19 @@ namespace Artie
         G4double mEnergyCutHigh = { 70 * keV };
 
         G4bool mUseLANLDistribution = { false };
-        G4bool mUseLANLBeamProfile =  { false };
+        G4bool mUseLANLTOF =  { false };
+
+        G4bool mUsenTOFTOF =  { false };
+        G4bool mUsenTOFBeamProfile =  { false };
 
 #ifdef ARTIE_ROOT
         TH1D* mLANLEnergyDistribution = {0};
-        TH2D* mLANLBeamProfile = {0};
+        TH2D* mLANLTOF = {0};
+
+        TH2D* mnTOFTOF = {0};
+        TH2D* mnTOFBeamProfile = {0};
+
+        TRandom3* mTRandom3 = {0};
 #endif
 
 #ifdef ARTIE_YAML

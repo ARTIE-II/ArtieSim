@@ -6,7 +6,7 @@ manager:
     seed:               10942
     mode:               "run"   # interactive/run
     detector:           "artieII"
-    output_filename:    "artieII_vacuum_long"
+    output_filename:    "artieII_ntof_vacuum_long"
     save_particle_maps: true
     save_primary_info:  true
     save_hits:          true
@@ -32,30 +32,30 @@ detector:
     container_material:     "stainless_steel"
     container_radius:       1.77   # cm
 
-    construct_inner_flange_left_side:   false
+    construct_inner_flange_left_side:   true
     inner_flange_left_side_material:    "aluminum"
     inner_flange_left_side_radius:      2.40665 #cm
     inner_flange_left_side_thickness:   0.20066 # cm
 
-    construct_inner_flange_right_side:  false
+    construct_inner_flange_right_side:  true
     inner_flange_right_side_material:   "aluminum"
     inner_flange_right_side_radius:     2.40665 #cm
     inner_flange_right_side_thickness:  0.20066 # cm
 
-    construct_inner_flange_left_side_gap:   false
+    construct_inner_flange_left_side_gap:   true
     inner_flange_left_side_gap_material:    "high_vacuum"
     inner_flange_left_side_gap_thickness:   1.87706 # cm
 
-    construct_inner_flange_right_side_gap:  false
+    construct_inner_flange_right_side_gap:  true
     inner_flange_right_side_gap_material:   "high_vacuum"
     inner_flange_right_side_gap_thickness:  1.87706 # cm
 
-    construct_outer_flange_left_side:   false
+    construct_outer_flange_left_side:   true
     outer_flange_left_side_material:    "aluminum"
     outer_flange_left_side_radius:      8.55218 #cm
     outer_flange_left_side_thickness:   0.20066 # cm
 
-    construct_outer_flange_right_side:  false
+    construct_outer_flange_right_side:  true
     outer_flange_right_side_material:   "aluminum"
     outer_flange_right_side_radius:     8.55218 #cm
     outer_flange_right_side_thickness:  0.20066 # cm
@@ -84,12 +84,25 @@ detector:
 # ARTIE-I generator parameters
 generator:
     use_lanl_distribution: false
-    lanl_distribution_filename: "resolution13a.root"
+    lanl_distribution_filename: "data/resolution13a.root"
     lanl_distribution_name: "tally5"
 
-    use_lanl_beam_profile:  true
-    lanl_beam_profile_filename: "resolution13a.root"
-    lanl_beam_profile_name: "tally15"
+    # wether to use the LANL tof for the 
+    # moderator function.
+    use_lanl_tof:  false
+    lanl_tof_filename: data/resolution13a.root"
+    lanl_tof_name: "tally15"
+
+    # wether to use the nTOF tof for the 
+    # moderator function.
+    use_ntof_tof:  true
+    ntof_tof_filename: "data/RF.root"
+    ntof_tof_name: "histfluka"
+
+    # wether to use the nTOF beam profile
+    use_ntof_beam_profile:  true
+    ntof_beam_profile_filename: "data/Profile_188m.root"
+    ntof_beam_profile_name: "histfluka"
     
     t_zero_location: -30.0    # m
     energy_cut_low:  20      # keV

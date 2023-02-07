@@ -43,64 +43,106 @@ namespace Artie
             if(mConfig["detector"]["detector_entrace"]) { mDetectorEntrance = mConfig["detector"]["detector_entrance"].as<G4double>() * m; }
         }
     #ifdef ARTIE_ROOT
+        if(mConfig["generator"]["use_lanl_distribution"]) { mUseLANLDistribution = mConfig["generator"]["use_lanl_distribution"].as<G4bool>(); }
+        if(mConfig["generator"]["use_lanl_tof"]) { mUseLANLTOF = mConfig["generator"]["use_lanl_tof"].as<G4bool>(); }
+        if(mConfig["generator"]["use_ntof_tof"]) { mUsenTOFTOF = mConfig["generator"]["use_ntof_tof"].as<G4bool>(); }
+        if(mConfig["generator"]["use_ntof_beam_profile"]) { mUsenTOFBeamProfile = mConfig["generator"]["use_ntof_beam_profile"].as<G4bool>(); }
+
         if(mConfig["generator"]["lanl_distribution_filename"])  { mLANLEnergyDistributionFileName = mConfig["generator"]["lanl_distribution_filename"].as<std::string>(); }
         if(mConfig["generator"]["lanl_distribution_name"])      { mLANLEnergyDistributionName = mConfig["generator"]["lanl_distribution_name"].as<std::string>(); }
-        if(mConfig["generator"]["lanl_beam_profile_filename"])  { mLANLBeamProfileFileName = mConfig["generator"]["lanl_beam_profile_filename"].as<std::string>(); }
-        if(mConfig["generator"]["lanl_beam_profile_name"])      { mLANLBeamProfileName = mConfig["generator"]["lanl_beam_profile_name"].as<std::string>(); }
+        if(mConfig["generator"]["lanl_tof_filename"])  { mLANLTOFFileName = mConfig["generator"]["lanl_tof_filename"].as<std::string>(); }
+        if(mConfig["generator"]["lanl_tof_name"])      { mLANLTOFName = mConfig["generator"]["lanl_tof_name"].as<std::string>(); }
+
+        if(mConfig["generator"]["ntof_tof_filename"])  { mnTOFTOFFileName = mConfig["generator"]["ntof_tof_filename"].as<std::string>(); }
+        if(mConfig["generator"]["ntof_tof_name"])      { mnTOFTOFName = mConfig["generator"]["ntof_tof_name"].as<std::string>(); }
+
+        if(mConfig["generator"]["ntof_beam_profile_filename"])  { mnTOFBeamProfileFileName = mConfig["generator"]["ntof_beam_profile_filename"].as<std::string>(); }
+        if(mConfig["generator"]["ntof_beam_profile_name"])      { mnTOFBeamProfileName = mConfig["generator"]["ntof_beam_profile_name"].as<std::string>(); }
+
         if(mConfig["generator"]["t_zero_location"])     { mTZeroLocation = mConfig["generator"]["t_zero_location"].as<G4double>() * m; }
         if(mConfig["generator"]["energy_cut_low"])  { mEnergyCutLow = mConfig["generator"]["energy_cut_low"].as<G4double>() * keV; }
         if(mConfig["generator"]["energy_cut_high"]) { mEnergyCutHigh = mConfig["generator"]["energy_cut_high"].as<G4double>() * keV; }
-        mLANLEnergyDistributionFile = new TFile(mLANLEnergyDistributionFileName);
-        mLANLBeamProfileFile = new TFile(mLANLBeamProfileFileName);
-        TGraph *DistributionGraph = (TGraph*)mLANLEnergyDistributionFile->Get(mLANLEnergyDistributionName);
-
-        // Make variable-bin histogram for beam energy
-        const G4int nlogbins=500;        
-        G4double xmin = 1.e-3;  //eV
-        G4double xmax = 1.e7;   //eV
-        G4double *xbins = new G4double[nlogbins+1];
-        G4double xlogmin = TMath::Log10(xmin);
-        G4double xlogmax = TMath::Log10(xmax);
-        G4double dlogx   = (xlogmax-xlogmin)/((G4double)nlogbins);
-        for (G4int i=0;i<=nlogbins;i++) 
+        
+        if(mUseLANLDistribution) 
         {
-            G4double xlog = xlogmin+ i*dlogx;
-            xbins[i] = TMath::Exp( TMath::Log(10) * xlog ); 
-        }
-        mLANLEnergyDistribution.reset(
-            new TH1D("LANLBeamEnergy", "LANLBeamEnergy", nlogbins, xbins)
-        );
-        auto nPoints = DistributionGraph->GetN(); // number of points 
-        G4double x, y;
-        for(G4int i=0; i < nPoints; ++i) {
-            DistributionGraph->GetPoint(i, x, y); //eV
-            if( 
-                x / 1000 > mEnergyCutLow && 
-                x / 1000 < mEnergyCutHigh
-            ) 
+            mLANLEnergyDistributionFile = new TFile(mLANLEnergyDistributionFileName);
+            TGraph *DistributionGraph = (TGraph*)mLANLEnergyDistributionFile->Get(mLANLEnergyDistributionName);
+
+            // Make variable-bin histogram for beam energy
+            const G4int nlogbins=500;        
+            G4double xmin = 1.e-3;  //eV
+            G4double xmax = 1.e7;   //eV
+            G4double *xbins = new G4double[nlogbins+1];
+            G4double xlogmin = TMath::Log10(xmin);
+            G4double xlogmax = TMath::Log10(xmax);
+            G4double dlogx   = (xlogmax-xlogmin)/((G4double)nlogbins);
+            for (G4int i=0;i<=nlogbins;i++) 
             {
-                mLANLEnergyDistribution->Fill(x,y);
+                G4double xlog = xlogmin+ i*dlogx;
+                xbins[i] = TMath::Exp( TMath::Log(10) * xlog ); 
+            }
+            mLANLEnergyDistribution.reset(
+                new TH1D("LANLBeamEnergy", "LANLBeamEnergy", nlogbins, xbins)
+            );
+            auto nPoints = DistributionGraph->GetN(); // number of points 
+            G4double x, y;
+            for(G4int i=0; i < nPoints; ++i) {
+                DistributionGraph->GetPoint(i, x, y); //eV
+                if( 
+                    x / 1000 > mEnergyCutLow && 
+                    x / 1000 < mEnergyCutHigh
+                ) 
+                {
+                    mLANLEnergyDistribution->Fill(x,y);
+                }
             }
         }
-
-        // Set up beam profile and projections
-        mLANLBeamProfile.reset((TH2D*)mLANLBeamProfileFile->Get(mLANLBeamProfileName));
-        auto beam_x = mLANLBeamProfile->GetXaxis();
-        auto num_bins = beam_x->GetNbins();
-        for(G4int ii = 0; ii < num_bins; ii++)
+        if(mUseLANLTOF) 
         {
-            std::string projection_name = "profile_" + std::to_string(ii);
-            TH1D* projection = (TH1D*)mLANLBeamProfile->ProjectionY(
-                projection_name.c_str(),
-                ii, ii+1
-            );
-            mLANLBeamProjections.emplace_back(projection);
+            mLANLTOFFile = new TFile(mLANLTOFFileName);
+            // Set up tof profile and projections
+            mLANLTOF.reset((TH2D*)mLANLTOFFile->Get(mLANLTOFName));
+            auto beam_x = mLANLTOF->GetXaxis();
+            auto num_bins = beam_x->GetNbins();
+            for(G4int ii = 0; ii < num_bins; ii++)
+            {
+                std::string projection_name = "profile_" + std::to_string(ii);
+                TH1D* projection = (TH1D*)mLANLTOF->ProjectionY(
+                    projection_name.c_str(),
+                    ii, ii+1
+                );
+                mLANLTOFProjections.emplace_back(projection);
+            }
+        }
+        if(mUsenTOFTOF) 
+        {
+            mnTOFTOFFile = new TFile(mnTOFTOFFileName);
+            // Set up tof profile and projections
+            mnTOFTOF.reset((TH2D*)mnTOFTOFFile->Get(mnTOFTOFName));
+            
+            auto beam_x = mnTOFTOF->GetXaxis();
+            auto num_bins = beam_x->GetNbins();
+            for(G4int ii = 0; ii < num_bins; ii++)
+            {
+                std::string projection_name = "profile_" + std::to_string(ii);
+                TH1D* projection = (TH1D*)mnTOFTOF->ProjectionY(
+                    projection_name.c_str(),
+                    ii, ii+1
+                );
+                mnTOFTOFProjections.emplace_back(projection);
+            }
+        }
+        if(mUsenTOFBeamProfile)
+        {
+            mnTOFBeamProfileFile = new TFile(mnTOFBeamProfileFileName);
+            // Set up tof profile and projections
+            mnTOFBeamProfile.reset((TH2D*)mnTOFBeamProfileFile->Get(mnTOFBeamProfileName));
         }
     #endif
         // Setting up the GDML parser
         G4GDMLParser* mGDMLParser;
-        mGDMLParser->SetStripFlag(false);
-        mGDMLParser->SetOverlapCheck(true);
+        // mGDMLParser->SetStripFlag(false);
+        // mGDMLParser->SetOverlapCheck(true);
 #endif
     }
 
@@ -334,6 +376,9 @@ namespace Artie
             AnalysisManager->CreateNtupleDColumn("neutron_energy");
             AnalysisManager->CreateNtupleDColumn("nominal_tof");
             AnalysisManager->CreateNtupleDColumn("start_time");
+            AnalysisManager->CreateNtupleDColumn("start_x");
+            AnalysisManager->CreateNtupleDColumn("start_y");
+            AnalysisManager->CreateNtupleDColumn("start_z");
             AnalysisManager->CreateNtupleDColumn("arrival_time");
             AnalysisManager->CreateNtupleDColumn("arrival_energy");
             AnalysisManager->CreateNtupleIColumn("num_elastic");
@@ -461,24 +506,27 @@ namespace Artie
             AnalysisManager->FillNtupleDColumn(index, 2, mNeutronEventData[ii].neutron_energy);
             AnalysisManager->FillNtupleDColumn(index, 3, mNeutronEventData[ii].nominal_tof);
             AnalysisManager->FillNtupleDColumn(index, 4, mNeutronEventData[ii].start_time);
-            AnalysisManager->FillNtupleDColumn(index, 5, mNeutronEventData[ii].arrival_time);
-            AnalysisManager->FillNtupleDColumn(index, 6, mNeutronEventData[ii].arrival_energy);
-            AnalysisManager->FillNtupleIColumn(index, 7, mNeutronEventData[ii].num_elastic);
-            AnalysisManager->FillNtupleIColumn(index, 8, mNeutronEventData[ii].num_inelastic);
-            AnalysisManager->FillNtupleIColumn(index, 9, mNeutronEventData[ii].num_capture);
-            AnalysisManager->FillNtupleIColumn(index, 10, mNeutronEventData[ii].num_fission);
-            AnalysisManager->FillNtupleIColumn(index, 11, mNeutronEventData[ii].num_scatter);
-            AnalysisManager->FillNtupleIColumn(index, 12, mNeutronEventData[ii].num_scatter_out);
-            AnalysisManager->FillNtupleIColumn(index, 13, mNeutronEventData[ii].gas_first);
-            AnalysisManager->FillNtupleDColumn(index, 14, mNeutronEventData[ii].first_scatter_z);
-            AnalysisManager->FillNtupleDColumn(index, 15, mNeutronEventData[ii].first_scatter_t);
-            AnalysisManager->FillNtupleDColumn(index, 16, mNeutronEventData[ii].max_dphi);
-            AnalysisManager->FillNtupleDColumn(index, 17, mNeutronEventData[ii].max_dp);
-            AnalysisManager->FillNtupleDColumn(index, 18, mNeutronEventData[ii].max_dE);
-            AnalysisManager->FillNtupleIColumn(index, 19, mNeutronEventData[ii].safe_passage);
-            AnalysisManager->FillNtupleDColumn(index, 20, mNeutronEventData[ii].first_target_step_time);
-            AnalysisManager->FillNtupleDColumn(index, 21, mNeutronEventData[ii].first_target_step_energy);
-            AnalysisManager->FillNtupleDColumn(index, 22, mNeutronEventData[ii].first_target_step_z);
+            AnalysisManager->FillNtupleDColumn(index, 5, mNeutronEventData[ii].start_x);
+            AnalysisManager->FillNtupleDColumn(index, 6, mNeutronEventData[ii].start_y);
+            AnalysisManager->FillNtupleDColumn(index, 7, mNeutronEventData[ii].start_z);
+            AnalysisManager->FillNtupleDColumn(index, 8, mNeutronEventData[ii].arrival_time);
+            AnalysisManager->FillNtupleDColumn(index, 9, mNeutronEventData[ii].arrival_energy);
+            AnalysisManager->FillNtupleIColumn(index, 10, mNeutronEventData[ii].num_elastic);
+            AnalysisManager->FillNtupleIColumn(index, 11, mNeutronEventData[ii].num_inelastic);
+            AnalysisManager->FillNtupleIColumn(index, 12, mNeutronEventData[ii].num_capture);
+            AnalysisManager->FillNtupleIColumn(index, 13, mNeutronEventData[ii].num_fission);
+            AnalysisManager->FillNtupleIColumn(index, 14, mNeutronEventData[ii].num_scatter);
+            AnalysisManager->FillNtupleIColumn(index, 15, mNeutronEventData[ii].num_scatter_out);
+            AnalysisManager->FillNtupleIColumn(index, 16, mNeutronEventData[ii].gas_first);
+            AnalysisManager->FillNtupleDColumn(index, 17, mNeutronEventData[ii].first_scatter_z);
+            AnalysisManager->FillNtupleDColumn(index, 18, mNeutronEventData[ii].first_scatter_t);
+            AnalysisManager->FillNtupleDColumn(index, 19, mNeutronEventData[ii].max_dphi);
+            AnalysisManager->FillNtupleDColumn(index, 20, mNeutronEventData[ii].max_dp);
+            AnalysisManager->FillNtupleDColumn(index, 21, mNeutronEventData[ii].max_dE);
+            AnalysisManager->FillNtupleIColumn(index, 22, mNeutronEventData[ii].safe_passage);
+            AnalysisManager->FillNtupleDColumn(index, 23, mNeutronEventData[ii].first_target_step_time);
+            AnalysisManager->FillNtupleDColumn(index, 24, mNeutronEventData[ii].first_target_step_energy);
+            AnalysisManager->FillNtupleDColumn(index, 25, mNeutronEventData[ii].first_target_step_z);
             AnalysisManager->AddNtupleRow(index);
         }
 
@@ -639,7 +687,8 @@ namespace Artie
                     track->GetTrackID(),
                     track->GetKineticEnergy(),
                     GetNominalTOF(track->GetKineticEnergy()),
-                    track->GetGlobalTime()
+                    track->GetGlobalTime(),
+                    track->GetPosition()
                 )
             );
             AddNeutronEventDataMapTrackID(track->GetTrackID(), mNeutronEventData.size() - 1);

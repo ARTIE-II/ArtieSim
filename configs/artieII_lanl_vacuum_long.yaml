@@ -6,7 +6,7 @@ manager:
     seed:               10942
     mode:               "run"   # interactive/run
     detector:           "artieII"
-    output_filename:    "artieII_ideal_long"
+    output_filename:    "artieII_lanl_vacuum_long"
     save_particle_maps: true
     save_primary_info:  true
     save_hits:          true
@@ -24,7 +24,7 @@ argon:
 
 # ARTIE-I detector parameters
 detector:
-    active_volume_material: "liquid_argon"
+    active_volume_material: "high_vacuum"
     target_radius:          1.104    # cm
     target_length:          168      # cm
 
@@ -83,15 +83,21 @@ detector:
     
 # ARTIE-I generator parameters
 generator:
-    # wether to use the LANL energy distribution
     use_lanl_distribution: false
-    lanl_distribution_filename: "resolution13a.root"
+    lanl_distribution_filename: "data/resolution13a.root"
     lanl_distribution_name: "tally5"
-    # wether to use the LANL beam profile for the 
+
+    # wether to use the LANL tof for the 
     # moderator function.
-    use_lanl_beam_profile:  true
-    lanl_beam_profile_filename: "resolution13a.root"
-    lanl_beam_profile_name: "tally15"
+    use_lanl_tof:  true
+    lanl_tof_filename: "data/resolution13a.root"
+    lanl_tof_name: "tally15"
+
+    # wether to use the nTOF tof for the 
+    # moderator function.
+    use_ntof_tof:  false
+    ntof_tof_filename: "data/RF.root"
+    ntof_tof_name: "histfluka"
     
     t_zero_location: -30.0    # m
     energy_cut_low:  20      # keV

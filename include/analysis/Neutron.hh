@@ -20,6 +20,10 @@ namespace Artie
         G4double neutron_energy = {0};
         G4double nominal_tof = {0};
         G4double start_time = {0};
+        G4double start_x = {0};
+        G4double start_y = {0};
+        G4double start_z = {0};
+
         G4double arrival_time = {0};
         G4double arrival_energy = {0};
         G4int num_elastic = {0};
@@ -48,13 +52,17 @@ namespace Artie
             G4int _event, G4int _track_id,
             G4double _neutron_energy,
             G4double _nominal_tof,
-            G4double _start_time
+            G4double _start_time,
+            G4ThreeVector _start_pos
         )
         : event(_event), track_id(_track_id)
         , neutron_energy(_neutron_energy)
         , nominal_tof(_nominal_tof)
         , start_time(_start_time)
         {
+            start_x = _start_pos[0];
+            start_y = _start_pos[1];
+            start_z = _start_pos[2];
         }
 
         NeutronEventData(
