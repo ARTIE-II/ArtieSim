@@ -4,7 +4,7 @@ manager:
     number_of_runs:     1
     number_of_events:   500000
     seed:               10942
-    mode:               "run"   # interactive/run
+    mode:               "interactive"   # interactive/run
     detector:           "artieII"
     output_filename:    "artieII_ntof_ideal_long"
     save_particle_maps: true
@@ -78,6 +78,13 @@ detector:
     detector_radius:        2.0     # cm
     detector_length:        20.0    # cm
     detector_entrance:      30.0    # m
+
+    #ARTIE Filters
+    construct_filters:  true                    #bool
+    filter_materials:   ["aluminum", "carbon"]
+    filter_z_position:  [100.0, 120.0]          # cm
+    filter_thickness:   [10.0, 5.0]             # cm
+    filter_radius:      [8.55218, 8.55218]      # cm
 
     world_material:         "high_vacuum"
     

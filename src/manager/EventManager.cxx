@@ -237,10 +237,27 @@ namespace Artie
             {
                 for(YAML::const_iterator iit = it->second.begin(); iit != it->second.end(); iit++)
                 {
-                    AnalysisManager->FillNtupleSColumn(index, 0, it->first.as<std::string>());
-                    AnalysisManager->FillNtupleSColumn(index, 1, iit->first.as<std::string>());
-                    AnalysisManager->FillNtupleSColumn(index, 2, iit->second.as<std::string>());
-                    AnalysisManager->AddNtupleRow(index);
+                    if (iit->first.as<std::string>() == "filter_materials" ||
+                        iit->first.as<std::string>() == "filter_z_position" ||
+                        iit->first.as<std::string>() == "filter_thickness" ||
+                        iit->first.as<std::string>() == "filter_radius"
+                    )
+                    {
+                        for(size_t jj = 0; jj < iit->second.size(); jj++)
+                        {
+                            AnalysisManager->FillNtupleSColumn(index, 0, it->first.as<std::string>());
+                            AnalysisManager->FillNtupleSColumn(index, 1, iit->first.as<std::string>());
+                            AnalysisManager->FillNtupleSColumn(index, 2, iit->second[jj].as<std::string>());
+                            AnalysisManager->AddNtupleRow(index);
+                        }
+                    }
+                    else
+                    {
+                        AnalysisManager->FillNtupleSColumn(index, 0, it->first.as<std::string>());
+                        AnalysisManager->FillNtupleSColumn(index, 1, iit->first.as<std::string>());
+                        AnalysisManager->FillNtupleSColumn(index, 2, iit->second.as<std::string>());
+                        AnalysisManager->AddNtupleRow(index);
+                    }
                 }
             }
             mSavedParameters = true;
