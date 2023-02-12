@@ -21,60 +21,60 @@ namespace Artie
 #ifdef ARTIE_YAML
     ArtieIIDetectorConstruction::ArtieIIDetectorConstruction(YAML::Node config)
     : G4VUserDetectorConstruction()
-    , mConfig(config["detector"])
+    , mConfig(config)
     {
-        if(mConfig["active_volume_material"]) { mActiveVolumeMaterialName = mConfig["active_volume_material"].as<std::string>(); }
-        if(mConfig["target_radius"])          { mTargetRadius = mConfig["target_radius"].as<G4double>() * cm; }
-        if(mConfig["target_length"])          { mTargetLength = mConfig["target_length"].as<G4double>() * cm; }
+        if(mConfig["target"]["active_volume_material"]) { mActiveVolumeMaterialName = mConfig["target"]["active_volume_material"].as<std::string>(); }
+        if(mConfig["target"]["target_radius"])          { mTargetRadius = mConfig["target"]["target_radius"].as<G4double>() * cm; }
+        if(mConfig["target"]["target_length"])          { mTargetLength = mConfig["target"]["target_length"].as<G4double>() * cm; }
         
-        if(mConfig["construct_container"])  { mConstructContainer = mConfig["construct_container"].as<G4bool>(); }
-        if(mConfig["container_material"])   { mContainerMaterialName = mConfig["container_material"].as<std::string>(); }
-        if(mConfig["container_radius"])     { mContainerRadius = mConfig["container_radius"].as<G4double>() * cm; }
+        if(mConfig["target"]["construct_container"])  { mConstructContainer = mConfig["target"]["construct_container"].as<G4bool>(); }
+        if(mConfig["target"]["container_material"])   { mContainerMaterialName = mConfig["target"]["container_material"].as<std::string>(); }
+        if(mConfig["target"]["container_radius"])     { mContainerRadius = mConfig["target"]["container_radius"].as<G4double>() * cm; }
 
-        if(mConfig["construct_inner_flange_left_side"]) { mConstructInnerFlangeLeftSide = mConfig["construct_inner_flange_left_side"].as<G4bool>(); }
-        if(mConfig["inner_flange_left_side_material"])  { mInnerFlangeLeftSideMaterialName = mConfig["inner_flange_left_side_material"].as<std::string>(); }
-        if(mConfig["inner_flange_left_side_radius"])    { mInnerFlangeLeftSideRadius = mConfig["inner_flange_left_side_radius"].as<G4double>() * cm; }
-        if(mConfig["inner_flange_left_side_thickness"]) { mInnerFlangeLeftSideThickness = mConfig["inner_flange_left_side_thickness"].as<G4double>() * cm; } 
+        if(mConfig["target"]["construct_inner_flange_left_side"]) { mConstructInnerFlangeLeftSide = mConfig["target"]["construct_inner_flange_left_side"].as<G4bool>(); }
+        if(mConfig["target"]["inner_flange_left_side_material"])  { mInnerFlangeLeftSideMaterialName = mConfig["target"]["inner_flange_left_side_material"].as<std::string>(); }
+        if(mConfig["target"]["inner_flange_left_side_radius"])    { mInnerFlangeLeftSideRadius = mConfig["target"]["inner_flange_left_side_radius"].as<G4double>() * cm; }
+        if(mConfig["target"]["inner_flange_left_side_thickness"]) { mInnerFlangeLeftSideThickness = mConfig["target"]["inner_flange_left_side_thickness"].as<G4double>() * cm; } 
         
-        if(mConfig["construct_inner_flange_right_side"]) { mConstructInnerFlangeRightSide = mConfig["construct_inner_flange_right_side"].as<G4bool>(); }
-        if(mConfig["inner_flange_right_side_material"])  { mInnerFlangeRightSideMaterialName = mConfig["inner_flange_right_side_material"].as<std::string>(); }
-        if(mConfig["inner_flange_right_side_radius"])    { mInnerFlangeRightSideRadius = mConfig["inner_flange_right_side_radius"].as<G4double>() * cm; }
-        if(mConfig["inner_flange_right_side_thickness"]) { mInnerFlangeRightSideThickness = mConfig["inner_flange_right_side_thickness"].as<G4double>() * cm; }
+        if(mConfig["target"]["construct_inner_flange_right_side"]) { mConstructInnerFlangeRightSide = mConfig["target"]["construct_inner_flange_right_side"].as<G4bool>(); }
+        if(mConfig["target"]["inner_flange_right_side_material"])  { mInnerFlangeRightSideMaterialName = mConfig["target"]["inner_flange_right_side_material"].as<std::string>(); }
+        if(mConfig["target"]["inner_flange_right_side_radius"])    { mInnerFlangeRightSideRadius = mConfig["target"]["inner_flange_right_side_radius"].as<G4double>() * cm; }
+        if(mConfig["target"]["inner_flange_right_side_thickness"]) { mInnerFlangeRightSideThickness = mConfig["target"]["inner_flange_right_side_thickness"].as<G4double>() * cm; }
         
-        if(mConfig["construct_inner_flange_left_side_gap"]) { mConstructInnerFlangeLeftSideGap = mConfig["construct_inner_flange_left_side_gap"].as<G4bool>(); }
-        if(mConfig["inner_flange_left_side_gap_material"])  { mInnerFlangeLeftSideGapMaterialName = mConfig["inner_flange_left_side_gap_material"].as<std::string>(); }
-        if(mConfig["inner_flange_left_side_gap_thickness"]) { mInnerFlangeLeftSideGapThickness = mConfig["inner_flange_left_side_gap_thickness"].as<G4double>() * cm; } 
+        if(mConfig["target"]["construct_inner_flange_left_side_gap"]) { mConstructInnerFlangeLeftSideGap = mConfig["target"]["construct_inner_flange_left_side_gap"].as<G4bool>(); }
+        if(mConfig["target"]["inner_flange_left_side_gap_material"])  { mInnerFlangeLeftSideGapMaterialName = mConfig["target"]["inner_flange_left_side_gap_material"].as<std::string>(); }
+        if(mConfig["target"]["inner_flange_left_side_gap_thickness"]) { mInnerFlangeLeftSideGapThickness = mConfig["target"]["inner_flange_left_side_gap_thickness"].as<G4double>() * cm; } 
         
-        if(mConfig["construct_inner_flange_left_side_gap"]) { mConstructInnerFlangeLeftSideGap = mConfig["construct_inner_flange_left_side_gap"].as<G4bool>(); }
-        if(mConfig["inner_flange_right_side_gap_material"])  { mInnerFlangeRightSideGapMaterialName = mConfig["inner_flange_right_side_gap_material"].as<std::string>(); }
-        if(mConfig["inner_flange_right_side_gap_thickness"]) { mInnerFlangeRightSideGapThickness = mConfig["inner_flange_right_side_gap_thickness"].as<G4double>() * cm; } 
+        if(mConfig["target"]["construct_inner_flange_left_side_gap"]) { mConstructInnerFlangeLeftSideGap = mConfig["target"]["construct_inner_flange_left_side_gap"].as<G4bool>(); }
+        if(mConfig["target"]["inner_flange_right_side_gap_material"])  { mInnerFlangeRightSideGapMaterialName = mConfig["target"]["inner_flange_right_side_gap_material"].as<std::string>(); }
+        if(mConfig["target"]["inner_flange_right_side_gap_thickness"]) { mInnerFlangeRightSideGapThickness = mConfig["target"]["inner_flange_right_side_gap_thickness"].as<G4double>() * cm; } 
 
-        if(mConfig["construct_outer_flange_left_side"]) { mConstructOuterFlangeLeftSide = mConfig["construct_outer_flange_left_side"].as<G4bool>(); }
-        if(mConfig["outer_flange_left_side_material"])  { mOuterFlangeLeftSideMaterialName = mConfig["outer_flange_left_side_material"].as<std::string>(); }
-        if(mConfig["outer_flange_left_side_radius"])    { mOuterFlangeLeftSideRadius = mConfig["outer_flange_left_side_radius"].as<G4double>() * cm; }
-        if(mConfig["outer_flange_left_side_thickness"]) { mOuterFlangeLeftSideThickness = mConfig["outer_flange_left_side_thickness"].as<G4double>() * cm; }
+        if(mConfig["target"]["construct_outer_flange_left_side"]) { mConstructOuterFlangeLeftSide = mConfig["target"]["construct_outer_flange_left_side"].as<G4bool>(); }
+        if(mConfig["target"]["outer_flange_left_side_material"])  { mOuterFlangeLeftSideMaterialName = mConfig["target"]["outer_flange_left_side_material"].as<std::string>(); }
+        if(mConfig["target"]["outer_flange_left_side_radius"])    { mOuterFlangeLeftSideRadius = mConfig["target"]["outer_flange_left_side_radius"].as<G4double>() * cm; }
+        if(mConfig["target"]["outer_flange_left_side_thickness"]) { mOuterFlangeLeftSideThickness = mConfig["target"]["outer_flange_left_side_thickness"].as<G4double>() * cm; }
         
-        if(mConfig["construct_outer_flange_right_side"]) { mConstructOuterFlangeRightSide = mConfig["construct_outer_flange_right_side"].as<G4bool>(); }
-        if(mConfig["outer_flange_right_side_material"])  { mOuterFlangeRightSideMaterialName = mConfig["outer_flange_right_side_material"].as<std::string>(); }
-        if(mConfig["outer_flange_right_side_radius"])    { mOuterFlangeRightSideRadius = mConfig["outer_flange_right_side_radius"].as<G4double>() * cm; }
-        if(mConfig["outer_flange_right_side_thickness"]) { mOuterFlangeRightSideThickness = mConfig["outer_flange_right_side_thickness"].as<G4double>() * cm; }
+        if(mConfig["target"]["construct_outer_flange_right_side"]) { mConstructOuterFlangeRightSide = mConfig["target"]["construct_outer_flange_right_side"].as<G4bool>(); }
+        if(mConfig["target"]["outer_flange_right_side_material"])  { mOuterFlangeRightSideMaterialName = mConfig["target"]["outer_flange_right_side_material"].as<std::string>(); }
+        if(mConfig["target"]["outer_flange_right_side_radius"])    { mOuterFlangeRightSideRadius = mConfig["target"]["outer_flange_right_side_radius"].as<G4double>() * cm; }
+        if(mConfig["target"]["outer_flange_right_side_thickness"]) { mOuterFlangeRightSideThickness = mConfig["target"]["outer_flange_right_side_thickness"].as<G4double>() * cm; }
 
-        if(mConfig["construct_detector"])   { mConstructDetector = mConfig["construct_detector"].as<G4bool>(); }
-        if(mConfig["detector_radius"])      { mDetectorRadius = mConfig["detector_radius"].as<G4double>() * cm; }
-        if(mConfig["detector_length"])      { mDetectorLength = mConfig["detector_length"].as<G4double>() * cm; }
-        if(mConfig["detector_entrance"])    { mDetectorEntrance = mConfig["detector_entrance"].as<G4double>() * m; }   
+        if(mConfig["detector"]["construct_detector"])   { mConstructDetector = mConfig["detector"]["construct_detector"].as<G4bool>(); }
+        if(mConfig["detector"]["detector_radius"])      { mDetectorRadius = mConfig["detector"]["detector_radius"].as<G4double>() * cm; }
+        if(mConfig["detector"]["detector_length"])      { mDetectorLength = mConfig["detector"]["detector_length"].as<G4double>() * cm; }
+        if(mConfig["detector"]["detector_entrance"])    { mDetectorEntrance = mConfig["detector"]["detector_entrance"].as<G4double>() * m; }   
 
-        if(mConfig["world_material"])   { mWorldMaterialName = mConfig["world_material"].as<std::string>(); }
-        if(mConfig["world_x"])          { mWorldX = mConfig["world_x"].as<G4double>() * m; }
-        if(mConfig["world_y"])          { mWorldY = mConfig["world_y"].as<G4double>() * m; }
-        if(mConfig["world_z"])          { mWorldZ = mConfig["world_z"].as<G4double>() * m; }
+        if(mConfig["hall"]["world_material"])   { mWorldMaterialName = mConfig["hall"]["world_material"].as<std::string>(); }
+        if(mConfig["hall"]["world_x"])          { mWorldX = mConfig["hall"]["world_x"].as<G4double>() * m; }
+        if(mConfig["hall"]["world_y"])          { mWorldY = mConfig["hall"]["world_y"].as<G4double>() * m; }
+        if(mConfig["hall"]["world_z"])          { mWorldZ = mConfig["hall"]["world_z"].as<G4double>() * m; }
 
         // filters
-        if(mConfig["construct_filters"])    { mConstructFilters = mConfig["construct_filters"].as<G4bool>(); }
-        if(mConfig["filter_materials"])     { mFilterMaterialNames = mConfig["filter_materials"].as<std::vector<std::string>>(); }
-        if(mConfig["filter_z_position"])    { mFilterZPos = mConfig["filter_z_position"].as<std::vector<G4double>>(); }
-        if(mConfig["filter_thickness"])     { mFilterThickness = mConfig["filter_thickness"].as<std::vector<G4double>>(); }
-        if(mConfig["filter_radius"])        { mFilterRadius = mConfig["filter_radius"].as<std::vector<G4double>>(); }
+        if(mConfig["filters"]["construct_filters"])    { mConstructFilters = mConfig["filters"]["construct_filters"].as<G4bool>(); }
+        if(mConfig["filters"]["filter_materials"])     { mFilterMaterialNames = mConfig["filters"]["filter_materials"].as<std::vector<std::string>>(); }
+        if(mConfig["filters"]["filter_z_position"])    { mFilterZPos = mConfig["filters"]["filter_z_position"].as<std::vector<G4double>>(); }
+        if(mConfig["filters"]["filter_thickness"])     { mFilterThickness = mConfig["filters"]["filter_thickness"].as<std::vector<G4double>>(); }
+        if(mConfig["filters"]["filter_radius"])        { mFilterRadius = mConfig["filters"]["filter_radius"].as<std::vector<G4double>>(); }
 
         DefineMaterials();
     }
@@ -127,123 +127,6 @@ namespace Artie
             false,
             0
         );
-
-        // // Construct the beampipe
-        // if(mConstructBeamPipe)
-        // {
-        //     mBeamPipeLeftHalfLength = (-mGap / 2.0 + mWorldZ / 2.0) / 2.0;
-        //     mBeamPipeRightHalfLength = (mDetectorEntrance - mGap / 2.0) / 2.0;
-        //     mBeamPipeLeftPosition = {
-        //         0., 
-        //         0., 
-        //         (-mWorldZ / 2.0 - mGap / 2.0) / 2.0
-        //     };
-        //     mBeamPipeRightPosition = {
-        //         0., 
-        //         0., 
-        //         (mDetectorEntrance + mGap / 2.0) / 2.0
-        //     };
-
-        //     // Left Beam
-        //     mSolidBeamPipeLeftBeam = new G4Tubs(
-        //         "Solid_ArtieIBeamPipeLeftBeam", 
-        //         0,
-        //         mBeamPipeInnerRadius, 
-        //         mBeamPipeLeftHalfLength, 
-        //         0,
-        //         2*M_PI
-        //     );
-        //     mLogicalBeamPipeLeftBeam = new G4LogicalVolume(
-        //         mSolidBeamPipeLeftBeam, 
-        //         mBeamPipeLeftBeamMaterial, 
-        //         "Logical_ArtieIBeamPipeLeftBeam"
-        //     );
-        //     mPhysicalBeamPipeLeftBeam = new G4PVPlacement(
-        //         0, 
-        //         mBeamPipeLeftPosition, 
-        //         mLogicalBeamPipeLeftBeam, 
-        //         "Physical_ArtieIBeamPipeLeftBeam", 
-        //         mLogicalExperimentalHall, 
-        //         false, 
-        //         0, 
-        //         true
-        //     );
-
-        //     // Right Beam
-        //     mSolidBeamPipeRightBeam = new G4Tubs(
-        //         "Solid_ArtieIBeamPipeRightBeam", 
-        //         0,
-        //         mBeamPipeInnerRadius, 
-        //         mBeamPipeRightHalfLength, 
-        //         0,
-        //         2*M_PI
-        //     );
-        //     mLogicalBeamPipeRightBeam = new G4LogicalVolume(
-        //         mSolidBeamPipeRightBeam, 
-        //         mBeamPipeRightBeamMaterial, 
-        //         "Logical_ArtieIBeamPipeRightBeam"
-        //     );
-        //     mPhysicalBeamPipeRightBeam = new G4PVPlacement(
-        //         0, 
-        //         mBeamPipeRightPosition, 
-        //         mLogicalBeamPipeRightBeam, 
-        //         "Physical_ArtieIBeamPipeRightBeam", 
-        //         mLogicalExperimentalHall, 
-        //         false, 
-        //         0, 
-        //         true
-        //     );
-
-        //     // Left Pipe
-        //     mSolidBeamPipeLeftPipe = new G4Tubs(
-        //         "Solid_ArtieIBeamPipeLeftPipe", 
-        //         mBeamPipeInnerRadius,
-        //         mBeamPipeOuterRadius, 
-        //         mBeamPipeLeftHalfLength, 
-        //         0,
-        //         2*M_PI
-        //     );
-        //     mLogicalBeamPipeLeftPipe = new G4LogicalVolume(
-        //         mSolidBeamPipeLeftPipe, 
-        //         mBeamPipeLeftPipeMaterial, 
-        //         "Logical_ArtieIBeamPipeLeftPipe"
-        //     );
-        //     mPhysicalBeamPipeLeftPipe = new G4PVPlacement(
-        //         0, 
-        //         mBeamPipeLeftPosition, 
-        //         mLogicalBeamPipeLeftPipe, 
-        //         "Physical_ArtieIBeamPipeLeftPipe", 
-        //         mLogicalExperimentalHall, 
-        //         false, 
-        //         0, 
-        //         true
-        //     );
-
-        //     // Right Pipe
-        //     mSolidBeamPipeRightPipe = new G4Tubs(
-        //         "Solid_ArtieIBeamPipeRightPipe", 
-        //         mBeamPipeInnerRadius,
-        //         mBeamPipeOuterRadius, 
-        //         mBeamPipeRightHalfLength, 
-        //         0,
-        //         2*M_PI
-        //     );
-        //     mLogicalBeamPipeRightPipe = new G4LogicalVolume(
-        //         mSolidBeamPipeRightPipe, 
-        //         mBeamPipeRightPipeMaterial, 
-        //         "Logical_ArtieIBeamPipeRightPipe"
-        //     );
-        //     mPhysicalBeamPipeRightPipe = new G4PVPlacement(
-        //         0, 
-        //         mBeamPipeRightPosition, 
-        //         mLogicalBeamPipeRightPipe, 
-        //         "Physical_ArtieIBeamPipeRightPipe", 
-        //         mLogicalExperimentalHall, 
-        //         false, 
-        //         0, 
-        //         true
-        //     );
-        // }
 
         // Construct the container
         if(mConstructContainer)
@@ -562,7 +445,123 @@ namespace Artie
         //         0, 
         //         true
         //     );
-        // }        
+        // }       
+        // // Construct the beampipe
+        // if(mConstructBeamPipe)
+        // {
+        //     mBeamPipeLeftHalfLength = (-mGap / 2.0 + mWorldZ / 2.0) / 2.0;
+        //     mBeamPipeRightHalfLength = (mDetectorEntrance - mGap / 2.0) / 2.0;
+        //     mBeamPipeLeftPosition = {
+        //         0., 
+        //         0., 
+        //         (-mWorldZ / 2.0 - mGap / 2.0) / 2.0
+        //     };
+        //     mBeamPipeRightPosition = {
+        //         0., 
+        //         0., 
+        //         (mDetectorEntrance + mGap / 2.0) / 2.0
+        //     };
+
+        //     // Left Beam
+        //     mSolidBeamPipeLeftBeam = new G4Tubs(
+        //         "Solid_ArtieIBeamPipeLeftBeam", 
+        //         0,
+        //         mBeamPipeInnerRadius, 
+        //         mBeamPipeLeftHalfLength, 
+        //         0,
+        //         2*M_PI
+        //     );
+        //     mLogicalBeamPipeLeftBeam = new G4LogicalVolume(
+        //         mSolidBeamPipeLeftBeam, 
+        //         mBeamPipeLeftBeamMaterial, 
+        //         "Logical_ArtieIBeamPipeLeftBeam"
+        //     );
+        //     mPhysicalBeamPipeLeftBeam = new G4PVPlacement(
+        //         0, 
+        //         mBeamPipeLeftPosition, 
+        //         mLogicalBeamPipeLeftBeam, 
+        //         "Physical_ArtieIBeamPipeLeftBeam", 
+        //         mLogicalExperimentalHall, 
+        //         false, 
+        //         0, 
+        //         true
+        //     );
+
+        //     // Right Beam
+        //     mSolidBeamPipeRightBeam = new G4Tubs(
+        //         "Solid_ArtieIBeamPipeRightBeam", 
+        //         0,
+        //         mBeamPipeInnerRadius, 
+        //         mBeamPipeRightHalfLength, 
+        //         0,
+        //         2*M_PI
+        //     );
+        //     mLogicalBeamPipeRightBeam = new G4LogicalVolume(
+        //         mSolidBeamPipeRightBeam, 
+        //         mBeamPipeRightBeamMaterial, 
+        //         "Logical_ArtieIBeamPipeRightBeam"
+        //     );
+        //     mPhysicalBeamPipeRightBeam = new G4PVPlacement(
+        //         0, 
+        //         mBeamPipeRightPosition, 
+        //         mLogicalBeamPipeRightBeam, 
+        //         "Physical_ArtieIBeamPipeRightBeam", 
+        //         mLogicalExperimentalHall, 
+        //         false, 
+        //         0, 
+        //         true
+        //     );
+
+        //     // Left Pipe
+        //     mSolidBeamPipeLeftPipe = new G4Tubs(
+        //         "Solid_ArtieIBeamPipeLeftPipe", 
+        //         mBeamPipeInnerRadius,
+        //         mBeamPipeOuterRadius, 
+        //         mBeamPipeLeftHalfLength, 
+        //         0,
+        //         2*M_PI
+        //     );
+        //     mLogicalBeamPipeLeftPipe = new G4LogicalVolume(
+        //         mSolidBeamPipeLeftPipe, 
+        //         mBeamPipeLeftPipeMaterial, 
+        //         "Logical_ArtieIBeamPipeLeftPipe"
+        //     );
+        //     mPhysicalBeamPipeLeftPipe = new G4PVPlacement(
+        //         0, 
+        //         mBeamPipeLeftPosition, 
+        //         mLogicalBeamPipeLeftPipe, 
+        //         "Physical_ArtieIBeamPipeLeftPipe", 
+        //         mLogicalExperimentalHall, 
+        //         false, 
+        //         0, 
+        //         true
+        //     );
+
+        //     // Right Pipe
+        //     mSolidBeamPipeRightPipe = new G4Tubs(
+        //         "Solid_ArtieIBeamPipeRightPipe", 
+        //         mBeamPipeInnerRadius,
+        //         mBeamPipeOuterRadius, 
+        //         mBeamPipeRightHalfLength, 
+        //         0,
+        //         2*M_PI
+        //     );
+        //     mLogicalBeamPipeRightPipe = new G4LogicalVolume(
+        //         mSolidBeamPipeRightPipe, 
+        //         mBeamPipeRightPipeMaterial, 
+        //         "Logical_ArtieIBeamPipeRightPipe"
+        //     );
+        //     mPhysicalBeamPipeRightPipe = new G4PVPlacement(
+        //         0, 
+        //         mBeamPipeRightPosition, 
+        //         mLogicalBeamPipeRightPipe, 
+        //         "Physical_ArtieIBeamPipeRightPipe", 
+        //         mLogicalExperimentalHall, 
+        //         false, 
+        //         0, 
+        //         true
+        //     );
+        // } 
 
         // Construct the active volume
         mSolidActiveVolume = new G4Tubs(

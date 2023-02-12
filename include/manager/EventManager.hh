@@ -43,6 +43,7 @@
 #include "Core.hh"
 #include "Hit.hh"
 #include "Neutron.hh"
+#include "Profile.hh"
 
 class PhysicsList;
 
@@ -161,11 +162,15 @@ namespace Artie
         void SavePrimaryInfo(G4bool save)       { sSavePrimaryInfo = save; }
         void SaveHits(G4bool save)              { sSaveHits = save; }
         void SaveNeutronData(G4bool save)       { sSaveNeutronData = save; }
+        void SaveNonDetectedNeutrons(G4bool save) { sSaveNonDetectedNeutrons = save; }
+        void SaveProfileData(G4bool save)       { sSaveProfileData = save; }
 
         G4bool SaveParticleMaps()       { return sSaveParticleMaps; }
         G4bool SavePrimaryInfo()        { return sSavePrimaryInfo; }
         G4bool SaveHits()               { return sSaveHits; }
         G4bool SaveNeutronData()        { return sSaveNeutronData; }
+        G4bool SaveNonDetectedNeutrons() { return sSaveNonDetectedNeutrons; }
+        G4bool SaveProfileData()        { return sSaveProfileData; }
 
         void CreateTuples();
         void FillParticleMaps(G4int EventID = -1);
@@ -309,6 +314,8 @@ namespace Artie
         inline static G4bool sSavePrimaryInfo = {true};
         inline static G4bool sSaveHits = {true};
         inline static G4bool sSaveNeutronData = {true};
+        inline static G4bool sSaveProfileData = {true};
+        inline static G4bool sSaveNonDetectedNeutrons = {true};
 
         // Argon related parameters
         inline static G4bool mUseG4Definition = {false};
@@ -330,6 +337,7 @@ namespace Artie
         inline static thread_local std::vector<PrimaryData>    mPrimaryData;
         inline static thread_local std::vector<Hit> mHits;
         inline static thread_local std::vector<NeutronEventData> mNeutronEventData;
+        inline static thread_local std::vector<ProfileEventData> mProfileEventData;
         inline static thread_local std::map<G4int, G4int> mNeutronEventDataMap;
         inline static NeutronRunData sNeutronRunData;
 

@@ -22,8 +22,8 @@ argon:
     lar_temperature:    85.0    # K
     lar_pressure:       0.952   # atm
 
-# ARTIE-I detector parameters
-detector:
+# ARTIE-II target parameters
+target:
     active_volume_material: "high_vacuum"
     target_radius:          1.104    # cm
     target_length:          168      # cm
@@ -59,7 +59,8 @@ detector:
     outer_flange_right_side_material:   "aluminum"
     outer_flange_right_side_radius:     8.55218 #cm
     outer_flange_right_side_thickness:  0.20066 # cm
-    
+
+hall:
     # construct_beam_pipe:    true    # bool
     # beam_pipe_material:     "rough_vacuum"
     # beam_material:          "high_vacuum"
@@ -71,15 +72,17 @@ detector:
     world_x:                4       # m                 
     world_y:                4       # m
     world_z:                200     # m
+    world_material:         "high_vacuum"
     # wall_thickness:         1.0     # m
 
+# ARTIE-II detector
+detector:
     construct_detector:     true    # bool
     detector_material:      "water"
     detector_radius:        2.0     # cm
     detector_length:        20.0    # cm
     detector_entrance:      30.0    # m
 
-    world_material:         "high_vacuum"
     
 # ARTIE-I generator parameters
 generator:

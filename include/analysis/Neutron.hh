@@ -24,6 +24,7 @@ namespace Artie
         G4double start_y = {0};
         G4double start_z = {0};
 
+        G4int detector = {-1};
         G4double arrival_time = {0};
         G4double arrival_energy = {0};
         G4int num_elastic = {0};

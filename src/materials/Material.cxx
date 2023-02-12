@@ -76,6 +76,9 @@ namespace Artie
         else if(material_name == "carbon") {
             material = G4NistManager::Instance()->FindOrBuildMaterial("G4_C");
         }
+        else if(material_name == "brass") {
+            material = G4NistManager::Instance()->FindOrBuildMaterial("G4_BRASS");
+        }
         else
         {
             std::cerr << "ERROR! Material (" + material_name + ") not recognized!" << G4endl;

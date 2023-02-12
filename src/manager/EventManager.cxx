@@ -33,6 +33,8 @@ namespace Artie
             if(mConfig["manager"]["number_of_runs"])    { sNumberOfRuns = mConfig["manager"]["number_of_runs"].as<G4int>(); }
             if(mConfig["manager"]["number_of_events"])  { sNumberOfEvents = mConfig["manager"]["number_of_events"].as<G4int>(); }
             if(mConfig["manager"]["output_filename"])   { sOutputFileName = mConfig["manager"]["output_filename"].as<std::string>(); }
+            if(mConfig["manager"]["save_profile_data"]) { sSaveProfileData = mConfig["manager"]["save_profile_data"].as<G4bool>(); }
+            if(mConfig["manager"]["save_non_detected_neutrons"]) { sSaveNonDetectedNeutrons = mConfig["manager"]["save_non_detected_neutrons"].as<G4bool>(); }
             if(mConfig["argon"]["use_g4_definition"])   { mUseG4Definition = mConfig["argon"]["use_g4_definition"].as<G4bool>(); }
             if(mConfig["argon"]["argon_36_ratio"])      { mArgon36Ratio = mConfig["argon"]["argon_36_ratio"].as<G4double>(); }
             if(mConfig["argon"]["argon_38_ratio"])      { mArgon38Ratio = mConfig["argon"]["argon_38_ratio"].as<G4double>(); }
@@ -59,7 +61,7 @@ namespace Artie
         if(mConfig["generator"]["ntof_beam_profile_filename"])  { mnTOFBeamProfileFileName = mConfig["generator"]["ntof_beam_profile_filename"].as<std::string>(); }
         if(mConfig["generator"]["ntof_beam_profile_name"])      { mnTOFBeamProfileName = mConfig["generator"]["ntof_beam_profile_name"].as<std::string>(); }
 
-        if(mConfig["generator"]["t_zero_location"])     { mTZeroLocation = mConfig["generator"]["t_zero_location"].as<G4double>() * m; }
+        if(mConfig["generator"]["t_zero_location"]) { mTZeroLocation = mConfig["generator"]["t_zero_location"].as<G4double>() * m; }
         if(mConfig["generator"]["energy_cut_low"])  { mEnergyCutLow = mConfig["generator"]["energy_cut_low"].as<G4double>() * keV; }
         if(mConfig["generator"]["energy_cut_high"]) { mEnergyCutHigh = mConfig["generator"]["energy_cut_high"].as<G4double>() * keV; }
         
@@ -396,6 +398,7 @@ namespace Artie
             AnalysisManager->CreateNtupleDColumn("start_x");
             AnalysisManager->CreateNtupleDColumn("start_y");
             AnalysisManager->CreateNtupleDColumn("start_z");
+            AnalysisManager->CreateNtupleIColumn("detector");
             AnalysisManager->CreateNtupleDColumn("arrival_time");
             AnalysisManager->CreateNtupleDColumn("arrival_energy");
             AnalysisManager->CreateNtupleIColumn("num_elastic");
@@ -414,6 +417,17 @@ namespace Artie
             AnalysisManager->CreateNtupleDColumn("first_target_step_time");
             AnalysisManager->CreateNtupleDColumn("first_target_step_energy");
             AnalysisManager->CreateNtupleDColumn("first_target_step_z");
+            AnalysisManager->FinishNtuple(index);
+        }
+        if(SaveProfileData())
+        {
+            G4int index = GetIndex("ProfileEventData");
+            AnalysisManager->CreateNtuple("ProfileEventData", "ProfileEventData");
+            AnalysisManager->CreateNtupleSColumn("name");
+            AnalysisManager->CreateNtupleSColumn("volume");
+            AnalysisManager->CreateNtupleIColumn("exit");
+            AnalysisManager->CreateNtupleDColumn("x");
+            AnalysisManager->CreateNtupleDColumn("y");
             AnalysisManager->FinishNtuple(index);
         }
         EndFunctionProfile("CreateTuples");
@@ -518,6 +532,9 @@ namespace Artie
         G4int index = GetIndex("NeutronEventData");
         for(size_t ii = 0; ii < mNeutronEventData.size(); ii++)
         {
+            if(!sSaveNonDetectedNeutrons && mNeutronEventData[ii].detector == -1) {
+                continue;
+            }
             AnalysisManager->FillNtupleIColumn(index, 0, mNeutronEventData[ii].event);
             AnalysisManager->FillNtupleIColumn(index, 1, mNeutronEventData[ii].track_id);
             AnalysisManager->FillNtupleDColumn(index, 2, mNeutronEventData[ii].neutron_energy);
@@ -526,24 +543,25 @@ namespace Artie
             AnalysisManager->FillNtupleDColumn(index, 5, mNeutronEventData[ii].start_x);
             AnalysisManager->FillNtupleDColumn(index, 6, mNeutronEventData[ii].start_y);
             AnalysisManager->FillNtupleDColumn(index, 7, mNeutronEventData[ii].start_z);
-            AnalysisManager->FillNtupleDColumn(index, 8, mNeutronEventData[ii].arrival_time);
-            AnalysisManager->FillNtupleDColumn(index, 9, mNeutronEventData[ii].arrival_energy);
-            AnalysisManager->FillNtupleIColumn(index, 10, mNeutronEventData[ii].num_elastic);
-            AnalysisManager->FillNtupleIColumn(index, 11, mNeutronEventData[ii].num_inelastic);
-            AnalysisManager->FillNtupleIColumn(index, 12, mNeutronEventData[ii].num_capture);
-            AnalysisManager->FillNtupleIColumn(index, 13, mNeutronEventData[ii].num_fission);
-            AnalysisManager->FillNtupleIColumn(index, 14, mNeutronEventData[ii].num_scatter);
-            AnalysisManager->FillNtupleIColumn(index, 15, mNeutronEventData[ii].num_scatter_out);
-            AnalysisManager->FillNtupleIColumn(index, 16, mNeutronEventData[ii].gas_first);
-            AnalysisManager->FillNtupleDColumn(index, 17, mNeutronEventData[ii].first_scatter_z);
-            AnalysisManager->FillNtupleDColumn(index, 18, mNeutronEventData[ii].first_scatter_t);
-            AnalysisManager->FillNtupleDColumn(index, 19, mNeutronEventData[ii].max_dphi);
-            AnalysisManager->FillNtupleDColumn(index, 20, mNeutronEventData[ii].max_dp);
-            AnalysisManager->FillNtupleDColumn(index, 21, mNeutronEventData[ii].max_dE);
-            AnalysisManager->FillNtupleIColumn(index, 22, mNeutronEventData[ii].safe_passage);
-            AnalysisManager->FillNtupleDColumn(index, 23, mNeutronEventData[ii].first_target_step_time);
-            AnalysisManager->FillNtupleDColumn(index, 24, mNeutronEventData[ii].first_target_step_energy);
-            AnalysisManager->FillNtupleDColumn(index, 25, mNeutronEventData[ii].first_target_step_z);
+            AnalysisManager->FillNtupleIColumn(index, 8, mNeutronEventData[ii].detector);
+            AnalysisManager->FillNtupleDColumn(index, 9, mNeutronEventData[ii].arrival_time);
+            AnalysisManager->FillNtupleDColumn(index, 10, mNeutronEventData[ii].arrival_energy);
+            AnalysisManager->FillNtupleIColumn(index, 11, mNeutronEventData[ii].num_elastic);
+            AnalysisManager->FillNtupleIColumn(index, 12, mNeutronEventData[ii].num_inelastic);
+            AnalysisManager->FillNtupleIColumn(index, 13, mNeutronEventData[ii].num_capture);
+            AnalysisManager->FillNtupleIColumn(index, 14, mNeutronEventData[ii].num_fission);
+            AnalysisManager->FillNtupleIColumn(index, 15, mNeutronEventData[ii].num_scatter);
+            AnalysisManager->FillNtupleIColumn(index, 16, mNeutronEventData[ii].num_scatter_out);
+            AnalysisManager->FillNtupleIColumn(index, 17, mNeutronEventData[ii].gas_first);
+            AnalysisManager->FillNtupleDColumn(index, 18, mNeutronEventData[ii].first_scatter_z);
+            AnalysisManager->FillNtupleDColumn(index, 19, mNeutronEventData[ii].first_scatter_t);
+            AnalysisManager->FillNtupleDColumn(index, 20, mNeutronEventData[ii].max_dphi);
+            AnalysisManager->FillNtupleDColumn(index, 21, mNeutronEventData[ii].max_dp);
+            AnalysisManager->FillNtupleDColumn(index, 22, mNeutronEventData[ii].max_dE);
+            AnalysisManager->FillNtupleIColumn(index, 23, mNeutronEventData[ii].safe_passage);
+            AnalysisManager->FillNtupleDColumn(index, 24, mNeutronEventData[ii].first_target_step_time);
+            AnalysisManager->FillNtupleDColumn(index, 25, mNeutronEventData[ii].first_target_step_energy);
+            AnalysisManager->FillNtupleDColumn(index, 26, mNeutronEventData[ii].first_target_step_z);
             AnalysisManager->AddNtupleRow(index);
         }
 
@@ -796,6 +814,18 @@ namespace Artie
                 mNeutronEventData[neutron_index].arrival_time = track->GetGlobalTime();
                 mNeutronEventData[neutron_index].arrival_energy = postStepPoint->GetKineticEnergy();
             }
+            else if(step->IsFirstStepInVolume() && volumeName == "Logical_ArtieIITargetDetectorLeft")
+            {
+                mNeutronEventData[neutron_index].detector = 0;
+                mNeutronEventData[neutron_index].arrival_time = track->GetGlobalTime();
+                mNeutronEventData[neutron_index].arrival_energy = postStepPoint->GetKineticEnergy();
+            }
+            else if(step->IsFirstStepInVolume() && volumeName == "Logical_ArtieIITargetDetectorRight")
+            {
+                mNeutronEventData[neutron_index].detector = 1;
+                mNeutronEventData[neutron_index].arrival_time = track->GetGlobalTime();
+                mNeutronEventData[neutron_index].arrival_energy = postStepPoint->GetKineticEnergy();
+            }
 
             // Quantify scattering
             if (dp > 0)
@@ -826,7 +856,10 @@ namespace Artie
                     }
                 }    
             }
-            if (volumeName != "Logical_ArtieIITargetDetector"){  
+            if (volumeName != "Logical_ArtieIITargetDetector" || 
+                volumeName != "Logical_ArtieIITargetDetectorLeft" || 
+                volumeName != "Logical_ArtieIITargetDetectorRight"
+            ){  
                 if (dp > mNeutronEventData[neutron_index].max_dp) {
                     mNeutronEventData[neutron_index].max_dp = dp;
                 }

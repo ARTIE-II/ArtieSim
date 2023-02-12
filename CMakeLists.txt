@@ -161,6 +161,11 @@ add_executable(artieII_run
     src/programs/ArtieII.cc 
 )
 target_link_libraries(artieII_run artie)
+
+add_executable(artieII_dicer 
+    src/programs/ArtieIIDICER.cc 
+)
+target_link_libraries(artieII_dicer artie)
 ##############################################################
 
 ##############################################################

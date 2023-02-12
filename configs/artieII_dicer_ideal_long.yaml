@@ -4,13 +4,15 @@ manager:
     number_of_runs:     1
     number_of_events:   500000
     seed:               10942
-    mode:               "run"   # interactive/run
-    detector:           "artieII"
-    output_filename:    "artieII_ntof_vacuum_long"
+    mode:               "interactive"   # interactive/run
+    detector:           "artieII_dicer"
+    output_filename:    "artieII_lanl_ideal_long"
     save_particle_maps: true
     save_primary_info:  true
     save_hits:          true
-    save_neutron_data:   true
+    save_neutron_data:  true
+    save_profile_data:  true
+    save_non_detected_neutrons: false
 
 # ARTIE argon parameters 
 argon:
@@ -22,15 +24,34 @@ argon:
     lar_temperature:    85.0    # K
     lar_pressure:       0.952   # atm
 
-# ARTIE-II target parameters
+# ARTIE-I target parameters
 target:
-    active_volume_material: "high_vacuum"
-    target_radius:          1.104    # cm
-    target_length:          168      # cm
+    active_volume_material: "liquid_argon"
+    target_radius:          1.1049    # cm
+    target_length:          158.60268      # cm
 
-    construct_container:    true    # bool
-    container_material:     "stainless_steel"
-    container_radius:       1.77   # cm
+    target_entrance:	16.0 # cm
+    target_x:	3.0 # cm
+    target_y:	0.0 # cm
+
+    construct_container:    true
+    container_outer_material:   "stainless_steel"
+    container_inner_material:   "high_vacuum"
+    container_outer_radius: 7.62 # cm
+    container_inner_radius: 7.4549 # cm
+    container_length:       160.6169 # cm
+
+    construct_annulus:          true
+    annulus_inner_material:     "liquid_argon"
+    annulus_container_material: "stainless_steel"
+    annulus_inner_radius:       5.08 # cm
+    annulus_container_radius:   4.9149 # cm
+    annulus_length:             139.21 # cm
+    annulus_face_thickness:     0.3302 # cm
+
+    construct_active_volume_container:    true    # bool
+    active_volume_container_material:     "stainless_steel"
+    active_volume_container_radius:       1.77   # cm
 
     construct_inner_flange_left_side:   true
     inner_flange_left_side_material:    "aluminum"
@@ -60,6 +81,34 @@ target:
     outer_flange_right_side_radius:     8.55218 #cm
     outer_flange_right_side_thickness:  0.20066 # cm
 
+dicer:
+    construct_rbb:	true
+    rbb_material:	"brass"
+    rbb_entrance:	14.35	# m
+    rbb_diameter:	21.5	# cm
+    rbb_length:		30.5	# cm
+    rbb_hole_size:	0.8		# cm
+    rbb_hole_separation:	6.0	# cm
+
+    construct_bc:	true
+    bc_material:	"brass"
+    bc_entrance:	14.85	# m
+    bc_width:		15.0	# cm
+    bc_height:      15.0    # cm
+    bc_length:		30.0	# cm
+    bc_hole_size:	0.1		# cm
+    bc_hole_separation:		6.0 # cm
+
+    construct_as:	true
+    as_material:	"brass"
+    as_entrance:	18.5	# m
+    as_width:		15.0 	# cm
+    as_height:      15.0    # cm
+    as_length:		30.0	# cm
+    as_hole_size:	1.2		# cm
+    as_hole_separation: 	6.0 # cm
+
+
 hall:
     # construct_beam_pipe:    true    # bool
     # beam_pipe_material:     "rough_vacuum"
@@ -71,7 +120,7 @@ hall:
     # hall_material:          "concrete"
     world_x:                4       # m                 
     world_y:                4       # m
-    world_z:                200     # m
+    world_z:                75     # m
     world_material:         "high_vacuum"
     # wall_thickness:         1.0     # m
 
@@ -79,41 +128,28 @@ hall:
 detector:
     construct_detector:     true    # bool
     detector_material:      "water"
-    detector_radius:        2.0     # cm
-    detector_length:        20.0    # cm
-    detector_entrance:      30.0    # m
+    detector_radius:        2.0 # cm
+    detector_length:        50.0 # cm
+    detector_separation:    6.0 # cm
+    detector_entrance:      0.0 # m
 
-# ARTIE Filters
-filters:
-    construct_filters:  true                    #bool
-    filter_materials:   ["aluminum", "carbon"]
-    filter_z_position:  [100.0, 120.0]          # cm
-    filter_thickness:   [10.0, 5.0]             # cm
-    filter_radius:      [8.55218, 8.55218]      # cm
     
 # ARTIE-I generator parameters
 generator:
+    # wether to use the LANL energy distribution
     use_lanl_distribution: false
     lanl_distribution_filename: "data/resolution13a.root"
     lanl_distribution_name: "tally5"
-
+    
     # wether to use the LANL tof for the 
     # moderator function.
-    use_lanl_tof:  false
-    lanl_tof_filename: data/resolution13a.root"
+    use_lanl_tof:  true
+    lanl_tof_filename: "data/resolution13a.root"
     lanl_tof_name: "tally15"
 
-    # wether to use the nTOF tof for the 
-    # moderator function.
-    use_ntof_tof:  true
-    ntof_tof_filename: "data/RF.root"
-    ntof_tof_name: "histfluka"
-
-    # wether to use the nTOF beam profile
-    use_ntof_beam_profile:  true
-    ntof_beam_profile_filename: "data/Profile_188m.root"
-    ntof_beam_profile_name: "histfluka"
+    use_lanl_beam_profile: false
     
-    t_zero_location: -30.0    # m
-    energy_cut_low:  20      # keV
-    energy_cut_high: 70     # keV
+    beam_hole_separation:   6.0 # cm
+    t_zero_location:        -30.0    # m
+    energy_cut_low:         20      # keV
+    energy_cut_high:        70     # keV
