@@ -147,9 +147,19 @@ generator:
     lanl_tof_filename: "data/resolution13a.root"
     lanl_tof_name: "tally15"
 
-    use_lanl_beam_profile: false
+    # beam profile
+    use_lanl_beam_profile:  false
+    generate_perfect_beam:  false
+    generate_uniform_beam:  false
+    uniform_beam_radius:    6.0     # cm
+
+    generate_uniform_discs: true
+    uniform_disc_radius:    0.05     # cm
+    generate_uniform_momentum:  false
+    uniform_momenentum_disc_radius: 1.0
+    generate_signal_momentum:   true
     
-    beam_hole_separation:   6.0 # cm
-    t_zero_location:        -30.0    # m
+    beam_hole_separation:   6.0     # cm
+    t_zero_location:        -30.0   # m
     energy_cut_low:         20      # keV
-    energy_cut_high:        70     # keV
+    energy_cut_high:        70      # keV

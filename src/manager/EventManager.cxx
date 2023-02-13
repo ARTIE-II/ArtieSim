@@ -44,6 +44,23 @@ namespace Artie
             if(mConfig["argon"]["lar_pressure"])        { mLArPressure = mConfig["argon"]["lar_pressure"].as<G4double>() * atmosphere; }
             if(mConfig["detector"]["detector_entrace"]) { mDetectorEntrance = mConfig["detector"]["detector_entrance"].as<G4double>() * m; }
         }
+        if(mConfig["dicer"]["rbb_entrance"])    { mRotatingBeamBlockerEntrance = mConfig["dicer"]["rbb_entrance"].as<G4double>() * m; }
+        if(mConfig["dicer"]["rbb_length"])      { mRotatingBeamBlockerLength = mConfig["dicer"]["rbb_length"].as<G4double>() * cm; }
+        if(mConfig["dicer"]["rbb_hole_size"])   { mRotatingBeamBlockerHoleSize = mConfig["dicer"]["rbb_hole_size"].as<G4double>() * cm; }
+        if(mConfig["dicer"]["rbb_hole_separation"])   { mRotatingBeamBlockerHoleSeparation = mConfig["dicer"]["rbb_hole_separation"].as<G4double>() * cm; }
+
+        if(mConfig["dicer"]["bc_entrance"])    { mBinocularCollimatorEntrance = mConfig["dicer"]["bc_entrance"].as<G4double>() * m; }
+        if(mConfig["dicer"]["bc_length"])      { mBinocularCollimatorLength = mConfig["dicer"]["bc_length"].as<G4double>() * cm; }
+        if(mConfig["dicer"]["bc_hole_size"])   { mBinocularCollimatorHoleSize = mConfig["dicer"]["bc_hole_size"].as<G4double>() * cm; }
+        if(mConfig["dicer"]["bc_hole_separation"])   { mBinocularCollimatorHoleSeparation = mConfig["dicer"]["bc_hole_separation"].as<G4double>() * cm; }
+
+        if(mConfig["dicer"]["as_entrance"])    { mAperatureStopEntrance = mConfig["dicer"]["as_entrance"].as<G4double>() * m; }
+        if(mConfig["dicer"]["as_length"])      { mAperatureStopLength = mConfig["dicer"]["as_length"].as<G4double>() * cm; }
+        if(mConfig["dicer"]["as_hole_size"])   { mAperatureStopHoleSize = mConfig["dicer"]["as_hole_size"].as<G4double>() * cm; }
+        if(mConfig["dicer"]["as_hole_separation"])   { mAperatureStopHoleSeparation = mConfig["dicer"]["as_hole_separation"].as<G4double>() * cm; }        if(mConfig["generator"]["t_zero_location"]) { mTZeroLocation = mConfig["generator"]["t_zero_location"].as<G4double>() * m; }
+
+        if(mConfig["generator"]["energy_cut_low"])  { mEnergyCutLow = mConfig["generator"]["energy_cut_low"].as<G4double>() * keV; }
+        if(mConfig["generator"]["energy_cut_high"]) { mEnergyCutHigh = mConfig["generator"]["energy_cut_high"].as<G4double>() * keV; }
     #ifdef ARTIE_ROOT
         if(mConfig["generator"]["use_lanl_distribution"]) { mUseLANLDistribution = mConfig["generator"]["use_lanl_distribution"].as<G4bool>(); }
         if(mConfig["generator"]["use_lanl_tof"]) { mUseLANLTOF = mConfig["generator"]["use_lanl_tof"].as<G4bool>(); }
@@ -61,10 +78,6 @@ namespace Artie
         if(mConfig["generator"]["ntof_beam_profile_filename"])  { mnTOFBeamProfileFileName = mConfig["generator"]["ntof_beam_profile_filename"].as<std::string>(); }
         if(mConfig["generator"]["ntof_beam_profile_name"])      { mnTOFBeamProfileName = mConfig["generator"]["ntof_beam_profile_name"].as<std::string>(); }
 
-        if(mConfig["generator"]["t_zero_location"]) { mTZeroLocation = mConfig["generator"]["t_zero_location"].as<G4double>() * m; }
-        if(mConfig["generator"]["energy_cut_low"])  { mEnergyCutLow = mConfig["generator"]["energy_cut_low"].as<G4double>() * keV; }
-        if(mConfig["generator"]["energy_cut_high"]) { mEnergyCutHigh = mConfig["generator"]["energy_cut_high"].as<G4double>() * keV; }
-        
         if(mUseLANLDistribution) 
         {
             mLANLEnergyDistributionFile = new TFile(mLANLEnergyDistributionFileName);
@@ -160,6 +173,47 @@ namespace Artie
         );
     }
 
+    void EventManager::FindSignalPath()
+    {
+        std::vector<G4double> radii = {
+            mRotatingBeamBlockerHoleSize,
+            mBinocularCollimatorHoleSize,
+            mAperatureStopHoleSize
+        };
+        std::vector<G4double> z = {
+            mTZeroLocation + mRotatingBeamBlockerEntrance,
+            mTZeroLocation + mBinocularCollimatorEntrance,
+            mTZeroLocation + mAperatureStopEntrance,
+        };
+        std::vector<G4double> l = {
+            mRotatingBeamBlockerLength,
+            mBinocularCollimatorLength,
+            mAperatureStopLength
+        };
+        mSmallestRadii = 10e8;
+        G4int smallest_index = 0;
+        for(G4int ii = 0; ii < radii.size(); ii++)
+        {
+            if(radii[ii] < mSmallestRadii) {
+                mSmallestRadii = radii[ii];
+                mSmallestRadiiZBegin = z[ii];
+                mSmallestRadiiZEnd = z[ii] + l[ii];
+                smallest_index = ii;
+            }
+        }
+        G4double smallest_tan_theta = 1.0;
+        for(G4int ii = 0; ii < radii.size(); ii++)
+        {
+            if(ii != mSmallestRadii) {
+                G4double tan_theta = radii[ii] / abs(z[ii] - (z[smallest_index] + l[smallest_index]));
+                if(tan_theta < smallest_tan_theta) {
+                    smallest_tan_theta = tan_theta;
+                }
+            }
+        }
+        mTZeroRadii = abs(smallest_tan_theta * mTZeroLocation);
+        mDetectorEntranceRadii = abs(smallest_tan_theta * mDetectorEntrance);
+    }
 
     G4int EventManager::GetIndex(G4String tuple)
     {

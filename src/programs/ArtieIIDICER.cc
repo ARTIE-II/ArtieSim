@@ -47,6 +47,7 @@ int main(int argc, char** argv)
     }
     auto Config = Artie::ConfigParser(ConfigFile);
     Artie::EventManager::GetEventManager()->SetConfig(Config.GetConfig());
+    Artie::EventManager::GetEventManager()->FindSignalPath();
 
     // choose the Random engine
     G4Random::setTheEngine(new CLHEP::RanecuEngine);

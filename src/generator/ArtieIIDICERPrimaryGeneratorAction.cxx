@@ -33,7 +33,18 @@ namespace Artie
     {
         if(mConfig["use_lanl_distribution"]) { mUseLANLDistribution = mConfig["use_lanl_distribution"].as<G4bool>(); }
         if(mConfig["use_lanl_tof"]) { mUseLANLTOF = mConfig["use_lanl_tof"].as<G4bool>(); }
+
         if(mConfig["use_lanl_beam_profile"]) { mUseLANLBeamProfile = mConfig["use_lanl_beam_profile"].as<G4bool>(); }
+        if(mConfig["generate_perfect_beam"]) { mGeneratePerfectBeam = mConfig["generate_perfect_beam"].as<G4bool>(); }
+        if(mConfig["generate_uniform_beam"]) { mGenerateUniformBeam = mConfig["generate_uniform_beam"].as<G4bool>(); }
+        if(mConfig["uniform_beam_radius"])  { mUniformBeamRadius = mConfig["uniform_beam_radius"].as<G4double>() * cm; }
+
+        if(mConfig["generate_uniform_discs"]) { mGenerateUniformDiscs = mConfig["generate_uniform_discs"].as<G4bool>(); }
+        if(mConfig["uniform_disc_radius"])  { mUniformDiscRadius = mConfig["uniform_disc_radius"].as<G4double>() * cm; }  
+
+        if(mConfig["generate_uniform_momentum"])    { mGenerateUniformMomentum = mConfig["generate_uniform_momentum"].as<G4bool>(); }
+        if(mConfig["uniform_momentum_disc_radius"])    { mUniformMomentumRadius = mConfig["uniform_momentum_disc_radius"].as<G4double>() * cm; }
+        if(mConfig["generate_signal_momentum"])    { mGenerateSignalMomentum = mConfig["generate_signal_momentum"].as<G4bool>(); }
 
         if(mConfig["beam_hole_separation"]) { mBeamHoleSeparation = mConfig["beam_hole_separation"].as<G4double>() * cm; }
         if(mConfig["t_zero_location"])  { mTZeroLocation = mConfig["t_zero_location"].as<G4double>() * m; }
@@ -86,17 +97,144 @@ namespace Artie
             x *= cm;
             y *= cm;
         }
-        else 
+        else if(mGeneratePerfectBeam)
         {
             if(G4UniformRand() <= 0.5) {
                 x = mBeamHoleSeparation * 0.5;
             }
-            else {
+            else{
                 x = -mBeamHoleSeparation * 0.5;
+            }
+        }
+        else if(mGenerateUniformBeam)
+        {
+            if(G4UniformRand() <= 0.5) {
+                x = mUniformBeamRadius * G4UniformRand();
+            }
+            else {
+                x = -mUniformBeamRadius * G4UniformRand();
+            }
+            G4double x_min = -sqrt(mUniformBeamRadius * mUniformBeamRadius - x*x);
+            G4double x_max = +sqrt(mUniformBeamRadius * mUniformBeamRadius - x*x);
+            if(G4UniformRand() <= 0.5) {
+                y = (G4UniformRand() * (x_max - x_min) + x_min);
+            }
+            else {
+                y = -(G4UniformRand() * (x_max - x_min) + x_min);
+            }
+        }
+        else if(mGenerateUniformDiscs)
+        {
+            if(G4UniformRand() <= 0.5) {
+                x = mUniformDiscRadius * G4UniformRand();
+            }
+            else {
+                x = -mUniformDiscRadius * G4UniformRand();
+            }
+            G4double x_min = -sqrt(mUniformDiscRadius * mUniformDiscRadius - x*x);
+            G4double x_max = +sqrt(mUniformDiscRadius * mUniformDiscRadius - x*x);
+            if(G4UniformRand() <= 0.5) {
+                y = (G4UniformRand() * (x_max - x_min) + x_min);
+            }
+            else {
+                y = -(G4UniformRand() * (x_max - x_min) + x_min);
+            }
+            if(G4UniformRand() <= 0.5) {
+                x -= mBeamHoleSeparation * 0.5;
+            }
+            else {
+                x += mBeamHoleSeparation * 0.5;
+            }
+        }
+        else if(mGenerateSignalMomentum)
+        {
+            G4double start_radius = EventManager::GetEventManager()->TZeroRadii();
+            if(G4UniformRand() <= 0.5) {
+                x = start_radius * G4UniformRand();
+            }
+            else {
+                x = -start_radius * G4UniformRand();
+            }
+            G4double x_min = -sqrt(start_radius * start_radius - x*x);
+            G4double x_max = +sqrt(start_radius * start_radius - x*x);
+            if(G4UniformRand() <= 0.5) {
+                y = (G4UniformRand() * (x_max - x_min) + x_min);
+            }
+            else {
+                y = -(G4UniformRand() * (x_max - x_min) + x_min);
+            }
+            if(G4UniformRand() <= 0.5) {
+                x -= mBeamHoleSeparation * 0.5;
+            }
+            else {
+                x += mBeamHoleSeparation * 0.5;
             }
         }
 #endif
         return G4ThreeVector(x, y, t_zero_location);
+    }
+    G4ThreeVector ArtieIIDICERPrimaryGeneratorAction::SampleBeamMomentum(G4ThreeVector StartPosition)
+    {
+        if(mGenerateSignalMomentum)
+        {
+            G4double x_init = StartPosition[0];
+            if(x_init < 0) {
+                x_init += mBeamHoleSeparation * 0.5;
+            }
+            else {
+                x_init -= mBeamHoleSeparation * 0.5;
+            }
+            G4double y_init = StartPosition[1];
+            G4double z_init = StartPosition[2];
+            G4double x_final = 0;
+            G4double y_final = 0;
+            G4double z_final = EventManager::GetEventManager()->SmallestRadiiZEnd();
+            G4double z_final_begin = EventManager::GetEventManager()->SmallestRadiiZBegin();
+            G4double intersect_radius = EventManager::GetEventManager()->SmallestRadii();
+            G4cout << "z: " << z_final << "," << z_final_begin << G4endl;
+            G4double r_init = sqrt(x_init * x_init + y_init * y_init);
+            G4double r_max = intersect_radius;
+            if(r_init > intersect_radius) {
+                r_max -= ((r_init - intersect_radius) * (z_final - z_final_begin)/z_final_begin);
+            }
+            G4cout << "r: " << r_init << "," << r_max << G4endl;
+            if(G4UniformRand() <= 0.5) {
+                x_final = r_max * G4UniformRand();
+            }
+            else {
+                x_final = -r_max * G4UniformRand();
+            }
+            G4double x_min = -sqrt(r_max * r_max - x_final*x_final);
+            G4double x_max = +sqrt(r_max * r_max - x_final*x_final);
+            if(G4UniformRand() <= 0.5) {
+                y_final = (G4UniformRand() * (x_max - x_min) + x_min);
+            }
+            else {
+                y_final = -(G4UniformRand() * (x_max - x_min) + x_min);
+            }
+            if(x_init < 0) {
+                x_final -= mBeamHoleSeparation * 0.5;
+            }
+            else {
+                x_final += mBeamHoleSeparation * 0.5;
+            }
+            G4double length = sqrt(
+                (x_final - x_init)*(x_final - x_init) + 
+                (y_final - y_init)*(y_final - y_init) + 
+                (z_final - z_init)*(z_final - z_init)
+            );
+            G4ThreeVector Momentum(
+                (x_final - x_init)/length,
+                (y_final - y_init)/length,
+                (z_final - z_init)/length
+            );
+            G4cout << x_final - x_init << "," << y_final - y_init << G4endl;
+            G4cout << Momentum << G4endl;
+            return Momentum;
+        }
+        else {
+            return G4ThreeVector(0, 0, 1);
+        }
     }
 
     void ArtieIIDICERPrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
@@ -105,9 +243,11 @@ namespace Artie
         G4double BeamEnergy = SampleBeamEnergy();
         G4double deltaTOF = SampleTOF(BeamEnergy);
         G4ThreeVector StartPosition = SampleBeamProfile(mTZeroLocation);
-
+        G4ThreeVector StartMomentum = SampleBeamMomentum(StartPosition);
         mParticleGun->SetParticleTime(deltaTOF);
         mParticleGun->SetParticlePosition(StartPosition);
+        G4cout << mParticleGun->GetParticleMomentumDirection() << G4endl;
+        mParticleGun->SetParticleMomentumDirection(StartMomentum);
         mParticleGun->SetParticleEnergy(BeamEnergy);
         mParticleGun->GeneratePrimaryVertex(event);
     }

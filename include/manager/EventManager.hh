@@ -172,6 +172,13 @@ namespace Artie
         G4bool SaveNonDetectedNeutrons() { return sSaveNonDetectedNeutrons; }
         G4bool SaveProfileData()        { return sSaveProfileData; }
 
+        G4double TZeroRadii()               { return mTZeroRadii; }
+        G4double DetectorEntranceRadii()    { return mDetectorEntranceRadii; }
+        G4double DetectorEntrance()         { return mDetectorEntrance; }
+        G4double SmallestRadii()            { return mSmallestRadii; }
+        G4double SmallestRadiiZBegin()      { return mSmallestRadiiZBegin; }
+        G4double SmallestRadiiZEnd()        { return mSmallestRadiiZEnd; }
+
         void CreateTuples();
         void FillParticleMaps(G4int EventID = -1);
         void FillPrimaryInfo(G4int EventID = -1);
@@ -274,6 +281,7 @@ namespace Artie
         //*************************************************************************************************//
 
         void SaveGDML();
+        void FindSignalPath();
 
 #ifdef ARTIE_PROFILING
         std::map<G4String, Profile> GetFunctionProfiles()     { return sFunctionProfiles; }
@@ -325,6 +333,30 @@ namespace Artie
         inline static G4double mLArDensity = {1.3954 * g/cm3};
         inline static G4double mLArTemperature = {85.0 * kelvin};
         inline static G4double mLArPressure = {0.952 * atmosphere};
+
+        inline static G4double mRotatingBeamBlockerEntrance = {14.35 * m};
+        inline static G4double mRotatingBeamBlockerLength = {30.5 * cm};
+        inline static G4double mRotatingBeamBlockerHoleSize = {0.8 * cm};
+        inline static G4double mRotatingBeamBlockerHoleSeparation = {3.0 * cm};
+
+        // BC
+        inline static G4double mBinocularCollimatorEntrance = {14.85 * m};
+        inline static G4double mBinocularCollimatorLength = {30.0 * cm};
+        inline static G4double mBinocularCollimatorHoleSize = {0.1 * cm};
+        inline static G4double mBinocularCollimatorHoleSeparation = {3.0 * cm};
+
+        // AS
+        inline static G4double mAperatureStopEntrance = {18.5 * m};
+        inline static G4double mAperatureStopLength = {15.0 * cm};
+        inline static G4double mAperatureStopHoleSize = {1.2 * cm};
+        inline static G4double mAperatureStopHoleSeparation = {3.0 * cm};
+
+        inline static G4double mTZeroRadii = {0.0};
+        inline static G4double mDetectorEntranceRadii = {0.0};
+        inline static G4double mDetectorEntranceZ = {0.0};
+        inline static G4double mSmallestRadii = {0.0};
+        inline static G4double mSmallestRadiiZBegin = {0.0};
+        inline static G4double mSmallestRadiiZEnd = {0.0};
 
         // Event level maps to keep track of particle ids,
         // parent ids, ancestor ids and pdg codes.

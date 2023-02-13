@@ -42,6 +42,7 @@ namespace Artie
         G4double SampleBeamEnergy();
         G4double SampleTOF(G4double beam_energy);
         G4ThreeVector SampleBeamProfile(G4double t_zero_location);
+        G4ThreeVector SampleBeamMomentum(G4ThreeVector StartPosition);
 
 #ifdef ARTIE_YAML
         ArtieIIDICERPrimaryGeneratorAction(YAML::Node config);
@@ -65,6 +66,16 @@ namespace Artie
         G4bool mUseLANLDistribution = { false };
         G4bool mUseLANLTOF =  { false };
         G4bool mUseLANLBeamProfile = { false };
+        G4bool mGeneratePerfectBeam = { false };
+        G4bool mGenerateUniformBeam = { false };
+        G4double mUniformBeamRadius = { 6.0 * cm };
+        G4bool mGenerateUniformDiscs = { false };
+        G4double mUniformDiscRadius = { 1.0 * cm };
+
+        G4bool mGenerateUniformMomentum = { false };
+        G4double mUniformMomentumRadius = { 1.0 * cm };
+        G4bool mGenerateSignalMomentum = { false };
+
 
 #ifdef ARTIE_ROOT
         TH1D* mLANLEnergyDistribution = {0};
