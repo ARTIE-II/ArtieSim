@@ -66,6 +66,9 @@ namespace Artie
         G4bool mUseLANLDistribution = { false };
         G4bool mUseLANLTOF =  { false };
         G4bool mUseLANLBeamProfile = { false };
+        G4bool mGenerateSingleBeam = { false };
+        G4String mSingleBeamLocation = { "right" };
+
         G4bool mGeneratePerfectBeam = { false };
         G4bool mGenerateUniformBeam = { false };
         G4double mUniformBeamRadius = { 6.0 * cm };
@@ -74,7 +77,6 @@ namespace Artie
 
         G4bool mGenerateUniformMomentum = { false };
         G4double mUniformMomentumRadius = { 1.0 * cm };
-        G4bool mGenerateSignalMomentum = { false };
 
 
 #ifdef ARTIE_ROOT
