@@ -84,6 +84,11 @@ if __name__ == "__main__":
             else:
                 energy += c
         energy = float(energy)
+
+        with open(f"../data/DICER_MARKIV_{energy}.csv", "w") as file:
+            writer = csv.writer(file, delimiter=",")
+            writer.writerows(np.vstack((x,y)).T)
+
         axs.plot(x, y, label=f"E = {energy} eV")
         axs.set_xlabel("Time [ns]")
         axs.set_ylabel("Resolution Function")
