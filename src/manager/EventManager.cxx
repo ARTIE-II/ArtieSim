@@ -57,6 +57,7 @@ namespace Artie
         if(mConfig["generator"]["lanl_distribution_name"])      { mLANLEnergyDistributionName = mConfig["generator"]["lanl_distribution_name"].as<std::string>(); }
         if(mConfig["generator"]["lanl_tof_filename"])  { mLANLTOFFileName = mConfig["generator"]["lanl_tof_filename"].as<std::string>(); }
         if(mConfig["generator"]["lanl_tof_name"])      { mLANLTOFName = mConfig["generator"]["lanl_tof_name"].as<std::string>(); }
+        if(mConfig["generator"]["dicer_tof_filename"])  { mDICERToFFileName = mConfig["generator"]["dicer_tof_filename"].as<std::string>(); }
 
         if(mConfig["generator"]["ntof_tof_filename"])  { mnTOFTOFFileName = mConfig["generator"]["ntof_tof_filename"].as<std::string>(); }
         if(mConfig["generator"]["ntof_tof_name"])      { mnTOFTOFName = mConfig["generator"]["ntof_tof_name"].as<std::string>(); }
@@ -113,6 +114,17 @@ namespace Artie
                     ii, ii+1
                 );
                 mLANLTOFProjections.emplace_back(projection);
+            }
+
+            //DICER ToF histograms
+            mDICERToFFile = new TFile(mDICERToFFileName);
+            std::string histEnergies[7] = {"1", "10", "100", "1000", "10000", "30000", "100000"};
+            // TH1D *h[std::size(histEnergies)];
+            for (G4int i = 0; i < std::size(histEnergies); i++)
+            {
+                std::string hist_name = "hist_" + histEnergies[i] + "ev";
+                TH1D *h1 = (TH1D*)mDICERToFFile->Get(hist_name.c_str());
+                mDICERToFHists.emplace_back(h1);
             }
         }
         if(mUsenTOFTOF) 

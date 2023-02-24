@@ -33,6 +33,7 @@ namespace Artie
     {
         if(mConfig["use_lanl_distribution"]) { mUseLANLDistribution = mConfig["use_lanl_distribution"].as<G4bool>(); }
         if(mConfig["use_lanl_tof"]) { mUseLANLTOF = mConfig["use_lanl_tof"].as<G4bool>(); }
+        if(mConfig["lanl_proton_pulse_FWHM"])  { mProtonPulseFWHM = mConfig["lanl_proton_pulse_FWHM"].as<G4double>(); }
 
         if(mConfig["use_lanl_beam_profile"]) { mUseLANLBeamProfile = mConfig["use_lanl_beam_profile"].as<G4bool>(); }
         if(mConfig["generate_single_beam"]) { mGenerateSingleBeam = mConfig["generate_single_beam"].as<G4bool>(); }
@@ -84,6 +85,41 @@ namespace Artie
 #ifdef ARTIE_ROOT
         Double_t nominalTOF = EventManager::GetEventManager()->GetNominalTOF(beam_energy);
         Double_t nominalVelocity = EventManager::GetEventManager()->GetNominalVelocity(beam_energy);
+        if(mUseLANLTOF) 
+        {
+            // Double_t delPulse = SampleTriangularDist(mProtonPulseFWHM);
+            Double_t deltaT;
+            // beam_energy is in keV
+            if (beam_energy <= 0.001) {
+                TH1D* TOF = EventManager::GetEventManager()->GetDICERToFHist(0);
+                deltaT = TOF->GetRandom();  
+            }
+            if (beam_energy > 0.001 && beam_energy <= 0.01) {
+                TH1D* TOF = EventManager::GetEventManager()->GetDICERToFHist(1);
+                deltaT = TOF->GetRandom();  
+            }
+            if (beam_energy > 0.01 && beam_energy <= 0.1) {
+                TH1D* TOF = EventManager::GetEventManager()->GetDICERToFHist(2);
+                deltaT = TOF->GetRandom();  
+            }
+            if (beam_energy > 0.1 && beam_energy <= 1) {
+                TH1D* TOF = EventManager::GetEventManager()->GetDICERToFHist(3);
+                deltaT = TOF->GetRandom();  
+            }
+            if (beam_energy > 1 && beam_energy <= 10) {
+                TH1D* TOF = EventManager::GetEventManager()->GetDICERToFHist(4);
+                deltaT = TOF->GetRandom();  
+            }
+            if (beam_energy > 10 && beam_energy <= 30) {
+                TH1D* TOF = EventManager::GetEventManager()->GetDICERToFHist(5);
+                deltaT = TOF->GetRandom();  
+            }
+            if (beam_energy > 30 && beam_energy <= 100) {
+                TH1D* TOF = EventManager::GetEventManager()->GetDICERToFHist(6);
+                deltaT = TOF->GetRandom();  
+            }
+            return deltaT * nominalTOF;
+        }
 #endif
         return 0.0;
     }

@@ -7,6 +7,8 @@
  */
 #pragma once
 #include <memory>
+#include <random>
+#include <array>
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4ParticleTable.hh"
@@ -44,6 +46,21 @@ namespace Artie
         G4ThreeVector SampleBeamProfile(G4double t_zero_location);
         G4ThreeVector SampleBeamMomentum(G4ThreeVector StartPosition);
 
+        Double_t SampleTriangularDist(double FWHM)
+        {       
+                std::random_device rd;
+                std::mt19937 gen{rd()};
+
+                double min = 0;
+                double peak = FWHM;
+                double max = 2*FWHM;
+                std::array<double, 3> i{min, peak, max};
+                std::array<double, 3> w{0, 1, 0};
+                std::piecewise_linear_distribution<double> d{i.begin(), i.end(), w.begin()};
+
+                return d(gen);
+        }
+
 #ifdef ARTIE_YAML
         ArtieIIDICERPrimaryGeneratorAction(YAML::Node config);
         YAML::Node Config() const { return mConfig; }
@@ -65,6 +82,7 @@ namespace Artie
 
         G4bool mUseLANLDistribution = { false };
         G4bool mUseLANLTOF =  { false };
+        G4double mProtonPulseFWHM;
         G4bool mUseLANLBeamProfile = { false };
         G4bool mGenerateSingleBeam = { false };
         G4String mSingleBeamLocation = { "right" };

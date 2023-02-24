@@ -2,7 +2,7 @@
 manager:
     number_of_threads:  8
     number_of_runs:     1
-    number_of_events:   500000
+    number_of_events:   100000
     seed:               10942
     mode:               "run"   # interactive/run
     detector:           "artieII_dicer"
@@ -144,13 +144,15 @@ generator:
     # wether to use the LANL tof for the 
     # moderator function.
     use_lanl_tof:  true
+    lanl_proton_pulse_FWHM: 125 #ns
     lanl_tof_filename: "data/resolution13a.root"
     lanl_tof_name: "tally15"
+    dicer_tof_filename: "data/moderator_hist.root"
 
     # beam profile
     use_lanl_beam_profile:  false
     generate_single_beam:   true
-    single_beam_location:   "right"
+    single_beam_location:   "left"
     generate_perfect_beam:  false
     generate_uniform_beam:  false
     uniform_beam_radius:    6.0     # cm

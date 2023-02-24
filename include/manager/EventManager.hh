@@ -151,6 +151,7 @@ namespace Artie
         TH1D* GetLANLEnergyDistribution()       { return mLANLEnergyDistribution.get(); }
         TH2D* GetLANLTOF()                      { return mLANLTOF.get(); }
         TH1D* GetLANLTOFProjection(G4int ii)    { return mLANLTOFProjections[ii].get(); }
+        TH1D* GetDICERToFHist(G4int ii)         { return mDICERToFHists[ii].get(); }
 
         TH2D* GetnTOFTOF()                      { return mnTOFTOF.get(); }
         TH1D* GetnTOFTOFProjection(G4int ii)    { return mnTOFTOFProjections[ii].get(); }
@@ -368,7 +369,10 @@ namespace Artie
         inline static TFile* mLANLTOFFile = {0};
         inline static std::shared_ptr<TH2D> mLANLTOF = {nullptr};
         inline static std::vector<std::shared_ptr<TH1D>> mLANLTOFProjections = {};
-
+        // DICER ToF
+        inline static G4String mDICERToFFileName = {"moderator_hist.root"};
+        inline static TFile* mDICERToFFile = {0};
+        inline static std::vector<std::shared_ptr<TH1D>> mDICERToFHists = {};
         // nTOF tof distribution
         inline static G4String mnTOFTOFFileName = {"RF.root"};
         inline static G4String mnTOFTOFName = {"histfluka"};
