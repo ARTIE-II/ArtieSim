@@ -6,7 +6,7 @@ manager:
     seed:               10942
     mode:               "run"   # interactive/run
     detector:           "artieII"
-    output_filename:    "artieII_ntof_ideal_long_high"
+    output_filename:    "artieII_ntof_ideal_scuba_medium"
     save_particle_maps: true
     save_primary_info:  true
     save_hits:          true
@@ -28,59 +28,16 @@ argon:
 # t-zero location.  
 target:
     active_volume_material: "liquid_argon"
-    target_radius:          1.104    # cm
-    target_length:          158.60268      # cm
+    target_radius:          10.00    # cm
+    target_length:          66.675      # cm
 
     target_entrance:	188 # cm
     target_x:	        0.0 # cm
     target_y:	        0.0 # cm
 
-    construct_container:    true
-    container_outer_material:   "stainless_steel"
-    container_inner_material:   "high_vacuum"
-    container_outer_radius: 7.62 # cm
-    container_inner_radius: 7.4549 # cm
-    container_length:       160.6169 # cm
-
-    construct_annulus:          true
-    annulus_inner_material:     "liquid_argon"
-    annulus_container_material: "stainless_steel"
-    annulus_inner_radius:       5.08 # cm
-    annulus_container_radius:   4.9149 # cm
-    annulus_length:             139.21 # cm
-    annulus_face_thickness:     0.3302 # cm
-
-    construct_active_volume_container:    true    # bool
-    active_volume_container_material:     "stainless_steel"
-    active_volume_container_radius:       1.77   # cm
-
-    construct_inner_flange_left_side:   true
-    inner_flange_left_side_material:    "aluminum"
-    inner_flange_left_side_radius:      2.40665 #cm
-    inner_flange_left_side_thickness:   0.20066 # cm
-
-    construct_inner_flange_right_side:  true
-    inner_flange_right_side_material:   "aluminum"
-    inner_flange_right_side_radius:     2.40665 #cm
-    inner_flange_right_side_thickness:  0.20066 # cm
-
-    construct_inner_flange_left_side_gap:   true
-    inner_flange_left_side_gap_material:    "high_vacuum"
-    inner_flange_left_side_gap_thickness:   1.87706 # cm
-
-    construct_inner_flange_right_side_gap:  true
-    inner_flange_right_side_gap_material:   "high_vacuum"
-    inner_flange_right_side_gap_thickness:  1.87706 # cm
-
-    construct_outer_flange_left_side:   true
-    outer_flange_left_side_material:    "aluminum"
-    outer_flange_left_side_radius:      8.55218 #cm
-    outer_flange_left_side_thickness:   0.20066 # cm
-
-    construct_outer_flange_right_side:  true
-    outer_flange_right_side_material:   "aluminum"
-    outer_flange_right_side_radius:     8.55218 #cm
-    outer_flange_right_side_thickness:  0.20066 # cm
+    construct_scuba_tank:    true
+    scuba_tank_radius:       10.16
+    scuba_tank_length:       66.675
 
 hall:
     # construct_beam_pipe:    true    # bool
@@ -130,5 +87,5 @@ generator:
     ntof_beam_profile_name: "histfluka"
     
     t_zero_location: -188.0    # m
-    energy_cut_low:  1500      # keV
-    energy_cut_high: 20000     # keV
+    energy_cut_low:  200      # keV
+    energy_cut_high: 2000     # keV

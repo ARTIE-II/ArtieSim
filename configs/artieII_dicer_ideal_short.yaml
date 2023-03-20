@@ -2,11 +2,11 @@
 manager:
     number_of_threads:  8
     number_of_runs:     1
-    number_of_events:   5000000 #500000
+    number_of_events:   5000000
     seed:               10942
     mode:               "run"   # interactive/run
     detector:           "artieII_dicer"
-    output_filename:    "artieII_lanl_vacuum_long"
+    output_filename:    "artieII_lanl_ideal_short"
     save_particle_maps: true
     save_primary_info:  true
     save_hits:          true
@@ -26,7 +26,7 @@ argon:
 
 # ARTIE-I target parameters
 target:
-    active_volume_material: "high_vacuum"
+    active_volume_material: "liquid_argon"
     target_radius:          1.1049    # cm
     target_length:          158.60268      # cm
 
@@ -42,7 +42,7 @@ target:
     container_length:       160.6169 # cm
 
     construct_annulus:          true
-    annulus_inner_material:     "high_vacuum"
+    annulus_inner_material:     "liquid_argon"
     annulus_container_material: "stainless_steel"
     annulus_inner_radius:       5.08 # cm
     annulus_container_radius:   4.9149 # cm

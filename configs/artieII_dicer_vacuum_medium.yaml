@@ -6,7 +6,7 @@ manager:
     seed:               10942
     mode:               "run"   # interactive/run
     detector:           "artieII_dicer"
-    output_filename:    "artieII_lanl_vacuum_long"
+    output_filename:    "artieII_lanl_vacuum_medium"
     save_particle_maps: true
     save_primary_info:  true
     save_hits:          true

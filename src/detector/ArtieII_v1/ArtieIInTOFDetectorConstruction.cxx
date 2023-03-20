@@ -1,5 +1,5 @@
 /**
- * @file ArtieIIDICERDetectorConstruction.cxx
+ * @file ArtieIInTOFDetectorConstruction.cxx
  * @author Nicholas Carrara [nmcarrara@ucdavis.edu]
  * @brief 
  * @version 0.0
@@ -8,18 +8,18 @@
  *      2022/09/20 - Initial creation of the file.
  * @date 2022-09-23
  */
-#include "ArtieIIDICERDetectorConstruction.hh"
+#include "ArtieIInTOFDetectorConstruction.hh"
 
 namespace Artie
 {
-    ArtieIIDICERDetectorConstruction::ArtieIIDICERDetectorConstruction()
+    ArtieIInTOFDetectorConstruction::ArtieIInTOFDetectorConstruction()
     : G4VUserDetectorConstruction()
     {
         DefineMaterials();
     }
 
 #ifdef ARTIE_YAML
-    ArtieIIDICERDetectorConstruction::ArtieIIDICERDetectorConstruction(YAML::Node config)
+    ArtieIInTOFDetectorConstruction::ArtieIInTOFDetectorConstruction(YAML::Node config)
     : G4VUserDetectorConstruction()
     , mConfig(config)
     {
@@ -83,32 +83,6 @@ namespace Artie
         if(mConfig["detector"]["detector_entrance"])    { mDetectorEntrance = mConfig["detector"]["detector_entrance"].as<G4double>() * m; }   
         if(mConfig["detector"]["detector_separation"])  { mDetectorSeparation = mConfig["detector"]["detector_separation"].as<G4double>() * cm; }
 
-        if(mConfig["dicer"]["construct_rbb"])   { mConstructRotatingBeamBlocker = mConfig["dicer"]["construct_rbb"].as<G4bool>(); }
-        if(mConfig["dicer"]["rbb_material"])    { mRotatingBeamBlockerMaterialName = mConfig["dicer"]["rbb_material"].as<std::string>(); }
-        if(mConfig["dicer"]["rbb_entrance"])    { mRotatingBeamBlockerEntrance = mConfig["dicer"]["rbb_entrance"].as<G4double>() * m; }
-        if(mConfig["dicer"]["rbb_diameter"])    { mRotatingBeamBlockerDiameter = mConfig["dicer"]["rbb_diameter"].as<G4double>() * cm; }
-        if(mConfig["dicer"]["rbb_length"])      { mRotatingBeamBlockerLength = mConfig["dicer"]["rbb_length"].as<G4double>() * cm; }
-        if(mConfig["dicer"]["rbb_hole_size"])   { mRotatingBeamBlockerHoleSize = mConfig["dicer"]["rbb_hole_size"].as<G4double>() * cm; }
-        if(mConfig["dicer"]["rbb_hole_separation"])   { mRotatingBeamBlockerHoleSeparation = mConfig["dicer"]["rbb_hole_separation"].as<G4double>() * cm; }
-
-        if(mConfig["dicer"]["construct_bc"])   { mConstructBinocularCollimator = mConfig["dicer"]["construct_bc"].as<G4bool>(); }
-        if(mConfig["dicer"]["bc_material"])    { mBinocularCollimatorMaterialName = mConfig["dicer"]["bc_material"].as<std::string>(); }
-        if(mConfig["dicer"]["bc_entrance"])    { mBinocularCollimatorEntrance = mConfig["dicer"]["bc_entrance"].as<G4double>() * m; }
-        if(mConfig["dicer"]["bc_width"])       { mBinocularCollimatorWidth = mConfig["dicer"]["bc_width"].as<G4double>() * cm; }
-        if(mConfig["dicer"]["bc_height"])      { mBinocularCollimatorHeight = mConfig["dicer"]["bc_height"].as<G4double>() * cm; }
-        if(mConfig["dicer"]["bc_length"])      { mBinocularCollimatorLength = mConfig["dicer"]["bc_length"].as<G4double>() * cm; }
-        if(mConfig["dicer"]["bc_hole_size"])   { mBinocularCollimatorHoleSize = mConfig["dicer"]["bc_hole_size"].as<G4double>() * cm; }
-        if(mConfig["dicer"]["bc_hole_separation"])   { mBinocularCollimatorHoleSeparation = mConfig["dicer"]["bc_hole_separation"].as<G4double>() * cm; }
-
-        if(mConfig["dicer"]["construct_as"])   { mConstructAperatureStop = mConfig["dicer"]["construct_as"].as<G4bool>(); }
-        if(mConfig["dicer"]["as_material"])    { mAperatureStopMaterialName = mConfig["dicer"]["as_material"].as<std::string>(); }
-        if(mConfig["dicer"]["as_entrance"])    { mAperatureStopEntrance = mConfig["dicer"]["as_entrance"].as<G4double>() * m; }
-        if(mConfig["dicer"]["as_width"])       { mAperatureStopWidth = mConfig["dicer"]["as_width"].as<G4double>() * cm; }
-        if(mConfig["dicer"]["as_height"])      { mAperatureStopHeight = mConfig["dicer"]["as_height"].as<G4double>() * cm; }
-        if(mConfig["dicer"]["as_length"])      { mAperatureStopLength = mConfig["dicer"]["as_length"].as<G4double>() * cm; }
-        if(mConfig["dicer"]["as_hole_size"])   { mAperatureStopHoleSize = mConfig["dicer"]["as_hole_size"].as<G4double>() * cm; }
-        if(mConfig["dicer"]["as_hole_separation"])   { mAperatureStopHoleSeparation = mConfig["dicer"]["as_hole_separation"].as<G4double>() * cm; }
-
         if(mConfig["hall"]["world_material"])   { mWorldMaterialName = mConfig["hall"]["world_material"].as<std::string>(); }
         if(mConfig["hall"]["world_x"])          { mWorldX = mConfig["hall"]["world_x"].as<G4double>() * m; }
         if(mConfig["hall"]["world_y"])          { mWorldY = mConfig["hall"]["world_y"].as<G4double>() * m; }
@@ -127,7 +101,7 @@ namespace Artie
     }
 #endif
 
-    void ArtieIIDICERDetectorConstruction::DefineMaterials()
+    void ArtieIInTOFDetectorConstruction::DefineMaterials()
     {
         mActiveVolumeMaterial = CreateMaterial(mActiveVolumeMaterialName, "ActiveVolume");
         mWorldMaterial = CreateMaterial(mWorldMaterialName, "World");
@@ -146,21 +120,8 @@ namespace Artie
         
         mOuterFlangeLeftSideMaterial = CreateMaterial(mOuterFlangeLeftSideMaterialName, "OuterFlangeLeftSide");
         mOuterFlangeRightSideMaterial = CreateMaterial(mOuterFlangeRightSideMaterialName, "OuterFlangeRightSide");
-        
-        mRotatingBeamBlockerMaterial = CreateMaterial(mRotatingBeamBlockerMaterialName, "RotatingBeamBlocker");
-        mRotatingBeamBlockerLeftHoleMaterial = CreateMaterial(mWorldMaterialName, "RotatingBeamBlockerLeftHole");
-        mRotatingBeamBlockerRightHoleMaterial = CreateMaterial(mWorldMaterialName, "RotatingBeamBlockerRightHole");
 
-        mBinocularCollimatorMaterial = CreateMaterial(mBinocularCollimatorMaterialName, "BinocularCollimator");
-        mBinocularCollimatorLeftHoleMaterial = CreateMaterial(mWorldMaterialName, "BinocularCollimatorLeftHole");
-        mBinocularCollimatorRightHoleMaterial = CreateMaterial(mWorldMaterialName, "BinocularCollimatorRightHole");
-        
-        mAperatureStopMaterial = CreateMaterial(mAperatureStopMaterialName, "AperatureStop");
-        mAperatureStopLeftHoleMaterial = CreateMaterial(mWorldMaterialName, "AperatureStopLeftHole");
-        mAperatureStopRightHoleMaterial = CreateMaterial(mWorldMaterialName, "AperatureStopRightHole");
-
-        mDetectorLeftMaterial = CreateMaterial(mDetectorMaterialName, "DetectorLeft");
-        mDetectorRightMaterial = CreateMaterial(mDetectorMaterialName, "DetectorRight");
+        mDetectorMaterial = CreateMaterial(mDetectorMaterialName, "Detector");
 
         for (G4int i = 0; i < mFilterMaterialNames.size(); i++)
         {
@@ -168,11 +129,11 @@ namespace Artie
         }
     }
 
-    ArtieIIDICERDetectorConstruction::~ArtieIIDICERDetectorConstruction()
+    ArtieIInTOFDetectorConstruction::~ArtieIInTOFDetectorConstruction()
     {
     }
 
-    G4VPhysicalVolume* ArtieIIDICERDetectorConstruction::Construct()
+    G4VPhysicalVolume* ArtieIInTOFDetectorConstruction::Construct()
     {
         DefineMaterials();
         G4double mTargetZ = mTZeroLocation + mTargetEntrance + 0.5 * mContainerLength;
@@ -532,53 +493,27 @@ namespace Artie
         // Construct the detector
         if(mConstructDetector)
         {
-            mSolidDetectorLeft = new G4Tubs(
-                "Solid_ArtieIITargetDetectorLeft", 
+            mSolidDetector = new G4Tubs(
+                "Solid_ArtieIITargetDetector", 
                 0,
                 mDetectorRadius, 
                 0.5 * mDetectorLength, 
                 0,
                 2*M_PI
             );
-            mLogicalDetectorLeft = new G4LogicalVolume(
-                mSolidDetectorLeft, 
-                mDetectorLeftMaterial, 
-                "Logical_ArtieIITargetDetectorLeft"
+            mLogicalDetector = new G4LogicalVolume(
+                mSolidDetector, 
+                mDetectorMaterial, 
+                "Logical_ArtieIITargetDetector"
             );
-            mPhysicalDetectorLeft = new G4PVPlacement(
+            mPhysicalDetector = new G4PVPlacement(
                 0, 
                 G4ThreeVector(
-                    - mDetectorSeparation * 0.5,
+                    0.,
                     0., 
                     + mTZeroLocation + mDetectorEntrance + mDetectorLength * 0.5),
-                mLogicalDetectorLeft, 
-                "Physical_ArtieIITargetDetectorLeft", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
-            mSolidDetectorRight = new G4Tubs(
-                "Solid_ArtieIITargetDetectorRight", 
-                0,
-                mDetectorRadius, 
-                0.5 * mDetectorLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalDetectorRight = new G4LogicalVolume(
-                mSolidDetectorRight, 
-                mDetectorRightMaterial, 
-                "Logical_ArtieIITargetDetectorRight"
-            );
-            mPhysicalDetectorRight = new G4PVPlacement(
-                0, 
-                G4ThreeVector(
-                    + mDetectorSeparation * 0.5,
-                    0., 
-                    + mTZeroLocation + mDetectorEntrance + mDetectorLength * 0.5),
-                mLogicalDetectorRight, 
-                "Physical_ArtieIITargetDetectorRight", 
+                mLogicalDetector, 
+                "Physical_ArtieIITargetDetector", 
                 mLogicalExperimentalHall, 
                 false, 
                 0, 
@@ -625,266 +560,6 @@ namespace Artie
                 );
                 mPhysicalFilters.push_back(PhysicalFilter);
             }
-        }
-
-        if(mConstructRotatingBeamBlocker)
-        {
-            // RBB
-            mSolidRotatingBeamBlocker = new G4Tubs(
-                "Solid_ArtieIIRotatingBeamBlocker", 
-                0.0,
-                mRotatingBeamBlockerDiameter / 2.0, 
-                0.5 * mRotatingBeamBlockerLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalRotatingBeamBlocker = new G4LogicalVolume(
-                mSolidRotatingBeamBlocker, 
-                mRotatingBeamBlockerMaterial, 
-                "Logical_ArtieIIRotatingBeamBlocker"
-            );
-            mPhysicalRotatingBeamBlocker = new G4PVPlacement(
-                0, 
-                G4ThreeVector(
-                    0.,
-                    0.,
-                    (mTZeroLocation + mRotatingBeamBlockerEntrance + 0.5 * mRotatingBeamBlockerLength)
-                ),
-                mLogicalRotatingBeamBlocker, 
-                "Physical_ArtieIIRotatingBeamBlocker", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
-            // left hole
-            mSolidRotatingBeamBlockerLeftHole = new G4Tubs(
-                "Solid_ArtieIIRotatingBeamBlockerLeftHole", 
-                0.0,
-                mRotatingBeamBlockerHoleSize / 2.0, 
-                0.5 * mRotatingBeamBlockerLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalRotatingBeamBlockerLeftHole = new G4LogicalVolume(
-                mSolidRotatingBeamBlockerLeftHole, 
-                mRotatingBeamBlockerLeftHoleMaterial, 
-                "Logical_ArtieIIRotatingBeamBlockerLeftHole"
-            );
-            mPhysicalRotatingBeamBlockerLeftHole = new G4PVPlacement(
-                0, 
-                G4ThreeVector(
-                    -0.5 * mRotatingBeamBlockerHoleSeparation,
-                    0.,
-                    0.
-                ),
-                mLogicalRotatingBeamBlockerLeftHole, 
-                "Physical_ArtieIIRotatingBeamBlockerLeftHole", 
-                mLogicalRotatingBeamBlocker, 
-                false, 
-                0, 
-                true
-            );
-            // right hole
-            mSolidRotatingBeamBlockerRightHole = new G4Tubs(
-                "Solid_ArtieIIRotatingBeamBlockerRightHole", 
-                0.0,
-                mRotatingBeamBlockerHoleSize / 2.0, 
-                0.5 * mRotatingBeamBlockerLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalRotatingBeamBlockerRightHole = new G4LogicalVolume(
-                mSolidRotatingBeamBlockerRightHole, 
-                mRotatingBeamBlockerRightHoleMaterial, 
-                "Logical_ArtieIIRotatingBeamBlockerRightHole"
-            );
-            mPhysicalRotatingBeamBlockerRightHole = new G4PVPlacement(
-                0, 
-                G4ThreeVector(
-                    0.5 * mRotatingBeamBlockerHoleSeparation,
-                    0.,
-                    0.
-                ),
-                mLogicalRotatingBeamBlockerRightHole, 
-                "Physical_ArtieIIRotatingBeamBlockerRightHole", 
-                mLogicalRotatingBeamBlocker, 
-                false, 
-                0, 
-                true
-            );
-        }
-
-        if(mConstructBinocularCollimator)
-        {
-            // RBB
-            mSolidBinocularCollimator = new G4Box(
-                "Solid_ArtieIIBinocularCollimator", 
-                mBinocularCollimatorWidth / 2.0,
-                mBinocularCollimatorHeight / 2.0,
-                mBinocularCollimatorLength / 2.0
-            );
-            mLogicalBinocularCollimator = new G4LogicalVolume(
-                mSolidBinocularCollimator, 
-                mBinocularCollimatorMaterial, 
-                "Logical_ArtieIIBinocularCollimator"
-            );
-            mPhysicalBinocularCollimator = new G4PVPlacement(
-                0, 
-                G4ThreeVector(
-                    0.,
-                    0.,
-                    (mTZeroLocation + mBinocularCollimatorEntrance + 0.5 * mBinocularCollimatorLength)
-                ),
-                mLogicalBinocularCollimator, 
-                "Physical_ArtieIIBinocularCollimator", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
-            // left hole
-            mSolidBinocularCollimatorLeftHole = new G4Tubs(
-                "Solid_ArtieIIBinocularCollimatorLeftHole", 
-                0.0,
-                mBinocularCollimatorHoleSize / 2.0, 
-                0.5 * mBinocularCollimatorLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalBinocularCollimatorLeftHole = new G4LogicalVolume(
-                mSolidBinocularCollimatorLeftHole, 
-                mBinocularCollimatorLeftHoleMaterial, 
-                "Logical_ArtieIIBinocularCollimatorLeftHole"
-            );
-            mPhysicalBinocularCollimatorLeftHole = new G4PVPlacement(
-                0, 
-                G4ThreeVector(
-                    -0.5 * mBinocularCollimatorHoleSeparation,
-                    0.,
-                    0.
-                ),
-                mLogicalBinocularCollimatorLeftHole, 
-                "Physical_ArtieIIBinocularCollimatorLeftHole", 
-                mLogicalBinocularCollimator, 
-                false, 
-                0, 
-                true
-            );
-            // right hole
-            mSolidBinocularCollimatorRightHole = new G4Tubs(
-                "Solid_ArtieIIBinocularCollimatorRightHole", 
-                0.0,
-                mBinocularCollimatorHoleSize / 2.0, 
-                0.5 * mBinocularCollimatorLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalBinocularCollimatorRightHole = new G4LogicalVolume(
-                mSolidBinocularCollimatorRightHole, 
-                mBinocularCollimatorRightHoleMaterial, 
-                "Logical_ArtieIIBinocularCollimatorRightHole"
-            );
-            mPhysicalBinocularCollimatorRightHole = new G4PVPlacement(
-                0, 
-                G4ThreeVector(
-                    0.5 * mBinocularCollimatorHoleSeparation,
-                    0.,
-                    0.
-                ),
-                mLogicalBinocularCollimatorRightHole, 
-                "Physical_ArtieIIBinocularCollimatorRightHole", 
-                mLogicalBinocularCollimator, 
-                false, 
-                0, 
-                true
-            );
-        }
-
-        if(mConstructAperatureStop)
-        {
-            // RBB
-            mSolidAperatureStop = new G4Box(
-                "Solid_ArtieIIAperatureStop", 
-                mAperatureStopWidth / 2.0,
-                mAperatureStopHeight / 2.0,
-                mAperatureStopLength / 2.0
-            );
-            mLogicalAperatureStop = new G4LogicalVolume(
-                mSolidAperatureStop, 
-                mAperatureStopMaterial, 
-                "Logical_ArtieIIAperatureStop"
-            );
-            mPhysicalAperatureStop = new G4PVPlacement(
-                0, 
-                G4ThreeVector(
-                    0.,
-                    0.,
-                    (mTZeroLocation + mAperatureStopEntrance + 0.5 * mAperatureStopLength)
-                ),
-                mLogicalAperatureStop, 
-                "Physical_ArtieIIAperatureStop", 
-                mLogicalExperimentalHall, 
-                false, 
-                0, 
-                true
-            );
-            // left hole
-            mSolidAperatureStopLeftHole = new G4Tubs(
-                "Solid_ArtieIIAperatureStopLeftHole", 
-                0.0,
-                mAperatureStopHoleSize / 2.0, 
-                0.5 * mAperatureStopLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalAperatureStopLeftHole = new G4LogicalVolume(
-                mSolidAperatureStopLeftHole, 
-                mAperatureStopLeftHoleMaterial, 
-                "Logical_ArtieIIAperatureStopLeftHole"
-            );
-            mPhysicalAperatureStopLeftHole = new G4PVPlacement(
-                0, 
-                G4ThreeVector(
-                    -0.5 * mAperatureStopHoleSeparation,
-                    0.,
-                    0.
-                ),
-                mLogicalAperatureStopLeftHole, 
-                "Physical_ArtieIIAperatureStopLeftHole", 
-                mLogicalAperatureStop, 
-                false, 
-                0, 
-                true
-            );
-            // right hole
-            mSolidAperatureStopRightHole = new G4Tubs(
-                "Solid_ArtieIIAperatureStopRightHole", 
-                0.0,
-                mAperatureStopHoleSize / 2.0, 
-                0.5 * mAperatureStopLength, 
-                0,
-                2*M_PI
-            );
-            mLogicalAperatureStopRightHole = new G4LogicalVolume(
-                mSolidAperatureStopRightHole, 
-                mAperatureStopRightHoleMaterial, 
-                "Logical_ArtieIIAperatureStopRightHole"
-            );
-            mPhysicalAperatureStopRightHole = new G4PVPlacement(
-                0, 
-                G4ThreeVector(
-                    0.5 * mAperatureStopHoleSeparation,
-                    0.,
-                    0.
-                ),
-                mLogicalAperatureStopRightHole, 
-                "Physical_ArtieIIAperatureStopRightHole", 
-                mLogicalAperatureStop, 
-                false, 
-                0, 
-                true
-            );
         }
 
         // // Construct the hall
@@ -1045,7 +720,7 @@ namespace Artie
         return mPhysicalExperimentalHall;
     }
 
-    void ArtieIIDICERDetectorConstruction::ConstructSDandField()
+    void ArtieIInTOFDetectorConstruction::ConstructSDandField()
     {
     }
 }

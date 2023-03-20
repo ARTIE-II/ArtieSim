@@ -117,13 +117,13 @@ namespace Artie
         G4double LArTemperature()   { return mLArTemperature; }
         G4double LArPressure()      { return mLArPressure; }
 
-        G4double FlightPath()       { return mDetectorEntrance - mTZeroLocation; }
+        G4double FlightPath()       { return mDetectorEntrance; }
         inline static G4double GetNominalTOF(G4double energy)
         {
             G4double kinetic_mass = energy/NeutronMassMeV();
             G4double denominator = 1.0 - 1.0/((kinetic_mass + 1.0)*(kinetic_mass + 1.0));
             G4double correction_factor = sqrt(1.0 / denominator);
-            return ((mDetectorEntrance - mTZeroLocation) / SpeedOfLight()) * correction_factor;
+            return ((mDetectorEntrance) / SpeedOfLight()) * correction_factor;
         }
         inline static G4double GetNominalVelocity(G4double energy)
         {

@@ -42,7 +42,7 @@ namespace Artie
             if(mConfig["argon"]["lar_density"])         { mLArDensity = mConfig["argon"]["lar_density"].as<G4double>() * g/cm3; }
             if(mConfig["argon"]["lar_temperature"])     { mLArTemperature = mConfig["argon"]["lar_temperature"].as<G4double>() * kelvin; }
             if(mConfig["argon"]["lar_pressure"])        { mLArPressure = mConfig["argon"]["lar_pressure"].as<G4double>() * atmosphere; }
-            if(mConfig["detector"]["detector_entrace"]) { mDetectorEntrance = mConfig["detector"]["detector_entrance"].as<G4double>() * m; }
+            if(mConfig["detector"]["detector_entrance"]) { mDetectorEntrance = mConfig["detector"]["detector_entrance"].as<G4double>() * m; }
         }
 
         if(mConfig["generator"]["energy_cut_low"])  { mEnergyCutLow = mConfig["generator"]["energy_cut_low"].as<G4double>() * keV; }

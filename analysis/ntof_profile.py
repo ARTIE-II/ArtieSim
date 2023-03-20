@@ -6,7 +6,7 @@ import os
 if __name__ == "__main__":
 
     if not os.path.isdir("plots/"):
-        os.maksdirs("plots/")
+        os.makedirs("plots/")
 
     f = uproot.open("../data/Profile_188m.root")
     w, x, y = f['histfluka'].to_hist().to_numpy()
@@ -99,6 +99,8 @@ if __name__ == "__main__":
 
     f = uproot.open("../data/Counts_TOF_3p3_natAr.root")
     hist, edges = f['LiG_TOF_Argon_1e17'].to_numpy()
+    total = np.sum([hist[ii] for ii in range(len(hist)) if edges[ii+1] < 50000])
+    print(total * 14)
     fig, axs = plt.subplots(figsize=(10,10))
     axs.stairs(hist, edges, fill=True)
     axs.set_xlim([50000,70000])

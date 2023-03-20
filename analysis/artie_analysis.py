@@ -335,7 +335,7 @@ class ArtieAnalysis:
         plt.legend()
         plt.tight_layout()
         if(save != ''):
-            plt.savefig(f"plots/{save}_neutron_time_of_flight.png")
+            plt.savefig(f"plots/{save}/{save}_neutron_time_of_flight.png")
         if(show):
             plt.show()
         plt.close()
@@ -353,7 +353,7 @@ class ArtieAnalysis:
             plt.legend()
             plt.tight_layout()
             if(save != ''):
-                plt.savefig(f"plots/{save}_neutron_time_of_flight_pull.png")
+                plt.savefig(f"plots/{save}/{save}_neutron_time_of_flight_pull.png")
             if(show):
                 plt.show()
             plt.close()
@@ -410,7 +410,7 @@ class ArtieAnalysis:
         axs[0].legend()
         plt.tight_layout()
         if(save != ''):
-            plt.savefig(f"plots/{save}_tof_vs_neutron_energy.png")
+            plt.savefig(f"plots/{save}/{save}_tof_vs_neutron_energy.png")
         if(show):
             plt.show()
 
@@ -463,9 +463,9 @@ class ArtieAnalysis:
         plt.tight_layout()
         if(save != ''):
             if transmitted:
-                plt.savefig(f"plots/{save}_transmitted_neutron_energy.png")
+                plt.savefig(f"plots/{save}/{save}_transmitted_neutron_energy.png")
             else:
-                plt.savefig(f"plots/{save}_generated_neutron_energy.png")
+                plt.savefig(f"plots/{save}/{save}_generated_neutron_energy.png")
         if(show):
             plt.show()
         plt.close()
@@ -487,9 +487,9 @@ class ArtieAnalysis:
             plt.tight_layout()
             if(save != ''):
                 if transmitted:
-                    plt.savefig(f"plots/{save}_transmitted_neutron_energy_pull.png")
+                    plt.savefig(f"plots/{save}/{save}_transmitted_neutron_energy_pull.png")
                 else:
-                    plt.savefig(f"plots/{save}_generated_neutron_energy_pull.png")
+                    plt.savefig(f"plots/{save}/{save}_generated_neutron_energy_pull.png")
             if(show):
                 plt.show()
             plt.close()
@@ -552,7 +552,7 @@ class ArtieAnalysis:
         plt.legend()
         plt.tight_layout()
         if(save != ''):
-            plt.savefig(f"plots/{save}_neutron_transmission.png")
+            plt.savefig(f"plots/{save}/{save}_neutron_transmission.png")
         if(show):
             plt.show()
         plt.close()
@@ -624,7 +624,7 @@ class ArtieAnalysis:
         plt.legend()
         plt.tight_layout()
         if(save != ''):
-            plt.savefig(f"plots/{save}_neutron_cross_section.png")
+            plt.savefig(f"plots/{save}/{save}_neutron_cross_section.png")
         if(show):
             plt.show()
         plt.close()
@@ -680,7 +680,7 @@ class ArtieAnalysis:
         plt.legend()
         plt.tight_layout()
         if(save != ''):
-            plt.savefig(f"plots/{save}_neutron_starting_x.png")
+            plt.savefig(f"plots/{save}/{save}_neutron_starting_x.png")
         if(show):
             plt.show()
         plt.close()
@@ -708,7 +708,7 @@ class ArtieAnalysis:
             plt.suptitle(f"{name} - {input} Starting Positions")
             plt.tight_layout()
             if(save != ''):
-                plt.savefig(f"plots/{save}_{input}_neutron_starting.png")
+                plt.savefig(f"plots/{save}/{save}_{input}_neutron_starting.png")
             if(show):
                 plt.show()
             plt.close()
@@ -750,7 +750,7 @@ class ArtieAnalysis:
         plt.legend()
         plt.tight_layout()
         if(save != ''):
-            plt.savefig(f"plots/{save}_neutron_starting_y.png")
+            plt.savefig(f"plots/{save}/{save}_neutron_starting_y.png")
         if(show):
             plt.show()
         plt.close()
@@ -764,6 +764,8 @@ class ArtieAnalysis:
         save:   str='',
         show:   bool=False
     ):    
+        if not os.path.isdir(f"plots/{save}"):
+            os.mkdir(f"plots/{save}")
         self.plot_time_of_flight(
             inputs=inputs,
             number_of_bins=number_of_bins,

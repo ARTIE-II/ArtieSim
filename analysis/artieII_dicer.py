@@ -4,8 +4,8 @@ if __name__ == "__main__":
 
     artieII_cfg = {
         "inputs":   {
-            "argon":    "../outputs/artieII_ntof_ideal_scuba_high_0.root",
-            "vacuum":   "../outputs/artieII_ntof_vacuum_scuba_high_0.root"
+            "argon":    "../outputs/artieII_lanl_ideal_long_0.root",
+            "vacuum":   "../outputs/artieII_lanl_vacuum_long_0.root"
         }
     }
 
@@ -14,9 +14,9 @@ if __name__ == "__main__":
     )
 
     number_of_bins=100
-    energy_min=1500
-    energy_max=5000
-    save='artieII_ntof_scuba_medium'
+    energy_min=20
+    energy_max=200
+    save='artieII_dicer'
     show=False
 
     artie.plot_all(
@@ -26,5 +26,5 @@ if __name__ == "__main__":
         energy_max=energy_max,
         save=save,
         show=show,
-        name="nTOF"
+        name="DICER"
     )

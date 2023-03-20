@@ -2,7 +2,7 @@
 manager:
     number_of_threads:  8
     number_of_runs:     1
-    number_of_events:   100000
+    number_of_events:   5000000
     seed:               10942
     mode:               "run"   # interactive/run
     detector:           "artieII_dicer"
@@ -131,7 +131,7 @@ detector:
     detector_radius:        2.0 # cm
     detector_length:        50.0 # cm
     detector_separation:    6.0 # cm
-    detector_entrance:      0.0 # m
+    detector_entrance:      30.0 # m
 
     
 # ARTIE-I generator parameters
@@ -165,4 +165,4 @@ generator:
     beam_hole_separation:   6.0     # cm
     t_zero_location:        -30.0   # m
     energy_cut_low:         20      # keV
-    energy_cut_high:        70      # keV
+    energy_cut_high:        200      # keV
