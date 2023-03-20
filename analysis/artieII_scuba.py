@@ -4,8 +4,8 @@ if __name__ == "__main__":
 
     artieII_cfg = {
         "inputs":   {
-            "argon":    "../outputs/artieII_ntof_ideal_scuba_low_0.root",
-            "vacuum":   "../outputs/artieII_ntof_vacuum_scuba_low_0.root"
+            "argon":    "../outputs/artieII_ntof_ideal_scuba_medium_0.root",
+            "vacuum":   "../outputs/artieII_ntof_vacuum_scuba_medium_0.root"
         }
     }
 
@@ -14,9 +14,9 @@ if __name__ == "__main__":
     )
 
     number_of_bins=100
-    energy_min=20
-    energy_max=200
-    save='artieII_ntof_scuba_low'
+    energy_min=200
+    energy_max=2000
+    save='artieII_ntof_scuba_medium'
     show=False
 
     artie.plot_all(

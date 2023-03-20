@@ -4,8 +4,8 @@ if __name__ == "__main__":
 
     artieII_cfg = {
         "inputs":   {
-            "argon":    "../outputs/artieII_lanl_ideal_long_0.root",
-            "vacuum":   "../outputs/artieII_lanl_vacuum_long_0.root"
+            "argon":    "../outputs/artieII_lanl_ideal_short_0.root",
+            "vacuum":   "../outputs/artieII_lanl_vacuum_short_0.root"
         }
     }
 
@@ -16,7 +16,7 @@ if __name__ == "__main__":
     number_of_bins=100
     energy_min=20
     energy_max=200
-    save='artieII_dicer'
+    save='artieII_dicer_short'
     show=False
 
     artie.plot_all(
