@@ -6,7 +6,7 @@ manager:
     seed:               10942
     mode:               "run"   # interactive/run
     detector:           "artieII"
-    output_filename:    "artieII_ntof_vacuum_scuba_medium"
+    output_filename:    "artieII_ntof_vacuum_scuba_high"
     save_particle_maps: true
     save_primary_info:  true
     save_hits:          true
@@ -87,5 +87,5 @@ generator:
     ntof_beam_profile_name: "histfluka"
     
     t_zero_location: -188.0    # m
-    energy_cut_low:  200      # keV
-    energy_cut_high: 2000     # keV
+    energy_cut_low:  20      # keV
+    energy_cut_high: 20000     # keV

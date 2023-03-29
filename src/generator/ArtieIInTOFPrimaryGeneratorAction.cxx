@@ -76,7 +76,7 @@ namespace Artie
             Int_t energy_bin = mnTOFTOF->GetXaxis()->FindBin(beam_energy * MeV);
             TH1D* TOF = EventManager::GetEventManager()->GetnTOFTOFProjection(energy_bin);
             Double_t lambda = TOF->GetRandom() * cm;   
-            return lambda / (nominalVelocity * 100);
+            return lambda / (nominalVelocity);
         }
 #endif
         return 0.0;

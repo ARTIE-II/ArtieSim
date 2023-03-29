@@ -48,17 +48,17 @@ namespace Artie
 
         Double_t SampleTriangularDist(double FWHM)
         {       
-                std::random_device rd;
-                std::mt19937 gen{rd()};
+			std::random_device rd;
+			std::mt19937 gen{rd()};
 
-                double min = 0;
-                double peak = FWHM;
-                double max = 2*FWHM;
-                std::array<double, 3> i{min, peak, max};
-                std::array<double, 3> w{0, 1, 0};
-                std::piecewise_linear_distribution<double> d{i.begin(), i.end(), w.begin()};
+			double min = 0;
+			double peak = FWHM;
+			double max = 2*FWHM;
+			std::array<double, 3> i{min, peak, max};
+			std::array<double, 3> w{0, 1, 0};
+			std::piecewise_linear_distribution<double> d{i.begin(), i.end(), w.begin()};
 
-                return d(gen);
+			return d(gen);
         }
 
 #ifdef ARTIE_YAML

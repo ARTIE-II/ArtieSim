@@ -55,7 +55,7 @@ if __name__ == "__main__":
     w, x, y = f['histfluka'].to_hist().to_numpy()
     fig, axs = plt.subplots(figsize=(10,10))
     mesh = axs.pcolormesh(x, y, w.T)
-    axs.set_ylabel(r"$\lambda$")
+    axs.set_ylabel(r"$\lambda$ [cm]")
     axs.set_xlabel("Energy [eV]")
     axs.set_title("nTOF EAR1 Resolution Function")
     fig.colorbar(mesh, ax=axs)
