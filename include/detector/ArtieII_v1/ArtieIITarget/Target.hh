@@ -1,5 +1,5 @@
 /**
- * @file ArtieIInTOFDetectorConstruction.hh
+ * @file ArtieIITarget.hh
  * @author Nicholas Carrara [nmcarrara@ucdavis.edu]
  * @brief 
  * @version 0.0
@@ -40,33 +40,28 @@
 #include "yaml-cpp/yaml.h"
 #endif
 
+#include "DICER.hh"
 #include "Material.hh"
 #include "SensitiveDetector.hh"
 
 namespace Artie
 {
-    class ArtieIInTOFDetectorConstruction : public G4VUserDetectorConstruction
+    class ArtieIITarget
     {
     public:
-        ArtieIInTOFDetectorConstruction();
-        ~ArtieIInTOFDetectorConstruction();
+        ArtieIITarget();
+        ~ArtieIITarget();
 
 #ifdef ARTIE_YAML
-        ArtieIInTOFDetectorConstruction(YAML::Node config);
+        ArtieIITarget(YAML::Node config);
 #endif
 
         void DefineMaterials();
 
-        virtual G4VPhysicalVolume* Construct();
-    
-    private:
-        virtual void ConstructSDandField();
+        void Construct(G4LogicalVolume* logicalWorld);
 
     private:
         G4String mWorldMaterialName = {"high_vacuum"};
-        G4double mExperimentalHallX = {75 * m};
-        G4double mExperimentalHallY = {75 * m};
-        G4double mExperimentalHallZ = {75 * m};
 
         // main target volume
         G4double mTargetEntrance = {16.0 * m};
@@ -131,32 +126,7 @@ namespace Artie
         G4double mOuterFlangeRightSideRadius = {17.10436 / 2.0 * cm};
         G4double mOuterFlangeRightSideThickness = {0.20066};
 
-        // Detector
-        G4bool mConstructDetector = {true};
-        G4String mDetectorMaterialName = {"water"};
-        G4double mDetectorRadius = {2.0 * cm};
-        G4double mDetectorLength = {20.0 * cm};
-        G4double mDetectorEntrance = {0.0};
-        G4double mDetectorSeparation = {6.0 * cm};
-
-        //Filters
-        G4bool mConstructFilters = {true};
-        std::vector<std::string> mFilterMaterialNames = {};
-        std::vector<G4double> mFilterZPos = {};
-        std::vector<G4double> mFilterThickness = {};
-        std::vector<G4double> mFilterRadius = {};
-
-        G4double mWorldX = {4 * m};
-        G4double mWorldY = {4 * m};
-        G4double mWorldZ = {200 * m};
-
-        G4double mTZeroLocation = {-188.0 * m};
-
-        // Experimental Hall
-        G4Material *mWorldMaterial;
-        G4Box* mSolidExperimentalHall;
-        G4LogicalVolume* mLogicalExperimentalHall;
-        G4VPhysicalVolume* mPhysicalExperimentalHall;
+        G4double mTZeroLocation = {-30.0 * m};
 
         // Container Mother Volume
         G4Material *mContainerOuterMaterial;
@@ -233,18 +203,6 @@ namespace Artie
         G4Tubs *mSolidOuterFlangeRightSide;
         G4LogicalVolume* mLogicalOuterFlangeRightSide;
         G4VPhysicalVolume* mPhysicalOuterFlangeRightSide;
-
-        // Detector
-        G4Material* mDetectorMaterial;
-        G4Tubs *mSolidDetector;
-        G4LogicalVolume* mLogicalDetector;
-        G4VPhysicalVolume* mPhysicalDetector;
-
-        // Filters
-        std::vector<G4Material*> mFilterMaterials = {};
-        std::vector<G4Tubs*> mSolidFilters = {};
-        std::vector<G4LogicalVolume*> mLogicalFilters = {};
-        std::vector<G4VPhysicalVolume*> mPhysicalFilters = {};
 
 #ifdef ARTIE_YAML
         YAML::Node mConfig;

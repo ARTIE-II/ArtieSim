@@ -2,9 +2,9 @@
 manager:
     number_of_threads:  8
     number_of_runs:     1
-    number_of_events:   5000000
+    number_of_events:   5000
     seed:               10942
-    mode:               "run"   # interactive/run
+    mode:               "interactive"   # interactive/run
     detector:           "artieII_dicer"
     output_filename:    "artieII_lanl_ideal_long"
     save_particle_maps: true
@@ -126,6 +126,7 @@ hall:
 
 # ARTIE-II detector
 detector:
+    detector_type:          "simple"
     construct_detector:     true    # bool
     detector_material:      "water"
     detector_radius:        2.0 # cm

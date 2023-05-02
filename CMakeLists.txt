@@ -162,19 +162,6 @@ add_executable(artieII_run
     src/programs/ArtieII.cc 
 )
 target_link_libraries(artieII_run artie)
-
-add_executable(artieII_dicer 
-    src/programs/ArtieIIDICER.cc 
-)
-target_link_libraries(artieII_dicer artie)
-add_executable(artieII_nTOF 
-    src/programs/ArtieIInTOF.cc 
-)
-target_link_libraries(artieII_nTOF artie)
-add_executable(artieII_nTOFSCUBA 
-    src/programs/ArtieIInTOFSCUBA.cc 
-)
-target_link_libraries(artieII_nTOFSCUBA artie)
 ##############################################################
 
 ##############################################################

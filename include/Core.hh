@@ -36,7 +36,11 @@ namespace Artie
     inline G4double keVToJoules(G4double energy) { return energy * 1.60218e-16; }
     inline G4double SpeedOfLight()  { return 299792458 * m / s; }
 
-    inline G4int GetTimeInMilliseconds() { return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count(); }
+    inline G4int GetTimeInMilliseconds() { 
+        return std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now().time_since_epoch()
+        ).count(); 
+    }
 
     class ArrayManager
     {
