@@ -15,7 +15,7 @@
 #include "G4AnalysisManager.hh"
 #endif
 
-#include "ArtieIPrimaryGeneratorAction.hh"
+#include "ArtieIIPrimaryGeneratorAction.hh"
 #include "EventManager.hh"
 
 namespace Artie

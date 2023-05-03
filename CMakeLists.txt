@@ -153,11 +153,6 @@ endif()
 
 ##############################################################
 # create programs
-add_executable(artieI_run 
-    src/programs/ArtieI.cc 
-)
-target_link_libraries(artieI_run artie)
-# create programs
 add_executable(artieII_run 
     src/programs/ArtieII.cc 
 )

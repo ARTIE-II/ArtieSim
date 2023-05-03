@@ -23,17 +23,26 @@ namespace Artie
     {
     }
 
-#ifdef ARTIE_YAML
     void EventManager::SetConfig(YAML::Node config)
     {
         mConfig = config;
         if(mConfig["manager"])
         {
-            if(mConfig["manager"]["number_of_threads"]) { sNumberOfThreads = mConfig["manager"]["number_of_threads"].as<G4int>(); }
-            if(mConfig["manager"]["number_of_runs"])    { sNumberOfRuns = mConfig["manager"]["number_of_runs"].as<G4int>(); }
-            if(mConfig["manager"]["number_of_events"])  { sNumberOfEvents = mConfig["manager"]["number_of_events"].as<G4int>(); }
-            if(mConfig["manager"]["output_filename"])   { sOutputFileName = mConfig["manager"]["output_filename"].as<std::string>(); }
-            if(mConfig["manager"]["save_profile_data"]) { sSaveProfileData = mConfig["manager"]["save_profile_data"].as<G4bool>(); }
+            if(mConfig["manager"]["number_of_threads"]) { 
+                sNumberOfThreads = mConfig["manager"]["number_of_threads"].as<G4int>(); 
+            }
+            if(mConfig["manager"]["number_of_runs"])    { 
+                sNumberOfRuns = mConfig["manager"]["number_of_runs"].as<G4int>(); 
+            }
+            if(mConfig["manager"]["number_of_events"])  { 
+                sNumberOfEvents = mConfig["manager"]["number_of_events"].as<G4int>(); 
+            }
+            if(mConfig["manager"]["output_filename"])   { 
+                sOutputFileName = mConfig["manager"]["output_filename"].as<std::string>(); 
+            }
+            if(mConfig["manager"]["save_profile_data"]) { 
+                sSaveProfileData = mConfig["manager"]["save_profile_data"].as<G4bool>(); 
+            }
             if(mConfig["manager"]["save_non_detected_neutrons"]) { sSaveNonDetectedNeutrons = mConfig["manager"]["save_non_detected_neutrons"].as<G4bool>(); }
             if(mConfig["argon"]["use_g4_definition"])   { mUseG4Definition = mConfig["argon"]["use_g4_definition"].as<G4bool>(); }
             if(mConfig["argon"]["argon_36_ratio"])      { mArgon36Ratio = mConfig["argon"]["argon_36_ratio"].as<G4double>(); }
@@ -47,26 +56,14 @@ namespace Artie
 
         if(mConfig["generator"]["energy_cut_low"])  { mEnergyCutLow = mConfig["generator"]["energy_cut_low"].as<G4double>() * keV; }
         if(mConfig["generator"]["energy_cut_high"]) { mEnergyCutHigh = mConfig["generator"]["energy_cut_high"].as<G4double>() * keV; }
-    #ifdef ARTIE_ROOT
-        if(mConfig["generator"]["use_lanl_distribution"]) { mUseLANLDistribution = mConfig["generator"]["use_lanl_distribution"].as<G4bool>(); }
-        if(mConfig["generator"]["use_lanl_tof"]) { mUseLANLTOF = mConfig["generator"]["use_lanl_tof"].as<G4bool>(); }
-        if(mConfig["generator"]["use_ntof_tof"]) { mUsenTOFTOF = mConfig["generator"]["use_ntof_tof"].as<G4bool>(); }
-        if(mConfig["generator"]["use_ntof_beam_profile"]) { mUsenTOFBeamProfile = mConfig["generator"]["use_ntof_beam_profile"].as<G4bool>(); }
 
-        if(mConfig["generator"]["lanl_distribution_filename"])  { mLANLEnergyDistributionFileName = mConfig["generator"]["lanl_distribution_filename"].as<std::string>(); }
-        if(mConfig["generator"]["lanl_distribution_name"])      { mLANLEnergyDistributionName = mConfig["generator"]["lanl_distribution_name"].as<std::string>(); }
-        if(mConfig["generator"]["lanl_tof_filename"])  { mLANLTOFFileName = mConfig["generator"]["lanl_tof_filename"].as<std::string>(); }
-        if(mConfig["generator"]["lanl_tof_name"])      { mLANLTOFName = mConfig["generator"]["lanl_tof_name"].as<std::string>(); }
-        if(mConfig["generator"]["dicer_tof_filename"])  { mDICERToFFileName = mConfig["generator"]["dicer_tof_filename"].as<std::string>(); }
-
-        if(mConfig["generator"]["ntof_tof_filename"])  { mnTOFTOFFileName = mConfig["generator"]["ntof_tof_filename"].as<std::string>(); }
-        if(mConfig["generator"]["ntof_tof_name"])      { mnTOFTOFName = mConfig["generator"]["ntof_tof_name"].as<std::string>(); }
-
-        if(mConfig["generator"]["ntof_beam_profile_filename"])  { mnTOFBeamProfileFileName = mConfig["generator"]["ntof_beam_profile_filename"].as<std::string>(); }
-        if(mConfig["generator"]["ntof_beam_profile_name"])      { mnTOFBeamProfileName = mConfig["generator"]["ntof_beam_profile_name"].as<std::string>(); }
-
-        if(mUseLANLDistribution) 
-        {
+        // Set up energy distributions
+        std::string distribution_type = mConfig["generator"]["energy_distribution"]["distribution_type"].as<std::string>();
+        if(distribution_type == "lanl") 
+        { 
+            mLANLEnergyDistributionFileName = mConfig["generator"]["energy_distribution"]["distribution_file"].as<std::string>();
+            G4cout << mLANLEnergyDistributionFileName << G4endl;
+            mLANLEnergyDistributionName = mConfig["generator"]["energy_distribution"]["distribution_name"].as<std::string>();
             mLANLEnergyDistributionFile = new TFile(mLANLEnergyDistributionFileName);
             TGraph *DistributionGraph = (TGraph*)mLANLEnergyDistributionFile->Get(mLANLEnergyDistributionName);
 
@@ -97,38 +94,44 @@ namespace Artie
                 {
                     mLANLEnergyDistribution->Fill(x,y);
                 }
-            }
+            } 
         }
-        if(mUseLANLTOF) 
+        if(distribution_type == "ntof")
         {
-            mLANLTOFFile = new TFile(mLANLTOFFileName);
-            // Set up tof profile and projections
-            mLANLTOF.reset((TH2D*)mLANLTOFFile->Get(mLANLTOFName));
-            auto beam_x = mLANLTOF->GetXaxis();
-            auto num_bins = beam_x->GetNbins();
-            for(G4int ii = 0; ii < num_bins; ii++)
-            {
-                std::string projection_name = "profile_" + std::to_string(ii);
-                TH1D* projection = (TH1D*)mLANLTOF->ProjectionY(
-                    projection_name.c_str(),
-                    ii, ii+1
-                );
-                mLANLTOFProjections.emplace_back(projection);
-            }
+        }
+        
+        std::string profile_type = mConfig["generator"]["beam_profile"]["profile_type"].as<std::string>();
+        if(profile_type == "lanl") 
+        {
+        }
+        if(profile_type == "ntof") 
+        {
+            mnTOFBeamProfileFileName = mConfig["generator"]["beam_profile"]["profile_file"].as<std::string>();
+            mnTOFBeamProfileName = mConfig["generator"]["beam_profile"]["profile_name"].as<std::string>();
+            mnTOFBeamProfileFile = new TFile(mnTOFBeamProfileFileName);
+            mnTOFBeamProfile.reset((TH2D*)mnTOFBeamProfileFile->Get(mnTOFBeamProfileName));
+        }
 
-            //DICER ToF histograms
-            mDICERToFFile = new TFile(mDICERToFFileName);
-            std::string histEnergies[7] = {"1", "10", "100", "1000", "10000", "30000", "100000"};
-            // TH1D *h[std::size(histEnergies)];
+        std::string tof_type = mConfig["generator"]["time_of_flight"]["tof_type"].as<std::string>();
+        if(tof_type == "lanl") 
+        {
+            mLANLTOFFileName = mConfig["generator"]["time_of_flight"]["tof_file"].as<std::string>();
+            mLANLTOFName = mConfig["generator"]["time_of_flight"]["tof_name"].as<std::string>();
+
+            mLANLTOFFile = new TFile(mLANLTOFFileName);
+            std::string histEnergies[7] = {
+                "1", "10", "100", "1000", "10000", "30000", "100000"
+            };
             for (G4int i = 0; i < std::size(histEnergies); i++)
             {
                 std::string hist_name = "hist_" + histEnergies[i] + "ev";
-                TH1D *h1 = (TH1D*)mDICERToFFile->Get(hist_name.c_str());
-                mDICERToFHists.emplace_back(h1);
+                TH1D *h1 = (TH1D*)mLANLTOFFile->Get(hist_name.c_str());
+                mLANLTOFHists.emplace_back(h1);
             }
         }
-        if(mUsenTOFTOF) 
+        if(tof_type == "ntof") 
         {
+            mnTOFTOFFileName = mConfig["generator"]["time_of_flight"]["tof_file"].as<std::string>();
             mnTOFTOFFile = new TFile(mnTOFTOFFileName);
             // Set up tof profile and projections
             mnTOFTOF.reset((TH2D*)mnTOFTOFFile->Get(mnTOFTOFName));
@@ -145,18 +148,9 @@ namespace Artie
                 mnTOFTOFProjections.emplace_back(projection);
             }
         }
-        if(mUsenTOFBeamProfile)
-        {
-            mnTOFBeamProfileFile = new TFile(mnTOFBeamProfileFileName);
-            // Set up tof profile and projections
-            mnTOFBeamProfile.reset((TH2D*)mnTOFBeamProfileFile->Get(mnTOFBeamProfileName));
-        }
-    #endif
-        // Setting up the GDML parser
+
         G4GDMLParser* mGDMLParser;
-        // mGDMLParser->SetStripFlag(false);
-        // mGDMLParser->SetOverlapCheck(true);
-#endif
+
     }
 
     void EventManager::SaveGDML()
@@ -241,40 +235,40 @@ namespace Artie
     void EventManager::CloseOutputFile(G4int RunID)
     {
         auto AnalysisManager = G4AnalysisManager::Instance();
-#ifdef ARTIE_YAML
-        if(mSavedParameters == false)
-        {
-            G4int index = GetIndex("Configuration");
-            for(YAML::const_iterator it = mConfig.begin(); it != mConfig.end(); it++)
-            {
-                for(YAML::const_iterator iit = it->second.begin(); iit != it->second.end(); iit++)
-                {
-                    if (iit->first.as<std::string>() == "filter_materials" ||
-                        iit->first.as<std::string>() == "filter_z_position" ||
-                        iit->first.as<std::string>() == "filter_thickness" ||
-                        iit->first.as<std::string>() == "filter_radius"
-                    )
-                    {
-                        for(size_t jj = 0; jj < iit->second.size(); jj++)
-                        {
-                            AnalysisManager->FillNtupleSColumn(index, 0, it->first.as<std::string>());
-                            AnalysisManager->FillNtupleSColumn(index, 1, iit->first.as<std::string>());
-                            AnalysisManager->FillNtupleSColumn(index, 2, iit->second[jj].as<std::string>());
-                            AnalysisManager->AddNtupleRow(index);
-                        }
-                    }
-                    else
-                    {
-                        AnalysisManager->FillNtupleSColumn(index, 0, it->first.as<std::string>());
-                        AnalysisManager->FillNtupleSColumn(index, 1, iit->first.as<std::string>());
-                        AnalysisManager->FillNtupleSColumn(index, 2, iit->second.as<std::string>());
-                        AnalysisManager->AddNtupleRow(index);
-                    }
-                }
-            }
-            mSavedParameters = true;
-        }
-#endif
+// #ifdef ARTIE_YAML
+//         if(mSavedParameters == false)
+//         {
+//             G4int index = GetIndex("Configuration");
+//             for(YAML::const_iterator it = mConfig.begin(); it != mConfig.end(); it++)
+//             {
+//                 for(YAML::const_iterator iit = it->second.begin(); iit != it->second.end(); iit++)
+//                 {
+//                     if (iit->first.as<std::string>() == "filter_materials" ||
+//                         iit->first.as<std::string>() == "filter_z_position" ||
+//                         iit->first.as<std::string>() == "filter_thickness" ||
+//                         iit->first.as<std::string>() == "filter_radius"
+//                     )
+//                     {
+//                         for(size_t jj = 0; jj < iit->second.size(); jj++)
+//                         {
+//                             AnalysisManager->FillNtupleSColumn(index, 0, it->first.as<std::string>());
+//                             AnalysisManager->FillNtupleSColumn(index, 1, iit->first.as<std::string>());
+//                             AnalysisManager->FillNtupleSColumn(index, 2, iit->second[jj].as<std::string>());
+//                             AnalysisManager->AddNtupleRow(index);
+//                         }
+//                     }
+//                     else
+//                     {
+//                         AnalysisManager->FillNtupleSColumn(index, 0, it->first.as<std::string>());
+//                         AnalysisManager->FillNtupleSColumn(index, 1, iit->first.as<std::string>());
+//                         AnalysisManager->FillNtupleSColumn(index, 2, iit->second.as<std::string>());
+//                         AnalysisManager->AddNtupleRow(index);
+//                     }
+//                 }
+//             }
+//             mSavedParameters = true;
+//         }
+// #endif
         AnalysisManager->Write();
         AnalysisManager->CloseFile();
 

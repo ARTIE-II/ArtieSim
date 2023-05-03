@@ -1,5 +1,5 @@
 /**
- * @file ArtieIIDICERPrimaryGeneratorAction.hh
+ * @file ArtieIIPrimaryGeneratorAction.hh
  * @author Nicholas Carrara [nmcarrara@ucdavis.edu]
  * @brief 
  * @version 0.1
@@ -18,26 +18,22 @@
 #include "Randomize.hh"
 #include "EventManager.hh"
 
-#ifdef ARTIE_ROOT
 #include "TFile.h"
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TGraph.h"
 #include "TMath.h"
 #include "TRandom3.h"
-#endif
 
-#ifdef ARTIE_YAML
 #include "yaml-cpp/yaml.h"
-#endif
 
 namespace Artie
 {
-    class ArtieIIDICERPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
+    class ArtieIIPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     {   
     public:
-        ArtieIIDICERPrimaryGeneratorAction();
-        ~ArtieIIDICERPrimaryGeneratorAction();
+        ArtieIIPrimaryGeneratorAction();
+        ~ArtieIIPrimaryGeneratorAction();
 
         virtual void GeneratePrimaries(G4Event* event);
         void ConstructEnergyDistribution();
@@ -46,25 +42,8 @@ namespace Artie
         G4ThreeVector SampleBeamProfile(G4double t_zero_location);
         G4ThreeVector SampleBeamMomentum(G4ThreeVector StartPosition);
 
-        Double_t SampleTriangularDist(double FWHM)
-        {       
-			std::random_device rd;
-			std::mt19937 gen{rd()};
-
-			double min = 0;
-			double peak = FWHM;
-			double max = 2*FWHM;
-			std::array<double, 3> i{min, peak, max};
-			std::array<double, 3> w{0, 1, 0};
-			std::piecewise_linear_distribution<double> d{i.begin(), i.end(), w.begin()};
-
-			return d(gen);
-        }
-
-#ifdef ARTIE_YAML
-        ArtieIIDICERPrimaryGeneratorAction(YAML::Node config);
+        ArtieIIPrimaryGeneratorAction(YAML::Node config);
         YAML::Node Config() const { return mConfig; }
-#endif
 
     private:
         G4ParticleGun* mParticleGun;
@@ -75,39 +54,33 @@ namespace Artie
         G4ThreeVector mParticlePosition;
         G4ThreeVector mParticleMomentumDirection;
 
-        G4double mBeamHoleSeparation =  { 3.0 * cm};
         G4double mTZeroLocation =   { -30.0 * m };
         G4double mEnergyCutLow =    { 40 * keV };
         G4double mEnergyCutHigh =   { 70 * keV };
 
         G4bool mUseLANLDistribution = { false };
-        G4bool mUseLANLTOF =  { false };
-        G4double mProtonPulseFWHM;
+        G4bool mUsenTOFDistribution = { false };
+        G4bool mUseUniformDistribution = { false };
+
         G4bool mUseLANLBeamProfile = { false };
-        G4bool mGenerateSingleBeam = { false };
-        G4String mSingleBeamLocation = { "right" };
+        G4bool mUsenTOFBeamProfile = { false };
+        
+        G4bool mUseLANLTOF = { false };
+        G4bool mUsenTOFTOF = { false };
 
-        G4bool mGeneratePerfectBeam = { false };
-        G4bool mGenerateUniformBeam = { false };
-        G4double mUniformBeamRadius = { 6.0 * cm };
-        G4bool mGenerateUniformDiscs = { false };
-        G4double mUniformDiscRadius = { 1.0 * cm };
+        G4double mBeamHoleSeparation =  { 3.0 * cm};
+        G4int mLANLBeamLocation = {0};
 
-        G4bool mGenerateUniformMomentum = { false };
-        G4double mUniformMomentumRadius = { 1.0 * cm };
-
-
-#ifdef ARTIE_ROOT
         TH1D* mLANLEnergyDistribution = {0};
-        TH2D* mLANLTOF = {0};
         TH2D* mLANLBeamProfile = {0};
+        TH2D* mLANLTOF = {0};
+        
+        TH1D* mnTOFEnergyDistribution = {0};
+        TH2D* mnTOFBeamProfile = {0};
+        TH2D* mnTOFTOF = {0};
 
         TRandom3* mTRandom3 = {0};
-#endif
 
-#ifdef ARTIE_YAML
         YAML::Node mConfig;
-#endif
-
     };
 }

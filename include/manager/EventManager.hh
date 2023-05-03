@@ -149,10 +149,10 @@ namespace Artie
         void ConstructEnergyDistribution();
 #ifdef ARTIE_ROOT
         TH1D* GetLANLEnergyDistribution()       { return mLANLEnergyDistribution.get(); }
-        TH2D* GetLANLTOF()                      { return mLANLTOF.get(); }
-        TH1D* GetLANLTOFProjection(G4int ii)    { return mLANLTOFProjections[ii].get(); }
-        TH1D* GetDICERToFHist(G4int ii)         { return mDICERToFHists[ii].get(); }
+        TH1D* GetLANLTOFHist(G4int ii)          { return mLANLTOFHists[ii].get(); }
+        TH2D* GetLANLBeamProfile()              { return mLANLBeamProfile.get(); }
 
+        TH1D* GetnTOFEnergyDistribution()       { return mnTOFEnergyDistribution.get(); }
         TH2D* GetnTOFTOF()                      { return mnTOFTOF.get(); }
         TH1D* GetnTOFTOFProjection(G4int ii)    { return mnTOFTOFProjections[ii].get(); }
         TH2D* GetnTOFBeamProfile()              { return mnTOFBeamProfile.get(); }
@@ -348,55 +348,55 @@ namespace Artie
         // GDML parser
         G4GDMLParser* mGDMLParser;
 
-#ifdef ARTIE_ROOT
-        inline static G4bool mUseLANLDistribution = { false };
-        inline static G4bool mUseLANLTOF =  { false };
-
-        inline static G4bool mUsenTOFTOF =  { false };
-        inline static G4bool mUsenTOFBeamProfile =  { false };
-        
+        inline static G4double mEnergyCutLow = { 40 * keV };
+        inline static G4double mEnergyCutHigh = { 70 * keV };
+        inline static G4double mTZeroLocation = {-1 * m};
+        inline static G4double mDetectorEntrance = {30.0 * m};
         
         // LANL energy distribution
         inline static G4String mLANLEnergyDistributionFileName = {"resolution13a.root"};
         inline static G4String mLANLEnergyDistributionName = {"tally5"};
         inline static TFile* mLANLEnergyDistributionFile = {0};
         inline static std::shared_ptr<TH1D> mLANLEnergyDistribution = {nullptr};
-        inline static G4double mEnergyCutLow = { 40 * keV };
-        inline static G4double mEnergyCutHigh = { 70 * keV };
+
+        // LANL beam profile
+        inline static G4String mLANLBeamProfileFileName = {"resolution13a.root"};
+        inline static G4String mLANLBeamProfileName = {"tally5"};
+        inline static TFile mLANLBeamProfileFile = {0};
+        inline static std::shared_ptr<TH2D> mLANLBeamProfile = {nullptr};
+
         // LANL tof distribution
         inline static G4String mLANLTOFFileName = {"resolution13a.root"};
         inline static G4String mLANLTOFName = {"tally15"};
         inline static TFile* mLANLTOFFile = {0};
-        inline static std::shared_ptr<TH2D> mLANLTOF = {nullptr};
-        inline static std::vector<std::shared_ptr<TH1D>> mLANLTOFProjections = {};
-        // DICER ToF
-        inline static G4String mDICERToFFileName = {"moderator_hist.root"};
-        inline static TFile* mDICERToFFile = {0};
-        inline static std::vector<std::shared_ptr<TH1D>> mDICERToFHists = {};
-        // nTOF tof distribution
-        inline static G4String mnTOFTOFFileName = {"RF.root"};
-        inline static G4String mnTOFTOFName = {"histfluka"};
-        inline static TFile* mnTOFTOFFile = {0};
-        inline static std::shared_ptr<TH2D> mnTOFTOF = {nullptr};
-        inline static std::vector<std::shared_ptr<TH1D>> mnTOFTOFProjections = {};
+        inline static std::vector<std::shared_ptr<TH1D>> mLANLTOFHists = {};
+
+        // nTOF energy distribution
+        inline static G4String mnTOFEnergyDistributionFileName = {"resolution13a.root"};
+        inline static G4String mnTOFEnergyDistributionName = {"tally5"};
+        inline static TFile* mnTOFEnergyDistributionFile = {0};
+        inline static std::shared_ptr<TH1D> mnTOFEnergyDistribution = {nullptr};
+
         // nTOF beam profile
         inline static G4String mnTOFBeamProfileFileName = {"Profile_188m.root"};
         inline static G4String mnTOFBeamProfileName = {"histfluka"};
         inline static TFile* mnTOFBeamProfileFile = {0};
         inline static std::shared_ptr<TH2D> mnTOFBeamProfile = {nullptr};
 
-        inline static G4double mTZeroLocation = {-1 * m};
-        inline static G4double mDetectorEntrance = {30.0 * m};
-#endif
+        // nTOF tof distribution
+        inline static G4String mnTOFTOFFileName = {"RF.root"};
+        inline static G4String mnTOFTOFName = {"histfluka"};
+        inline static TFile* mnTOFTOFFile = {0};
+        inline static std::shared_ptr<TH2D> mnTOFTOF = {nullptr};
+        inline static std::vector<std::shared_ptr<TH1D>> mnTOFTOFProjections = {};
+
+        inline static G4bool mSavedParameters = {false};
+        inline static YAML::Node mConfig;    
 
 #ifdef ARTIE_PROFILING
         inline static thread_local std::map<G4String, Profile> sFunctionProfiles = {};
         inline static thread_local std::vector<G4int> sProfilingTime = {};
 #endif
 
-#ifdef ARTIE_YAML
-        inline static G4bool mSavedParameters = {false};
-        inline static YAML::Node mConfig;
-#endif     
     };
 }

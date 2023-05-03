@@ -1,5 +1,5 @@
 /**
- * @file ArtieIInTOFActionInitialization.hh
+ * @file ArtieIIActionInitialization.hh
  * @author Nicholas Carrara [nmcarrara@ucdavis.edu]
  * @brief 
  * @version 0.1
@@ -8,7 +8,7 @@
 #pragma once
 #include "G4VUserActionInitialization.hh"
 
-#include "ArtieIInTOFPrimaryGeneratorAction.hh"
+#include "ArtieIIPrimaryGeneratorAction.hh"
 #include "RunAction.hh"
 #include "EventAction.hh"
 #include "SteppingAction.hh"
@@ -17,14 +17,14 @@
 
 namespace Artie
 {
-    class ArtieIInTOFActionInitialization : public G4VUserActionInitialization
+    class ArtieIIActionInitialization : public G4VUserActionInitialization
     {
     public:
-        ArtieIInTOFActionInitialization();
-        ~ArtieIInTOFActionInitialization();
+        ArtieIIActionInitialization();
+        ~ArtieIIActionInitialization();
 
 #ifdef ARTIE_YAML
-        ArtieIInTOFActionInitialization(YAML::Node config);
+        ArtieIIActionInitialization(YAML::Node config);
 #endif
 
         virtual void Build() const;
