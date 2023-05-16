@@ -30,6 +30,7 @@ namespace Artie
         if(mConfig["hall"]["world_z"])          { mExperimentalHallZ = mConfig["hall"]["world_z"].as<G4double>() * m; }
 
         mTarget = ArtieIITarget(config);
+        mFilters = Filters(config);
         mDICER = DICER(config);
         mnTOF = nTOF(config);
 
@@ -73,6 +74,10 @@ namespace Artie
             false,
             0
         );
+
+        if(mConfig["filters"]) {
+            mFilters.Construct(mLogicalExperimentalHall);
+        }
 
         if(mConfig["dicer"]) {
             mDICER.Construct(mLogicalExperimentalHall);

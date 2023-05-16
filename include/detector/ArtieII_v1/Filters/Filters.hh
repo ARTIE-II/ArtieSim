@@ -1,5 +1,5 @@
 /**
- * @file ArtieIIDetectorConstruction.hh
+ * @file Filters.hh
  * @author Nicholas Carrara [nmcarrara@ucdavis.edu]
  * @brief 
  * @version 0.0
@@ -40,53 +40,34 @@
 #include "yaml-cpp/yaml.h"
 #endif
 
-#include "DICER.hh"
-#include "LiG.hh"
 #include "Material.hh"
-#include "Filters.hh"
-#include "nTOF.hh"
 #include "SensitiveDetector.hh"
-#include "SimpleDetector.hh"
-#include "DICERDetector.hh"
-#include "Target.hh"
 
 namespace Artie
 {
-    class ArtieIIDetectorConstruction : public G4VUserDetectorConstruction
+    class Filters
     {
     public:
-        ArtieIIDetectorConstruction();
-        ~ArtieIIDetectorConstruction();
+        Filters();
+        ~Filters();
 
 #ifdef ARTIE_YAML
-        ArtieIIDetectorConstruction(YAML::Node config);
+        Filters(YAML::Node config);
 #endif
 
         void DefineMaterials();
-
-        virtual G4VPhysicalVolume* Construct();
+        void Construct(G4LogicalVolume* logicalWorld);
     
     private:
-        virtual void ConstructSDandField();
+        G4bool mConstructFilters = {false};
+        std::vector<std::string> mFilterMaterialNames = {};
+        std::vector<G4double> mFilterRadius = {};
+        std::vector<G4double> mFilterThickness = {};
+        std::vector<G4double> mFilterXPos = {};
+        std::vector<G4double> mFilterZPos = {};
+        std::vector<G4Material*> mFilterMaterials = {};
 
-    private:
-        G4String mWorldMaterialName = {"high_vacuum"};
-        G4double mExperimentalHallX = {500 * m};
-        G4double mExperimentalHallY = {500 * m};
-        G4double mExperimentalHallZ = {500 * m};
-
-        // Experimental Hall
-        G4Material *mWorldMaterial;
-        G4Box* mSolidExperimentalHall;
-        G4LogicalVolume* mLogicalExperimentalHall;
-        G4VPhysicalVolume* mPhysicalExperimentalHall;
-
-        ArtieIITarget mTarget;
-        Filters mFilters;
-        DICER mDICER;
-        nTOF mnTOF;
-        SimpleDetector mSimpleDetector;
-        DICERDetector mDICERDetector;
+        G4double mTZeroLocation = {-30 * m};
 
 #ifdef ARTIE_YAML
         YAML::Node mConfig;

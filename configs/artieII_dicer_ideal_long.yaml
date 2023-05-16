@@ -2,11 +2,11 @@
 manager:
     number_of_threads:  8
     number_of_runs:     1
-    number_of_events:   5000
+    number_of_events:   5000000
     seed:               10942
     mode:               "run"   # interactive/run
     detector:           "artieII_dicer"
-    output_filename:    "artieII_lanl_ideal_long"
+    output_filename:    "dicer_right_4al_filter"
     save_particle_maps: true
     save_primary_info:  true
     save_particle_info: true
@@ -57,12 +57,12 @@ argon:
 
 # generator parameters
 generator:
-    energy_cut_low:         20      # keV
-    energy_cut_high:        200     # keV
+    energy_cut_low:         0.1      # keV
+    energy_cut_high:        2000     # keV
     t_zero_location:        -30.0   # m
 
     energy_distribution:
-        distribution_type:  "lanl"      # "lanl", "ntof", "uniform"
+        distribution_type:  "uniform"      # "lanl", "ntof", "uniform"
         distribution_file:  "data/resolution13a.root"
         distribution_name:  "tally5"
 
@@ -70,7 +70,7 @@ generator:
         profile_type:   "lanl"      # "lanl", "ntof", "none"
         profile_file:   "data/resolution13a.root"
         profile_name:   "tally15"
-        beam_location:  "both"      # left, right, both, profile for LANL, none for nTOF
+        beam_location:  "right"      # left, right, both, profile for LANL, none for nTOF
         
     time_of_flight:
         tof_type:       "lanl"
@@ -83,7 +83,7 @@ target:
     target_radius:          0.5    # cm
     target_length:          199.9996      # cm
 
-    target_entrance:	16.0 # cm
+    target_entrance:	16.0 # m
     target_x:	2.475 # cm
     target_y:	0.0 # cm
 
@@ -133,6 +133,15 @@ target:
     outer_flange_right_side_material:   "aluminum"
     outer_flange_right_side_radius:     12.7 #cm
     outer_flange_right_side_thickness:  0.20066 # cm
+
+# ARTIE Filters
+filters:
+    construct_filters:  true                   #bool
+    filter_materials:   ["aluminum", "aluminum", "aluminum", "aluminum", "aluminum", "aluminum", "aluminum", "aluminum"]
+    filter_x_position:  [2.475, -2.475, 2.475, -2.475, 2.475, -2.475, 2.475, -2.475]
+    filter_z_position:  [15.5, 15.5, 15.55, 15.55, 15.6, 15.6, 15.65, 15.65]            # m
+    filter_thickness:   [2.54, 2.54, 2.54, 2.54, 2.54, 2.54, 2.54, 2.54]             # cm
+    filter_radius:      [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0]      # cm
 
 dicer:
     construct_rbb:	true

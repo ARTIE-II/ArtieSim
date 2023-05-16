@@ -439,8 +439,14 @@ namespace Artie
             AnalysisManager->CreateNtupleIColumn("num_scatter");
             AnalysisManager->CreateNtupleIColumn("num_scatter_out");
             AnalysisManager->CreateNtupleIColumn("gas_first");
+            AnalysisManager->CreateNtupleDColumn("first_scatter_x");
+            AnalysisManager->CreateNtupleDColumn("first_scatter_y");
             AnalysisManager->CreateNtupleDColumn("first_scatter_z");
             AnalysisManager->CreateNtupleDColumn("first_scatter_t");
+            AnalysisManager->CreateNtupleDColumn("second_scatter_x");
+            AnalysisManager->CreateNtupleDColumn("second_scatter_y");
+            AnalysisManager->CreateNtupleDColumn("second_scatter_z");
+            AnalysisManager->CreateNtupleDColumn("second_scatter_t");
             AnalysisManager->CreateNtupleDColumn("max_dphi");
             AnalysisManager->CreateNtupleDColumn("max_dp");
             AnalysisManager->CreateNtupleDColumn("max_dE");
@@ -636,15 +642,21 @@ namespace Artie
             AnalysisManager->FillNtupleIColumn(index, 15, mNeutronEventData[ii].num_scatter);
             AnalysisManager->FillNtupleIColumn(index, 16, mNeutronEventData[ii].num_scatter_out);
             AnalysisManager->FillNtupleIColumn(index, 17, mNeutronEventData[ii].gas_first);
-            AnalysisManager->FillNtupleDColumn(index, 18, mNeutronEventData[ii].first_scatter_z);
-            AnalysisManager->FillNtupleDColumn(index, 19, mNeutronEventData[ii].first_scatter_t);
-            AnalysisManager->FillNtupleDColumn(index, 20, mNeutronEventData[ii].max_dphi);
-            AnalysisManager->FillNtupleDColumn(index, 21, mNeutronEventData[ii].max_dp);
-            AnalysisManager->FillNtupleDColumn(index, 22, mNeutronEventData[ii].max_dE);
-            AnalysisManager->FillNtupleIColumn(index, 23, mNeutronEventData[ii].safe_passage);
-            AnalysisManager->FillNtupleDColumn(index, 24, mNeutronEventData[ii].first_target_step_time);
-            AnalysisManager->FillNtupleDColumn(index, 25, mNeutronEventData[ii].first_target_step_energy);
-            AnalysisManager->FillNtupleDColumn(index, 26, mNeutronEventData[ii].first_target_step_z);
+            AnalysisManager->FillNtupleDColumn(index, 18, mNeutronEventData[ii].first_scatter_x);
+            AnalysisManager->FillNtupleDColumn(index, 19, mNeutronEventData[ii].first_scatter_y);
+            AnalysisManager->FillNtupleDColumn(index, 20, mNeutronEventData[ii].first_scatter_z);
+            AnalysisManager->FillNtupleDColumn(index, 21, mNeutronEventData[ii].first_scatter_t);
+            AnalysisManager->FillNtupleDColumn(index, 22, mNeutronEventData[ii].second_scatter_x);
+            AnalysisManager->FillNtupleDColumn(index, 23, mNeutronEventData[ii].second_scatter_y);
+            AnalysisManager->FillNtupleDColumn(index, 24, mNeutronEventData[ii].second_scatter_z);
+            AnalysisManager->FillNtupleDColumn(index, 25, mNeutronEventData[ii].second_scatter_t);
+            AnalysisManager->FillNtupleDColumn(index, 26, mNeutronEventData[ii].max_dphi);
+            AnalysisManager->FillNtupleDColumn(index, 27, mNeutronEventData[ii].max_dp);
+            AnalysisManager->FillNtupleDColumn(index, 28, mNeutronEventData[ii].max_dE);
+            AnalysisManager->FillNtupleIColumn(index, 29, mNeutronEventData[ii].safe_passage);
+            AnalysisManager->FillNtupleDColumn(index, 30, mNeutronEventData[ii].first_target_step_time);
+            AnalysisManager->FillNtupleDColumn(index, 31, mNeutronEventData[ii].first_target_step_energy);
+            AnalysisManager->FillNtupleDColumn(index, 32, mNeutronEventData[ii].first_target_step_z);
             AnalysisManager->AddNtupleRow(index);
         }
 
@@ -1047,9 +1059,18 @@ namespace Artie
                         mNeutronEventData[neutron_index].num_scatter_out == 0
                     )
                     {
+                        mNeutronEventData[neutron_index].first_scatter_x = position.x();
+                        mNeutronEventData[neutron_index].first_scatter_y = position.y();
                         mNeutronEventData[neutron_index].first_scatter_z = position.z();
                         mNeutronEventData[neutron_index].first_scatter_t = track->GetGlobalTime();
                         mNeutronEventData[neutron_index].gas_first = 1;
+                    }
+                    else if((mNeutronEventData[neutron_index].num_scatter + mNeutronEventData[neutron_index].num_scatter_out) == 2)
+                    {
+                        mNeutronEventData[neutron_index].second_scatter_x = position.x();
+                        mNeutronEventData[neutron_index].second_scatter_y = position.y();
+                        mNeutronEventData[neutron_index].second_scatter_z = position.z();
+                        mNeutronEventData[neutron_index].second_scatter_t = track->GetGlobalTime();
                     }
                 } 
                 else 
@@ -1060,8 +1081,17 @@ namespace Artie
                         mNeutronEventData[neutron_index].num_scatter_out == 1
                     ) 
                     {
+                        mNeutronEventData[neutron_index].first_scatter_x = position.x();
+                        mNeutronEventData[neutron_index].first_scatter_y = position.y();
                         mNeutronEventData[neutron_index].first_scatter_z = position.z();
                         mNeutronEventData[neutron_index].first_scatter_t = track->GetGlobalTime();
+                    }
+                    else if((mNeutronEventData[neutron_index].num_scatter + mNeutronEventData[neutron_index].num_scatter_out) == 2)
+                    {
+                        mNeutronEventData[neutron_index].second_scatter_x = position.x();
+                        mNeutronEventData[neutron_index].second_scatter_y = position.y();
+                        mNeutronEventData[neutron_index].second_scatter_z = position.z();
+                        mNeutronEventData[neutron_index].second_scatter_t = track->GetGlobalTime();
                     }
                 }    
             }
