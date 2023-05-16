@@ -196,8 +196,6 @@ namespace Artie
         else if(mUsenTOFBeamProfile) {
             mnTOFBeamProfile->GetRandom2(x, y, mTRandom3);
         }
-        x *= cm;
-        y *= cm;
         return G4ThreeVector(x, y, t_zero_location);
     }
 

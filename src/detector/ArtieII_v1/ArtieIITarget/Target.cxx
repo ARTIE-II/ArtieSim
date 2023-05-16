@@ -111,7 +111,6 @@ namespace Artie
     {
         DefineMaterials();
         G4double mTargetZ = mTZeroLocation + mTargetEntrance + 0.5 * mContainerLength;
-
         // Construct outer container mother volume
         mSolidContainerInner = new G4Tubs(
             "Solid_ArtieIITargetContainerInner", 

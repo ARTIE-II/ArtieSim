@@ -33,6 +33,9 @@ namespace Artie
         mDICER = DICER(config);
         mnTOF = nTOF(config);
 
+        mSimpleDetector = SimpleDetector(config);
+        mDICERDetector = DICERDetector(config);
+
         DefineMaterials();
     }
 #endif
@@ -82,6 +85,9 @@ namespace Artie
 
         if(mConfig["detector"]["detector_type"].as<std::string>() == "simple") {
             mSimpleDetector.Construct(mLogicalExperimentalHall);
+        }
+        else if (mConfig["detector"]["detector_type"].as<std::string>() == "dicer") {
+            mDICERDetector.Construct(mLogicalExperimentalHall);
         }
 
         return mPhysicalExperimentalHall;

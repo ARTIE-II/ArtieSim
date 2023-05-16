@@ -40,8 +40,29 @@ namespace Artie
             if(mConfig["manager"]["output_filename"])   { 
                 sOutputFileName = mConfig["manager"]["output_filename"].as<std::string>(); 
             }
+            if(mConfig["manager"]["save_particle_maps"]) { 
+                sSaveParticleMaps = mConfig["manager"]["save_particle_maps"].as<G4bool>(); 
+            }
+            if(mConfig["manager"]["save_primary_info"]) { 
+                sSavePrimaryInfo = mConfig["manager"]["save_primary_info"].as<G4bool>(); 
+            }
+            if(mConfig["manager"]["save_particle_info"]) { 
+                sSaveParticleInfo = mConfig["manager"]["save_particle_info"].as<G4bool>(); 
+            }
+            if(mConfig["manager"]["save_energy_deposits"]) { 
+                sSaveEnergyDeposits = mConfig["manager"]["save_energy_deposits"].as<G4bool>(); 
+            }
+            if(mConfig["manager"]["save_neutron_data"]) { 
+                sSaveNeutronData = mConfig["manager"]["save_neutron_data"].as<G4bool>(); 
+            }
             if(mConfig["manager"]["save_profile_data"]) { 
                 sSaveProfileData = mConfig["manager"]["save_profile_data"].as<G4bool>(); 
+            }
+            if(mConfig["manager"]["save_non_detected_neutrons"]) { 
+                sSaveNonDetectedNeutrons = mConfig["manager"]["save_non_detected_neutrons"].as<G4bool>(); 
+            }
+            if(mConfig["manager"]["save_hits"]) { 
+                sSaveHits = mConfig["manager"]["save_hits"].as<G4bool>(); 
             }
             if(mConfig["manager"]["save_non_detected_neutrons"]) { sSaveNonDetectedNeutrons = mConfig["manager"]["save_non_detected_neutrons"].as<G4bool>(); }
             if(mConfig["argon"]["use_g4_definition"])   { mUseG4Definition = mConfig["argon"]["use_g4_definition"].as<G4bool>(); }
@@ -235,44 +256,10 @@ namespace Artie
     void EventManager::CloseOutputFile(G4int RunID)
     {
         auto AnalysisManager = G4AnalysisManager::Instance();
-// #ifdef ARTIE_YAML
-//         if(mSavedParameters == false)
-//         {
-//             G4int index = GetIndex("Configuration");
-//             for(YAML::const_iterator it = mConfig.begin(); it != mConfig.end(); it++)
-//             {
-//                 for(YAML::const_iterator iit = it->second.begin(); iit != it->second.end(); iit++)
-//                 {
-//                     if (iit->first.as<std::string>() == "filter_materials" ||
-//                         iit->first.as<std::string>() == "filter_z_position" ||
-//                         iit->first.as<std::string>() == "filter_thickness" ||
-//                         iit->first.as<std::string>() == "filter_radius"
-//                     )
-//                     {
-//                         for(size_t jj = 0; jj < iit->second.size(); jj++)
-//                         {
-//                             AnalysisManager->FillNtupleSColumn(index, 0, it->first.as<std::string>());
-//                             AnalysisManager->FillNtupleSColumn(index, 1, iit->first.as<std::string>());
-//                             AnalysisManager->FillNtupleSColumn(index, 2, iit->second[jj].as<std::string>());
-//                             AnalysisManager->AddNtupleRow(index);
-//                         }
-//                     }
-//                     else
-//                     {
-//                         AnalysisManager->FillNtupleSColumn(index, 0, it->first.as<std::string>());
-//                         AnalysisManager->FillNtupleSColumn(index, 1, iit->first.as<std::string>());
-//                         AnalysisManager->FillNtupleSColumn(index, 2, iit->second.as<std::string>());
-//                         AnalysisManager->AddNtupleRow(index);
-//                     }
-//                 }
-//             }
-//             mSavedParameters = true;
-//         }
-// #endif
         AnalysisManager->Write();
         AnalysisManager->CloseFile();
 
-#ifdef LARGEANT_PROFILING
+#ifdef ARTIE_PROFILING
         std::ofstream ProfilingFile;
         std::filesystem::create_directory(".logs");
         auto ThreadID = G4Threading::G4GetThreadId();
@@ -353,6 +340,46 @@ namespace Artie
             AnalysisManager->CreateNtupleIColumn("number_of_edeps");
             AnalysisManager->CreateNtupleDColumn("total_edep");
             AnalysisManager->CreateNtupleIColumn("number_of_hits");
+            AnalysisManager->FinishNtuple(index);
+        }
+        if(SaveParticleInfo())
+        {
+            G4int index = GetIndex("Particles");
+            AnalysisManager->CreateNtuple("Particles", "Particles");
+            AnalysisManager->CreateNtupleIColumn("event");
+            AnalysisManager->CreateNtupleIColumn("track_id");
+            AnalysisManager->CreateNtupleIColumn("pdg");
+            AnalysisManager->CreateNtupleIColumn("parent_track_id");
+            AnalysisManager->CreateNtupleSColumn("creation_process");
+            AnalysisManager->CreateNtupleDColumn("global_init_time");
+            AnalysisManager->CreateNtupleDColumn("local_init_time");
+            AnalysisManager->CreateNtupleDColumn("init_x");
+            AnalysisManager->CreateNtupleDColumn("init_y");
+            AnalysisManager->CreateNtupleDColumn("init_z");
+            AnalysisManager->CreateNtupleDColumn("init_energy");
+            AnalysisManager->CreateNtupleDColumn("init_px");
+            AnalysisManager->CreateNtupleDColumn("init_py");
+            AnalysisManager->CreateNtupleDColumn("init_pz");
+            AnalysisManager->FinishNtuple(index);
+        }
+        if(SaveEnergyDeposits())
+        {
+            G4int index = GetIndex("EnergyDeposits");
+            AnalysisManager->CreateNtuple("EnergyDeposits", "EnergyDeposits");
+            AnalysisManager->CreateNtupleIColumn("event");
+            AnalysisManager->CreateNtupleIColumn("track_id");
+            AnalysisManager->CreateNtupleSColumn("volume");
+            AnalysisManager->CreateNtupleSColumn("particle");
+            AnalysisManager->CreateNtupleIColumn("pdg");
+            AnalysisManager->CreateNtupleDColumn("local_time");
+            AnalysisManager->CreateNtupleDColumn("global_time");
+            AnalysisManager->CreateNtupleDColumn("init_x");
+            AnalysisManager->CreateNtupleDColumn("init_y");
+            AnalysisManager->CreateNtupleDColumn("init_z");
+            AnalysisManager->CreateNtupleDColumn("final_x");
+            AnalysisManager->CreateNtupleDColumn("final_y");
+            AnalysisManager->CreateNtupleDColumn("final_z");
+            AnalysisManager->CreateNtupleDColumn("edep");
             AnalysisManager->FinishNtuple(index);
         }
         if(SaveHits())
@@ -494,7 +521,62 @@ namespace Artie
         }
         EndFunctionProfile("FillPrimaryInfo");
     }
-
+    void EventManager::FillParticleInfo(G4int EventID)
+    {
+        StartFunctionProfile();
+        if(!SaveParticleInfo()) {
+            return;
+        }
+        auto AnalysisManager = G4AnalysisManager::Instance();
+        G4int index = GetIndex("Particles");
+        for(size_t ii = 0; ii < mParticles.size(); ii++)
+        {
+            AnalysisManager->FillNtupleIColumn(index, 0, EventID);
+            AnalysisManager->FillNtupleIColumn(index, 1, mParticles[ii].TrackID());
+            AnalysisManager->FillNtupleIColumn(index, 2, mParticles[ii].PDG());
+            AnalysisManager->FillNtupleIColumn(index, 3, mParticles[ii].ParentTrackID());
+            AnalysisManager->FillNtupleSColumn(index, 4, mParticles[ii].CreationProcess());
+            AnalysisManager->FillNtupleDColumn(index, 5, mParticles[ii].GetGlobalCreationTime());
+            AnalysisManager->FillNtupleDColumn(index, 6, mParticles[ii].GetT());
+            AnalysisManager->FillNtupleDColumn(index, 7, mParticles[ii].GetX());
+            AnalysisManager->FillNtupleDColumn(index, 8, mParticles[ii].GetY());
+            AnalysisManager->FillNtupleDColumn(index, 9, mParticles[ii].GetZ());
+            AnalysisManager->FillNtupleDColumn(index, 10, mParticles[ii].GetE());
+            AnalysisManager->FillNtupleDColumn(index, 11, mParticles[ii].GetPx());
+            AnalysisManager->FillNtupleDColumn(index, 12, mParticles[ii].GetPy());
+            AnalysisManager->FillNtupleDColumn(index, 13, mParticles[ii].GetPz());
+            AnalysisManager->AddNtupleRow(index);
+        }
+        EndFunctionProfile("FillParticleInfo");
+    }
+    void EventManager::FillEnergyDeposits(G4int EventID)
+    {
+        StartFunctionProfile();
+        if(!SaveEnergyDeposits()) {
+            return;
+        } 
+        auto AnalysisManager = G4AnalysisManager::Instance();
+        G4int index = GetIndex("EnergyDeposits");
+        for(size_t ii = 0; ii < mEnergyDeposits.size(); ii++)
+        {
+            AnalysisManager->FillNtupleIColumn(index, 0, EventID);
+            AnalysisManager->FillNtupleIColumn(index, 1, mEnergyDeposits[ii].track_id);
+            AnalysisManager->FillNtupleSColumn(index, 2, mEnergyDeposits[ii].volume);
+            AnalysisManager->FillNtupleSColumn(index, 3, mEnergyDeposits[ii].name);
+            AnalysisManager->FillNtupleIColumn(index, 4, mEnergyDeposits[ii].pdg);
+            AnalysisManager->FillNtupleDColumn(index, 5, mEnergyDeposits[ii].local_time);
+            AnalysisManager->FillNtupleDColumn(index, 6, mEnergyDeposits[ii].global_time);
+            AnalysisManager->FillNtupleDColumn(index, 7, mEnergyDeposits[ii].pre_step_position[0]);
+            AnalysisManager->FillNtupleDColumn(index, 8, mEnergyDeposits[ii].pre_step_position[1]);
+            AnalysisManager->FillNtupleDColumn(index, 9, mEnergyDeposits[ii].pre_step_position[2]);
+            AnalysisManager->FillNtupleDColumn(index, 10, mEnergyDeposits[ii].post_step_position[0]);
+            AnalysisManager->FillNtupleDColumn(index, 11, mEnergyDeposits[ii].post_step_position[1]);
+            AnalysisManager->FillNtupleDColumn(index, 12, mEnergyDeposits[ii].post_step_position[2]);
+            AnalysisManager->FillNtupleDColumn(index, 13, mEnergyDeposits[ii].energy);
+            AnalysisManager->AddNtupleRow(index);
+        }
+        EndFunctionProfile("FillEnergyDeposits");
+    }
     void EventManager::FillHits(G4int EventID)
     {
         if (!SaveHits()) {
@@ -681,6 +763,132 @@ namespace Artie
             GetPrimaryData(GetParticleAncestorTrackID(track_id)).total_daughter_final_energy += kinetic_energy;
         }
         EndFunctionProfile("AddPrimaryInfoFromTrackEnd");
+    }
+    void EventManager::AddParticleInfoFromTrackBegin(const G4Track* track)
+    {
+        StartFunctionProfile();
+        G4int track_id = track->GetTrackID();
+        G4int particle_pdg = track->GetParticleDefinition()->GetPDGEncoding();
+        G4int parent_track_id = track->GetParentID();
+        const G4VProcess* creator_process = track->GetCreatorProcess();
+        G4String process = "none";
+        if(creator_process) {
+            process = creator_process->GetProcessName();
+        }
+        G4double global_time = track->GetGlobalTime();
+        G4double local_time = track->GetLocalTime();
+        G4ThreeVector particle_position = track->GetVertexPosition();
+        G4double kinetic_energy = track->GetKineticEnergy();
+        G4ThreeVector particle_momentum = track->GetMomentum();
+
+        mParticles.emplace_back(
+            Particle(
+                track_id, 
+                particle_pdg,
+                parent_track_id,
+                process,
+                global_time,
+                local_time,
+                particle_position,
+                kinetic_energy,
+                particle_momentum
+            )
+        );
+        AddParticleTrackID(track_id, mParticles.size()-1);
+        EndFunctionProfile("AddParticleInfoFromTrackBegin");
+    }
+    void EventManager::AddParticleInfoFromTrackEnd(const G4Track* track)
+    {
+        StartFunctionProfile();
+        EndFunctionProfile("AddParticleInfoFromTrackEnd");
+    }
+    void EventManager::AddParticleInfoFromStep(const G4Step *step)
+    {
+        StartFunctionProfile();
+        G4VPhysicalVolume* physicalVolume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
+        G4LogicalVolume *logicalVolume = physicalVolume->GetLogicalVolume();
+        G4Track* track = step->GetTrack();
+        G4StepPoint* pre_step_point = step->GetPreStepPoint();
+        G4StepPoint* post_step_point = step->GetPostStepPoint();
+        const G4VProcess* pre_process = pre_step_point->GetProcessDefinedStep();
+        const G4VProcess* post_process = post_step_point->GetProcessDefinedStep();
+
+        G4int           event = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
+        G4String        particle_name = step->GetTrack()->GetParticleDefinition()->GetParticleName();
+        G4int           particle_pdg = step->GetTrack()->GetParticleDefinition()->GetPDGEncoding();
+        G4ThreeVector   particleStartPosition = step->GetPreStepPoint()->GetPosition();
+        G4double        local_time = track->GetLocalTime();
+        G4double        global_time = track->GetGlobalTime();
+        G4double        pre_step_energy = pre_step_point->GetKineticEnergy();
+        G4double        post_step_energy = post_step_point->GetKineticEnergy();
+        G4int           track_status = (int)track->GetTrackStatus();
+        G4int           track_id = track->GetTrackID();
+        G4int           parent_track_id = track->GetParentID();
+        G4ThreeVector   pre_step_position = pre_step_point->GetPosition();
+        G4ThreeVector   post_step_position = post_step_point->GetPosition();
+        G4ThreeVector   pre_step_momentum = pre_step_point->GetMomentum();
+        G4ThreeVector   post_step_momentum = post_step_point->GetMomentum();
+        G4double        edep = step->GetTotalEnergyDeposit();
+        G4double        kinetic_energy = track->GetKineticEnergy();
+
+        if(GetParticleParentTrackID(track_id) == 0)
+        {
+            if(parent_track_id == 0) {
+                GetPrimaryData(track_id).number_of_edeps += 1;
+                GetPrimaryData(track_id).total_edep += edep;
+            }
+            else {
+                GetPrimaryData(GetParticleAncestorTrackID(track_id)).total_daughter_edep += edep;
+            }
+        }
+        else
+        {
+            mParticles[GetParticleTrackID(track_id)].AddTrajectoryPoint(
+                local_time, pre_step_position, kinetic_energy, pre_step_momentum
+            );
+        }
+        EndFunctionProfile("AddParticleInfoFromStep");
+    }
+
+    void EventManager::AddEnergyDepositInfoFromStep(const G4Step* step)
+    {
+        StartFunctionProfile();
+        G4VPhysicalVolume* physicalVolume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
+        G4LogicalVolume *logicalVolume = physicalVolume->GetLogicalVolume();
+        G4String volume = logicalVolume->GetName();
+
+        G4Track* track = step->GetTrack();
+        G4StepPoint* pre_step_point = step->GetPreStepPoint();
+        G4StepPoint* post_step_point = step->GetPostStepPoint();
+        const G4VProcess* pre_process = pre_step_point->GetProcessDefinedStep();
+        const G4VProcess* post_process = post_step_point->GetProcessDefinedStep();
+
+        G4int           event = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
+        G4String        particle_name = step->GetTrack()->GetParticleDefinition()->GetParticleName();
+        G4int           particle_pdg = step->GetTrack()->GetParticleDefinition()->GetPDGEncoding();
+        G4ThreeVector   particleStartPosition = step->GetPreStepPoint()->GetPosition();
+        G4double        local_time = track->GetLocalTime();
+        G4double        global_time = track->GetGlobalTime();
+        G4double        pre_step_energy = pre_step_point->GetKineticEnergy();
+        G4double        post_step_energy = post_step_point->GetKineticEnergy();
+        G4int           track_status = (int)track->GetTrackStatus();
+        G4int           track_id = track->GetTrackID();
+        G4int           parent_track_id = track->GetParentID();
+        G4ThreeVector   pre_step_position = pre_step_point->GetPosition();
+        G4ThreeVector   post_step_position = post_step_point->GetPosition();
+        G4double        edep = step->GetTotalEnergyDeposit();
+        if (edep == 0.0) {
+            return;
+        }
+        mEnergyDeposits.emplace_back(
+            EnergyDeposit(
+                track_id, volume, particle_name,
+                particle_pdg, local_time, global_time,
+                pre_step_position, post_step_position,
+                edep
+            )
+        );
+        EndFunctionProfile("AddEnergyDepositInfoFromStep");
     }
 
     void EventManager::AddHitInfoFromStep(G4Step* step, G4TouchableHistory* history)

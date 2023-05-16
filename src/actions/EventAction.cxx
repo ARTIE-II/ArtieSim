@@ -30,8 +30,10 @@ namespace Artie
         auto Manager = EventManager::GetEventManager();
         Manager->FillParticleMaps(event->GetEventID());
         Manager->FillPrimaryInfo(event->GetEventID());
-        Manager->FillHits(event->GetEventID());
+        Manager->FillParticleInfo(event->GetEventID());
+        Manager->FillEnergyDeposits(event->GetEventID());
         Manager->FillNeutronEventData(event->GetEventID());
+        Manager->FillHits(event->GetEventID());
         
         // Send out tuples to analysis functions
         Manager->EvaluateEvent();

@@ -44,6 +44,8 @@
 #include "Hit.hh"
 #include "Neutron.hh"
 #include "Profile.hh"
+#include "Particle.hh"
+#include "EnergyDeposit.hh"
 
 class PhysicsList;
 
@@ -161,21 +163,27 @@ namespace Artie
         // Options to save various data to root files.
         void SaveParticleMaps(G4bool save)      { sSaveParticleMaps = save; }
         void SavePrimaryInfo(G4bool save)       { sSavePrimaryInfo = save; }
-        void SaveHits(G4bool save)              { sSaveHits = save; }
+        void SaveParticleInfo(G4bool save)      { sSaveParticleInfo = save; }
+        void SaveEnergyDeposits(G4bool save)    { sSaveEnergyDeposits = save; }
         void SaveNeutronData(G4bool save)       { sSaveNeutronData = save; }
         void SaveNonDetectedNeutrons(G4bool save) { sSaveNonDetectedNeutrons = save; }
+        void SaveHits(G4bool save)              { sSaveHits = save; }
         void SaveProfileData(G4bool save)       { sSaveProfileData = save; }
 
         G4bool SaveParticleMaps()       { return sSaveParticleMaps; }
         G4bool SavePrimaryInfo()        { return sSavePrimaryInfo; }
-        G4bool SaveHits()               { return sSaveHits; }
+        G4bool SaveParticleInfo()       { return sSaveParticleInfo; }
+        G4bool SaveEnergyDeposits()     { return sSaveEnergyDeposits; }
         G4bool SaveNeutronData()        { return sSaveNeutronData; }
         G4bool SaveNonDetectedNeutrons() { return sSaveNonDetectedNeutrons; }
+        G4bool SaveHits()               { return sSaveHits; }
         G4bool SaveProfileData()        { return sSaveProfileData; }
 
         void CreateTuples();
         void FillParticleMaps(G4int EventID = -1);
         void FillPrimaryInfo(G4int EventID = -1);
+        void FillParticleInfo(G4int EventID = -1);
+        void FillEnergyDeposits(G4int EventID = -1);
         void FillHits(G4int EventID = -1);
         void FillNeutronEventData(G4int EventID = -1);
         void FillNeutronRunData();
@@ -187,9 +195,11 @@ namespace Artie
             mParticleParentTrackID.clear();
             mParticleAncestorTrackID.clear();
             mPrimaryData.clear();
-            mHits.clear();
+            mParticles.clear();
+            mEnergyDeposits.clear();
             mNeutronEventData.clear();
             mNeutronEventDataMap.clear();
+            mHits.clear();
         }
         //*************************************************************************************************//
 
@@ -254,6 +264,21 @@ namespace Artie
         //*************************************************************************************************//
 
         //*************************************************************************************************//
+        // Particle level info to keep track of
+        void AddParticleInfoFromTrackBegin(const G4Track* track);
+        void AddParticleInfoFromTrackEnd(const G4Track* track);
+        void AddParticleInfoFromStep(const G4Step* step);
+        inline static thread_local const std::vector<Particle>& GetParticles()     { return mParticles; }
+        //*************************************************************************************************//
+
+        //*************************************************************************************************//
+        // Energy deposit level info to keep track of
+        void AddEnergyDepositInfoFromStep(const G4Step* step);
+        inline static thread_local const std::vector<EnergyDeposit>& GetEnergyDeposits() 
+        { return mEnergyDeposits; }
+        //*************************************************************************************************//
+
+        //*************************************************************************************************//
         // Hit level info to keep track of
         void AddHitInfoFromStep(G4Step* step, G4TouchableHistory* history);
         inline static thread_local const std::vector<Hit>& GetHits() { return mHits; }
@@ -313,6 +338,8 @@ namespace Artie
         inline static std::vector<Tuple> sTuples;
         inline static G4bool sSaveParticleMaps = {true};
         inline static G4bool sSavePrimaryInfo = {true};
+        inline static G4bool sSaveParticleInfo = true;
+        inline static G4bool sSaveEnergyDeposits = true;
         inline static G4bool sSaveHits = {true};
         inline static G4bool sSaveNeutronData = {true};
         inline static G4bool sSaveProfileData = {true};
@@ -336,10 +363,12 @@ namespace Artie
         inline static thread_local std::map<G4int, G4int>      mParticleAncestorTrackID;
 
         inline static thread_local std::vector<PrimaryData>    mPrimaryData;
-        inline static thread_local std::vector<Hit> mHits;
+        inline static thread_local std::vector<Particle>       mParticles;
+        inline static thread_local std::vector<EnergyDeposit>  mEnergyDeposits;
         inline static thread_local std::vector<NeutronEventData> mNeutronEventData;
         inline static thread_local std::vector<ProfileEventData> mProfileEventData;
         inline static thread_local std::map<G4int, G4int> mNeutronEventDataMap;
+        inline static thread_local std::vector<Hit> mHits;
         inline static NeutronRunData sNeutronRunData;
 
         // Analysis functions

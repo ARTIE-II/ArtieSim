@@ -2,11 +2,11 @@
 manager:
     number_of_threads:  8
     number_of_runs:     1
-    number_of_events:   5000000
+    number_of_events:   5000
     seed:               10942
     mode:               "run"   # interactive/run
     detector:           "artieII_dicer"
-    output_filename:    "artieII_lanl_ideal_medium"
+    output_filename:    "artieII_lanl_ideal_long"
     save_particle_maps: true
     save_primary_info:  true
     save_hits:          true
@@ -14,7 +14,17 @@ manager:
     save_profile_data:  true
     save_non_detected_neutrons: false
 
-# ARTIE argon parameters 
+# neutron HP parameters
+neutron:
+    skip_missing_isotopes:      true
+    do_not_adjust_final_state:  true
+    use_only_photo_evaporation: true
+    neglect_doppler:            true
+    produce_fission_fragments:  true
+    use_wendt_fission_model:    true
+    use_nresp71_model:          true
+
+# argon parameters 
 argon:
     use_g4_definition:  false
     argon_36_ratio:     0.334   # %
@@ -23,6 +33,28 @@ argon:
     lar_density:        1.3954  # g/cm^3
     lar_temperature:    85.0    # K
     lar_pressure:       0.952   # atm
+
+# generator parameters
+generator:
+    energy_cut_low:         20      # keV
+    energy_cut_high:        200     # keV
+    t_zero_location:        -30.0   # m
+
+    energy_distribution:
+        distribution_type:  "lanl"      # "lanl", "ntof", "uniform"
+        distribution_file:  "data/resolution13a.root"
+        distribution_name:  "tally5"
+
+    beam_profile:
+        profile_type:   "lanl"      # "lanl", "ntof", "none"
+        profile_file:   "data/resolution13a.root"
+        profile_name:   "tally15"
+        beam_location:  "left"      # left, right, both, profile for LANL, none for nTOF
+        
+    time_of_flight:
+        tof_type:       "lanl"
+        tof_file:       "data/moderator_hist.root"
+        tof_name:       "tally15"   
 
 # ARTIE-I target parameters
 target:
@@ -126,43 +158,10 @@ hall:
 
 # ARTIE-II detector
 detector:
+    detector_type:          "simple"
     construct_detector:     true    # bool
     detector_material:      "water"
     detector_radius:        2.0 # cm
     detector_length:        50.0 # cm
     detector_separation:    6.0 # cm
     detector_entrance:      30.0 # m
-
-    
-# ARTIE-I generator parameters
-generator:
-    # wether to use the LANL energy distribution
-    use_lanl_distribution: false
-    lanl_distribution_filename: "data/resolution13a.root"
-    lanl_distribution_name: "tally5"
-    
-    # wether to use the LANL tof for the 
-    # moderator function.
-    use_lanl_tof:  true
-    lanl_proton_pulse_FWHM: 125 #ns
-    lanl_tof_filename: "data/resolution13a.root"
-    lanl_tof_name: "tally15"
-    dicer_tof_filename: "data/moderator_hist.root"
-
-    # beam profile
-    use_lanl_beam_profile:  false
-    generate_single_beam:   true
-    single_beam_location:   "right"
-    generate_perfect_beam:  false
-    generate_uniform_beam:  false
-    uniform_beam_radius:    6.0     # cm
-
-    generate_uniform_discs: true
-    uniform_disc_radius:    0.05     # cm
-    generate_uniform_momentum:  false
-    uniform_momenentum_disc_radius: 1.0
-    
-    beam_hole_separation:   4.95     # cm
-    t_zero_location:        -30.0   # m
-    energy_cut_low:         20      # keV
-    energy_cut_high:        200      # keV

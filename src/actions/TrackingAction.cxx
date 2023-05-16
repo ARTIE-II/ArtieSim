@@ -22,6 +22,7 @@ namespace Artie
         auto Manager = EventManager::GetEventManager();
         Manager->AddParticleMapsFromTrack(track);
         Manager->AddPrimaryInfoFromTrackBegin(track);
+        Manager->AddParticleInfoFromTrackBegin(track);
         Manager->AddNeutronInfoFromTrackBegin(track);
     }
 
@@ -29,6 +30,7 @@ namespace Artie
     {
         auto Manager = EventManager::GetEventManager();
         Manager->AddPrimaryInfoFromTrackEnd(track);
+        Manager->AddParticleInfoFromTrackEnd(track);
         Manager->AddNeutronInfoFromTrackEnd(track);
     }
 

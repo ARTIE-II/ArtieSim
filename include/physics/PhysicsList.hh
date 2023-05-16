@@ -43,6 +43,8 @@
 #include "G4StepLimiterPhysics.hh"
 #include "G4StepLimiter.hh"
 
+#include "yaml-cpp/yaml.h"
+
 #include "G4ProcessTable.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4UnitsTable.hh"
@@ -58,12 +60,14 @@ namespace Artie
         PhysicsList();
         ~PhysicsList();
 
+        PhysicsList(YAML::Node config);
+
         virtual void SetCuts();
         virtual void ConstructParticle();
 
         void PrintPhysicsLists();
 
     private:
-        
+        YAML::Node mConfig;
     };
 }

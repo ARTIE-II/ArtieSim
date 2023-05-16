@@ -23,6 +23,8 @@ namespace Artie
             step->GetTrack()->SetTrackStatus(fStopAndKill);
         }
         auto Manager = EventManager::GetEventManager();
+        Manager->AddParticleInfoFromStep(step);
+        Manager->AddEnergyDepositInfoFromStep(step);
         Manager->AddNeutronInfoFromStep(step);
     }
 }

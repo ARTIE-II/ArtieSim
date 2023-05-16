@@ -9,13 +9,34 @@ manager:
     output_filename:    "artieII_lanl_ideal_long"
     save_particle_maps: true
     save_primary_info:  true
-    save_hits:          true
+    save_particle_info: true
+    save_energy_deposits: true
     save_neutron_data:  true
     save_profile_data:  true
     save_non_detected_neutrons: false
+    save_hits: true
 
-# neutron HP parameters
-neutron:
+# physics lists
+physics:
+  register_em_standard:         true
+  register_em_extra:            true
+  register_optical:             true
+  register_decay:               true
+  register_radioactive_decay:   true
+  register_stopping:            true
+  register_ion:                 true
+  register_hadron_elastic_hp:   true
+  register_hadron_qgsp_bert_hp: true
+  register_step_limiter:        true
+  register_fast_simulation:     false
+  register_lar_scintillation:   false
+  register_neutron_hp:          true
+
+  scintillation:
+    track_optical_photons:      false
+    track_thermal_electrons:    false
+
+  neutron:
     skip_missing_isotopes:      true
     do_not_adjust_final_state:  true
     use_only_photo_evaporation: true
@@ -49,7 +70,7 @@ generator:
         profile_type:   "lanl"      # "lanl", "ntof", "none"
         profile_file:   "data/resolution13a.root"
         profile_name:   "tally15"
-        beam_location:  "left"      # left, right, both, profile for LANL, none for nTOF
+        beam_location:  "both"      # left, right, both, profile for LANL, none for nTOF
         
     time_of_flight:
         tof_type:       "lanl"
@@ -142,26 +163,17 @@ dicer:
 
 
 hall:
-    # construct_beam_pipe:    true    # bool
-    # beam_pipe_material:     "rough_vacuum"
-    # beam_material:          "high_vacuum"
-    # beam_pipe_inner_radius: 18.0    # cm
-    # beam_pipe_outer_radius: 20.0    # cm
-    # gap:                    2.5     # m
-    # construct_hall:         true    # bool
-    # hall_material:          "concrete"
     world_x:                4       # m                 
     world_y:                4       # m
     world_z:                75     # m
     world_material:         "high_vacuum"
-    # wall_thickness:         1.0     # m
 
 # ARTIE-II detector
 detector:
-    detector_type:          "simple"
+    detector_type:          "dicer"
     construct_detector:     true    # bool
-    detector_material:      "water"
+    detector_material:      "lithium_glass"
     detector_radius:        2.0 # cm
-    detector_length:        50.0 # cm
+    detector_length:        10 # cm
     detector_separation:    6.0 # cm
     detector_entrance:      30.0 # m
