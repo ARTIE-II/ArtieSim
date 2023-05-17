@@ -296,8 +296,14 @@ namespace Artie
 
         //*************************************************************************************************//
         // Analysis related functions
-        void EvaluateEvent();
-        void AddAnalysisFunction(std::function<void()> func) { mAnalysisFunctions.emplace_back(func); }
+        void EvaluateRunBegin();
+        void EvaluateRunEnd();
+        void EvaluateEventBegin();
+        void EvaluateEventEnd();
+        void AddAnalysisRunBeginFunction(std::function<void()> func)    { mAnalysisRunBeginFunctions.emplace_back(func); }
+        void AddAnalysisRunEndFunction(std::function<void()> func)      { mAnalysisRunEndFunctions.emplace_back(func); }
+        void AddAnalysisEventBeginFunction(std::function<void()> func)  { mAnalysisEventBeginFunctions.emplace_back(func); }
+        void AddAnalysisEventEndFunction(std::function<void()> func)    { mAnalysisEventEndFunctions.emplace_back(func); }
         //*************************************************************************************************//
 
         void SaveGDML();
@@ -376,7 +382,10 @@ namespace Artie
 
         //*************************************************************************************************//
         // Analysis functions
-        inline static std::vector<std::function<void()>> mAnalysisFunctions = {};
+        inline static std::vector<std::function<void()>> mAnalysisRunBeginFunctions = {};
+        inline static std::vector<std::function<void()>> mAnalysisRunEndFunctions = {};
+        inline static std::vector<std::function<void()>> mAnalysisEventBeginFunctions = {};
+        inline static std::vector<std::function<void()>> mAnalysisEventEndFunctions = {};
         //*************************************************************************************************//
 
         //*************************************************************************************************//

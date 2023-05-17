@@ -22,12 +22,14 @@ namespace Artie
     {
         auto Manager = EventManager::GetEventManager();
         Manager->ResetProfiling();
+        Manager->EvaluateRunBegin();
         Manager->OpenOutputFile(run->GetRunID());
     }
 
     void RunAction::EndOfRunAction(const G4Run* run)
     {
         auto Manager = EventManager::GetEventManager();
+        Manager->EvaluateRunEnd();
         Manager->CloseOutputFile(run->GetRunID());
     }
 }

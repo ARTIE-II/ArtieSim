@@ -10,5 +10,13 @@
 
 namespace Artie
 {
-    void ExampleAnalysisFunction();
+    struct AnalysisTuple
+    {
+        G4int event_id = 0;
+        G4int number_of_primaries = 0;
+    };
+    void AnalysisFunctionRunBegin();
+    void AnalysisFunctionRunEnd();
+    void AnalysisFunctionEventBegin();
+    void AnalysisFunctionEventEnd();
 }

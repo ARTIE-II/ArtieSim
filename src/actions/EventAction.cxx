@@ -22,6 +22,7 @@ namespace Artie
     void EventAction::BeginOfEventAction(const G4Event* event)
     {
         auto Manager = EventManager::GetEventManager();
+        Manager->EvaluateEventBegin();
         // Manager->ClearEventData();
     }
 
@@ -36,7 +37,7 @@ namespace Artie
         Manager->FillHits(event->GetEventID());
         
         // Send out tuples to analysis functions
-        Manager->EvaluateEvent();
+        Manager->EvaluateEventEnd();
         Manager->ClearEventData();
     }
 }

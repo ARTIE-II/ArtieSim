@@ -92,10 +92,11 @@ namespace Artie
                 mDetectorEntrance = mConfig["detector"]["detector_entrance"].as<G4double>() * m; 
             }
         }
-        if(mConfig["analysis"])
-        {
-           mAnalysisFunctions.emplace_back(ExampleAnalysisFunction);
-        }
+        mAnalysisRunBeginFunctions.emplace_back(AnalysisFunctionRunBegin);
+        mAnalysisRunEndFunctions.emplace_back(AnalysisFunctionRunEnd);
+        mAnalysisEventBeginFunctions.emplace_back(AnalysisFunctionEventBegin);
+        mAnalysisEventEndFunctions.emplace_back(AnalysisFunctionEventEnd);
+        
         if(mConfig["generator"]["energy_cut_low"])  { 
             mEnergyCutLow = mConfig["generator"]["energy_cut_low"].as<G4double>() * keV; 
         }
@@ -1138,12 +1139,32 @@ namespace Artie
 
         EndFunctionProfile("AddNeutronInfoFromStep");
     }
-
-    void EventManager::EvaluateEvent()
+    void EventManager::EvaluateRunBegin()
     {
-        for(size_t ii = 0; ii < mAnalysisFunctions.size(); ii++)
+        for(size_t ii = 0; ii < mAnalysisRunBeginFunctions.size(); ii++)
         {
-            mAnalysisFunctions[ii]();
+            mAnalysisRunBeginFunctions[ii]();
+        }
+    }
+    void EventManager::EvaluateRunEnd()
+    {
+        for(size_t ii = 0; ii < mAnalysisRunEndFunctions.size(); ii++)
+        {
+            mAnalysisRunEndFunctions[ii]();
+        }
+    }
+    void EventManager::EvaluateEventBegin()
+    {
+        for(size_t ii = 0; ii < mAnalysisEventBeginFunctions.size(); ii++)
+        {
+            mAnalysisEventBeginFunctions[ii]();
+        }
+    }
+    void EventManager::EvaluateEventEnd()
+    {
+        for(size_t ii = 0; ii < mAnalysisEventEndFunctions.size(); ii++)
+        {
+            mAnalysisEventEndFunctions[ii]();
         }
     }
 }
