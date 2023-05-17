@@ -77,8 +77,6 @@ namespace Artie
 
         if(mConfig["hall"]["world_material"])   { mWorldMaterialName = mConfig["hall"]["world_material"].as<std::string>(); }
 
-        if(mConfig["generator"]["t_zero_location"])     { mTZeroLocation = mConfig["generator"]["t_zero_location"].as<G4double>() * m;}
-
         DefineMaterials();
     }
 #endif
@@ -110,7 +108,7 @@ namespace Artie
     void ArtieIITarget::Construct(G4LogicalVolume* logicalWorld)
     {
         DefineMaterials();
-        G4double mTargetZ = mTZeroLocation + mTargetEntrance + 0.5 * mContainerLength;
+        G4double mTargetZ = mTargetEntrance + 0.5 * mContainerLength;
         // Construct outer container mother volume
         mSolidContainerInner = new G4Tubs(
             "Solid_ArtieIITargetContainerInner", 

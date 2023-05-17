@@ -9,5 +9,11 @@
 
 namespace Artie
 {
-
+    void ExampleAnalysisFunction()
+    {
+        auto Manager = EventManager::GetEventManager();
+        auto primaries = Manager->GetPrimaries();
+        G4cout << "Event: " << Manager->EventID();
+        G4cout << " - Number of primaries: " << primaries.size() << G4endl;
+    }
 }

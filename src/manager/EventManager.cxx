@@ -64,19 +64,44 @@ namespace Artie
             if(mConfig["manager"]["save_hits"]) { 
                 sSaveHits = mConfig["manager"]["save_hits"].as<G4bool>(); 
             }
-            if(mConfig["manager"]["save_non_detected_neutrons"]) { sSaveNonDetectedNeutrons = mConfig["manager"]["save_non_detected_neutrons"].as<G4bool>(); }
-            if(mConfig["argon"]["use_g4_definition"])   { mUseG4Definition = mConfig["argon"]["use_g4_definition"].as<G4bool>(); }
-            if(mConfig["argon"]["argon_36_ratio"])      { mArgon36Ratio = mConfig["argon"]["argon_36_ratio"].as<G4double>(); }
-            if(mConfig["argon"]["argon_38_ratio"])      { mArgon38Ratio = mConfig["argon"]["argon_38_ratio"].as<G4double>(); }
-            if(mConfig["argon"]["argon_40_ratio"])      { mArgon40Ratio = mConfig["argon"]["argon_40_ratio"].as<G4double>(); }
-            if(mConfig["argon"]["lar_density"])         { mLArDensity = mConfig["argon"]["lar_density"].as<G4double>() * g/cm3; }
-            if(mConfig["argon"]["lar_temperature"])     { mLArTemperature = mConfig["argon"]["lar_temperature"].as<G4double>() * kelvin; }
-            if(mConfig["argon"]["lar_pressure"])        { mLArPressure = mConfig["argon"]["lar_pressure"].as<G4double>() * atmosphere; }
-            if(mConfig["detector"]["detector_entrance"]) { mDetectorEntrance = mConfig["detector"]["detector_entrance"].as<G4double>() * m; }
+            if(mConfig["manager"]["save_non_detected_neutrons"]) { 
+                sSaveNonDetectedNeutrons = mConfig["manager"]["save_non_detected_neutrons"].as<G4bool>(); 
+            }
+            if(mConfig["argon"]["use_g4_definition"])   { 
+                mUseG4Definition = mConfig["argon"]["use_g4_definition"].as<G4bool>(); 
+            }
+            if(mConfig["argon"]["argon_36_ratio"])      { 
+                mArgon36Ratio = mConfig["argon"]["argon_36_ratio"].as<G4double>(); 
+            }
+            if(mConfig["argon"]["argon_38_ratio"])      { 
+                mArgon38Ratio = mConfig["argon"]["argon_38_ratio"].as<G4double>(); 
+            }
+            if(mConfig["argon"]["argon_40_ratio"])      { 
+                mArgon40Ratio = mConfig["argon"]["argon_40_ratio"].as<G4double>(); 
+            }
+            if(mConfig["argon"]["lar_density"])         { 
+                mLArDensity = mConfig["argon"]["lar_density"].as<G4double>() * g/cm3; 
+            }
+            if(mConfig["argon"]["lar_temperature"])     { 
+                mLArTemperature = mConfig["argon"]["lar_temperature"].as<G4double>() * kelvin; 
+            }
+            if(mConfig["argon"]["lar_pressure"])        { 
+                mLArPressure = mConfig["argon"]["lar_pressure"].as<G4double>() * atmosphere; 
+            }
+            if(mConfig["detector"]["detector_entrance"]) { 
+                mDetectorEntrance = mConfig["detector"]["detector_entrance"].as<G4double>() * m; 
+            }
         }
-
-        if(mConfig["generator"]["energy_cut_low"])  { mEnergyCutLow = mConfig["generator"]["energy_cut_low"].as<G4double>() * keV; }
-        if(mConfig["generator"]["energy_cut_high"]) { mEnergyCutHigh = mConfig["generator"]["energy_cut_high"].as<G4double>() * keV; }
+        if(mConfig["analysis"])
+        {
+           mAnalysisFunctions.emplace_back(ExampleAnalysisFunction);
+        }
+        if(mConfig["generator"]["energy_cut_low"])  { 
+            mEnergyCutLow = mConfig["generator"]["energy_cut_low"].as<G4double>() * keV; 
+        }
+        if(mConfig["generator"]["energy_cut_high"]) { 
+            mEnergyCutHigh = mConfig["generator"]["energy_cut_high"].as<G4double>() * keV; 
+        }
 
         // Set up energy distributions
         std::string distribution_type = mConfig["generator"]["energy_distribution"]["distribution_type"].as<std::string>();

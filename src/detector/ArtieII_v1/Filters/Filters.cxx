@@ -27,7 +27,6 @@ namespace Artie
         if(mConfig["filters"]["filter_z_position"])    { mFilterZPos = mConfig["filters"]["filter_z_position"].as<std::vector<G4double>>(); }
         if(mConfig["filters"]["filter_thickness"])     { mFilterThickness = mConfig["filters"]["filter_thickness"].as<std::vector<G4double>>(); }
         if(mConfig["filters"]["filter_radius"])        { mFilterRadius = mConfig["filters"]["filter_radius"].as<std::vector<G4double>>(); }
-        if(mConfig["generator"]["t_zero_location"])     { mTZeroLocation = mConfig["generator"]["t_zero_location"].as<G4double>() * m;}
 
         DefineMaterials();
     }
@@ -74,7 +73,7 @@ namespace Artie
                     G4ThreeVector(
                         mFilterXPos[i] * cm,
                         0., 
-                        mTZeroLocation + mFilterZPos[i] * m + 0.5 * mFilterThickness[i] * cm),
+                        mFilterZPos[i] * m + 0.5 * mFilterThickness[i] * cm),
                     LogicalFilter, 
                     "Physical_ArtieIIFilter_"+mFilterMaterialNames[i]+"_"+std::to_string(i), 
                     logicalWorld, 

@@ -48,7 +48,6 @@ namespace Artie
         if(mConfig["dicer"]["as_hole_separation"])   { mAperatureStopHoleSeparation = mConfig["dicer"]["as_hole_separation"].as<G4double>() * cm; }
 
         if(mConfig["hall"]["world_material"])           { mWorldMaterialName = mConfig["hall"]["world_material"].as<std::string>(); }
-        if(mConfig["generator"]["t_zero_location"])     { mTZeroLocation = mConfig["generator"]["t_zero_location"].as<G4double>() * m;}
 
         DefineMaterials();
     }
@@ -98,7 +97,7 @@ namespace Artie
                 G4ThreeVector(
                     0.,
                     0.,
-                    (mTZeroLocation + mRotatingBeamBlockerEntrance + 0.5 * mRotatingBeamBlockerLength)
+                    (mRotatingBeamBlockerEntrance + 0.5 * mRotatingBeamBlockerLength)
                 ),
                 mLogicalRotatingBeamBlocker, 
                 "Physical_ArtieIIRotatingBeamBlocker", 
@@ -184,7 +183,7 @@ namespace Artie
                 G4ThreeVector(
                     0.,
                     0.,
-                    (mTZeroLocation + mBinocularCollimatorEntrance + 0.5 * mBinocularCollimatorLength)
+                    (mBinocularCollimatorEntrance + 0.5 * mBinocularCollimatorLength)
                 ),
                 mLogicalBinocularCollimator, 
                 "Physical_ArtieIIBinocularCollimator", 
@@ -270,7 +269,7 @@ namespace Artie
                 G4ThreeVector(
                     0.,
                     0.,
-                    (mTZeroLocation + mAperatureStopEntrance + 0.5 * mAperatureStopLength)
+                    (mAperatureStopEntrance + 0.5 * mAperatureStopLength)
                 ),
                 mLogicalAperatureStop, 
                 "Physical_ArtieIIAperatureStop", 

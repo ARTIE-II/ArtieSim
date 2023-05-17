@@ -29,7 +29,6 @@ namespace Artie
         if(mConfig["detector"]["detector_separation"])  { mDetectorSeparation = mConfig["detector"]["detector_separation"].as<G4double>() * cm; }     
 
         if(mConfig["hall"]["world_material"])           { mWorldMaterialName = mConfig["hall"]["world_material"].as<std::string>(); }
-        if(mConfig["generator"]["t_zero_location"])     { mTZeroLocation = mConfig["generator"]["t_zero_location"].as<G4double>() * m;}
 
         DefineMaterials();
     }

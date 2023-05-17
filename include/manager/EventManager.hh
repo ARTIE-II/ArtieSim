@@ -46,6 +46,7 @@
 #include "Profile.hh"
 #include "Particle.hh"
 #include "EnergyDeposit.hh"
+#include "Analysis.hh"
 
 class PhysicsList;
 
@@ -354,6 +355,7 @@ namespace Artie
         inline static G4double mLArTemperature = {85.0 * kelvin};
         inline static G4double mLArPressure = {0.952 * atmosphere};
 
+        //*************************************************************************************************//
         // Event level maps to keep track of particle ids,
         // parent ids, ancestor ids and pdg codes.
         inline static thread_local std::map<G4int, G4int>      mParticleTrackID;
@@ -370,12 +372,17 @@ namespace Artie
         inline static thread_local std::map<G4int, G4int> mNeutronEventDataMap;
         inline static thread_local std::vector<Hit> mHits;
         inline static NeutronRunData sNeutronRunData;
+        //*************************************************************************************************//
 
+        //*************************************************************************************************//
         // Analysis functions
-        std::vector<std::function<void()>> mAnalysisFunctions;
+        inline static std::vector<std::function<void()>> mAnalysisFunctions = {};
+        //*************************************************************************************************//
 
+        //*************************************************************************************************//
         // GDML parser
         G4GDMLParser* mGDMLParser;
+        //*************************************************************************************************//
 
         inline static G4double mEnergyCutLow = { 40 * keV };
         inline static G4double mEnergyCutHigh = { 70 * keV };

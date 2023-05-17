@@ -6,8 +6,9 @@
  * @date 2022-04-27
  */
 #pragma once
+#include "EventManager.hh"
 
 namespace Artie
 {
-    
+    void ExampleAnalysisFunction();
 }
