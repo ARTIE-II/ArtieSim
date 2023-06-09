@@ -53,6 +53,19 @@
         "tuple": "cpp",
         "typeinfo": "cpp",
         "utility": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "any": "cpp",
+        "cstdarg": "cpp",
+        "cstring": "cpp",
+        "forward_list": "cpp",
+        "unordered_set": "cpp",
+        "algorithm": "cpp",
+        "iterator": "cpp",
+        "memory_resource": "cpp",
+        "optional": "cpp",
+        "random": "cpp",
+        "fstream": "cpp",
+        "cinttypes": "cpp",
+        "variant": "cpp"
     }
 }

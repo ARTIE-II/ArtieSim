@@ -1,6 +1,7 @@
 /**
  * @file EventManager.hh
  * @author Nicholas Carrara [nmcarrara@ucdavis.edu]
+ * @author Yashwanth Bezawada [ysbezawada@ucdavis.edu]
  * @brief 
  * @version 0.0
  * @details 
@@ -47,6 +48,7 @@
 #include "Particle.hh"
 #include "EnergyDeposit.hh"
 #include "Analysis.hh"
+#include "bkgdAnalysis.hh"
 
 class PhysicsList;
 
@@ -110,6 +112,34 @@ namespace Artie
         // Number of events
         G4int NumberOfEvents()             { return sNumberOfEvents; }
         void NumberOfEvents(G4int Events) { sNumberOfEvents = Events;}
+
+        // Analysis parameters
+        G4int GetNx() { return mN_x; }
+        G4int GetNy() { return mN_y; }
+        G4int GetNz() { return mN_z; }
+
+        // Experimental hall parameters
+        G4double GetHallX() { return mHallX; }
+        G4double GetHallY() { return mHallY; }
+        G4double GetHallZ() { return mHallZ; }
+
+        // Detector Parameters
+        G4double GetDetEntrance() { return mDetEntrance; }
+        G4double GetDetLength() { return mDetLen; }
+
+        // Analysis Functions
+        std::vector<G4int> FindVoxel(G4double x, G4double y, G4double z, G4double x_fac, G4double y_fac, G4double z_fac){
+            std::vector<G4int> voxel;
+            voxel.push_back(std::floor(x*x_fac));
+            voxel.push_back(std::floor(y*y_fac));
+            voxel.push_back(std::floor(z*z_fac));
+            return voxel;
+        }
+
+        //sign function
+        G4int sgn(G4double x) {
+            return (x > 0) ? 1 : ((x < 0) ? -1 : 0);
+        }
 
         // Argon properties
         G4bool UseG4Definition()    { return mUseG4Definition; }
@@ -340,6 +370,20 @@ namespace Artie
 
         inline static G4String sOutputFileName = {"default"};
         inline static G4int sCurrentTupleIndex = {0};
+
+        // Analysis related parameters
+        inline static G4int mN_x = 0;
+        inline static G4int mN_y = 0;
+        inline static G4int mN_z = 0;
+
+        // Experimental hall parameters
+        inline static G4double mHallX = {500 * m};
+        inline static G4double mHallY = {500 * m};
+        inline static G4double mHallZ = {500 * m};
+
+        // Detector Parameters
+        inline static G4double mDetEntrance = {30 * m};
+        inline static G4double mDetLen = {10 * cm};
 
         // Options to save various data to root files.
         inline static std::vector<Tuple> sTuples;

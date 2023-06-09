@@ -1,6 +1,7 @@
 /**
  * @file EventManager.cxx
  * @author Nicholas Carrara [nmcarrara@ucdavis.edu]
+ * @author Yashwanth Bezawada [ysbezawada@ucdavis.edu]
  * @brief 
  * @version 0.1
  * @details 
@@ -92,10 +93,34 @@ namespace Artie
                 mDetectorEntrance = mConfig["detector"]["detector_entrance"].as<G4double>() * m; 
             }
         }
-        mAnalysisRunBeginFunctions.emplace_back(AnalysisFunctionRunBegin);
-        mAnalysisRunEndFunctions.emplace_back(AnalysisFunctionRunEnd);
-        mAnalysisEventBeginFunctions.emplace_back(AnalysisFunctionEventBegin);
-        mAnalysisEventEndFunctions.emplace_back(AnalysisFunctionEventEnd);
+        if(mConfig["analysis"])
+        {
+            if(mConfig["analysis"]["N_x"]) { 
+                mN_x = mConfig["analysis"]["N_x"].as<G4int>(); 
+            }
+            if(mConfig["analysis"]["N_y"]) { 
+                mN_y = mConfig["analysis"]["N_y"].as<G4int>(); 
+            }
+            if(mConfig["analysis"]["N_z"]) { 
+                mN_z = mConfig["analysis"]["N_z"].as<G4int>(); 
+            }
+        }
+        if(mConfig["hall"]["world_x"]) { mHallX = mConfig["hall"]["world_x"].as<G4double>() * m; }
+        if(mConfig["hall"]["world_y"]) { mHallY = mConfig["hall"]["world_y"].as<G4double>() * m; }
+        if(mConfig["hall"]["world_z"]) { mHallZ = mConfig["hall"]["world_z"].as<G4double>() * m; }
+
+        if(mConfig["detector"]["detector_length"])      { mDetLen = mConfig["detector"]["detector_length"].as<G4double>() * cm; }
+        if(mConfig["detector"]["detector_entrance"])    { mDetEntrance = mConfig["detector"]["detector_entrance"].as<G4double>() * m; }
+
+        // mAnalysisRunBeginFunctions.emplace_back(AnalysisFunctionRunBegin);
+        // mAnalysisRunEndFunctions.emplace_back(AnalysisFunctionRunEnd);
+        // mAnalysisEventBeginFunctions.emplace_back(AnalysisFunctionEventBegin);
+        // mAnalysisEventEndFunctions.emplace_back(AnalysisFunctionEventEnd);
+
+        mAnalysisRunBeginFunctions.emplace_back(bkgdAnalysisFunctionRunBegin);
+        mAnalysisRunEndFunctions.emplace_back(bkgdAnalysisFunctionRunEnd);
+        mAnalysisEventBeginFunctions.emplace_back(bkgdAnalysisFunctionEventBegin);
+        mAnalysisEventEndFunctions.emplace_back(bkgdAnalysisFunctionEventEnd);
         
         if(mConfig["generator"]["energy_cut_low"])  { 
             mEnergyCutLow = mConfig["generator"]["energy_cut_low"].as<G4double>() * keV; 
@@ -838,6 +863,16 @@ namespace Artie
     void EventManager::AddParticleInfoFromTrackEnd(const G4Track* track)
     {
         StartFunctionProfile();
+        // G4int           track_id = track->GetTrackID();
+        // G4double        local_time = track->GetLocalTime();
+        // G4ThreeVector   end_position = track->GetStep()->GetPostStepPoint()->GetPosition(); //track->GetPosition();
+        // G4ThreeVector   end_momentum = track->GetMomentum();
+        // G4double        kinetic_energy = track->GetKineticEnergy();
+
+        // mParticles[GetParticleTrackID(track_id)].AddTrajectoryPoint(
+        //     local_time, end_position, kinetic_energy, end_momentum
+        // );
+
         EndFunctionProfile("AddParticleInfoFromTrackEnd");
     }
     void EventManager::AddParticleInfoFromStep(const G4Step *step)
@@ -878,13 +913,20 @@ namespace Artie
             else {
                 GetPrimaryData(GetParticleAncestorTrackID(track_id)).total_daughter_edep += edep;
             }
-        }
-        else
+        }    
+
+        mParticles[GetParticleTrackID(track_id)].AddTrajectoryPoint(
+            local_time, pre_step_position, kinetic_energy, pre_step_momentum
+        );
+
+        G4StepStatus post_step_status = post_step_point->GetStepStatus();
+        if (post_step_status == fWorldBoundary)
         {
             mParticles[GetParticleTrackID(track_id)].AddTrajectoryPoint(
-                local_time, pre_step_position, kinetic_energy, pre_step_momentum
+                local_time, post_step_position, kinetic_energy, post_step_momentum
             );
         }
+        
         EndFunctionProfile("AddParticleInfoFromStep");
     }
 

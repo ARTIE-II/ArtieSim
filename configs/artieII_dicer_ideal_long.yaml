@@ -1,12 +1,12 @@
 # ARTIE manager parameters
 manager:
-    number_of_threads:  8
+    number_of_threads:  6
     number_of_runs:     1
-    number_of_events:   10
-    seed:               10942
+    number_of_events:   100
+    seed:               92483598  # 10942
     mode:               "run"   # interactive/run
     detector:           "artieII_dicer"
-    output_filename:    "test"
+    output_filename:    "ana_test"
     save_particle_maps: true
     save_primary_info:  true
     save_particle_info: true
@@ -18,6 +18,9 @@ manager:
 
 # analysis functions
 analysis:
+    N_x: 8
+    N_y: 8
+    N_z: 15
 
 
 # physics lists
@@ -61,8 +64,8 @@ argon:
 
 # generator parameters
 generator:
-    energy_cut_low:         0.1     # keV
-    energy_cut_high:        2000    # keV
+    energy_cut_low:         20     # keV
+    energy_cut_high:        70    # keV
     t_zero_location:        0.0     # m
 
     energy_distribution:
@@ -140,7 +143,7 @@ target:
 
 # ARTIE Filters
 filters:
-    construct_filters:  true                 #bool
+    construct_filters:  false                 #bool
     filter_materials:   ["aluminum", "aluminum", "aluminum", "aluminum", "aluminum", "aluminum", "aluminum", "aluminum"]
     filter_x_position:  [2.475, -2.475, 2.475, -2.475, 2.475, -2.475, 2.475, -2.475]
     filter_z_position:  [15.5, 15.5, 15.55, 15.55, 15.6, 15.6, 15.65, 15.65]            # m
