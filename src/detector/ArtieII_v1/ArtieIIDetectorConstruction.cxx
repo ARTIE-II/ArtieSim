@@ -30,12 +30,14 @@ namespace Artie
         if(mConfig["hall"]["world_z"])          { mExperimentalHallZ = mConfig["hall"]["world_z"].as<G4double>() * m; }
 
         mTarget = ArtieIITarget(config);
+        mMArEXTarget = MArEXTarget(config);
         mFilters = Filters(config);
         mDICER = DICER(config);
         mnTOF = nTOF(config);
 
         mSimpleDetector = SimpleDetector(config);
         mDICERDetector = DICERDetector(config);
+        mLiGDetector = LiGDetector(config);
 
         DefineMaterials();
     }
@@ -86,7 +88,12 @@ namespace Artie
             mnTOF.Construct(mLogicalExperimentalHall);
         }
 
-        mTarget.Construct(mLogicalExperimentalHall);
+        if(mConfig["MArEX_target"])
+        {
+            mMArEXTarget.Construct(mLogicalExperimentalHall);
+        } else {
+            mTarget.Construct(mLogicalExperimentalHall);
+        }
 
         if(mConfig["detector"]["detector_type"].as<std::string>() == "simple") {
             mSimpleDetector.Construct(mLogicalExperimentalHall);
@@ -94,6 +101,11 @@ namespace Artie
         else if (mConfig["detector"]["detector_type"].as<std::string>() == "dicer") {
             mDICERDetector.Construct(mLogicalExperimentalHall);
         }
+        else if (mConfig["detector"]["detector_type"].as<std::string>() == "LiG")
+        {
+            mLiGDetector.Construct(mLogicalExperimentalHall);
+        }
+        
 
         return mPhysicalExperimentalHall;
     }

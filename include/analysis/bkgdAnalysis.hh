@@ -8,6 +8,9 @@
  */
 #pragma once
 #include "EventManager.hh"
+#include "Randomize.hh"
+
+#include "TRandom3.h"
 
 namespace Artie
 {
@@ -15,6 +18,7 @@ namespace Artie
     {
         G4double n_energy = 0;
         G4double n_energy_detected = 0;
+        G4double n_energy_bkgd = 0;
     };
 
     void bkgdAnalysisFunctionRunBegin();

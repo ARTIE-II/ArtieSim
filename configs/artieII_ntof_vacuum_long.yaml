@@ -12,6 +12,11 @@ manager:
     save_hits:          true
     save_neutron_data:   true
 
+# analysis parameters
+analysis:
+    background_neutrons:  10
+    distribution_type:    "Uniform"
+
 # ARTIE argon parameters 
 argon:
     use_g4_definition:  false

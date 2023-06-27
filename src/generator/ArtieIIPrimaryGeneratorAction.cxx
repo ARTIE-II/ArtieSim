@@ -30,6 +30,9 @@ namespace Artie
     : G4VUserPrimaryGeneratorAction()
     , mConfig(config)
     {
+        if(mConfig["detector"]["detector_entrance"]) {
+            mDetEntrance = mConfig["detector"]["detector_entrance"].as<G4double>() * m;
+        }        
         if(mConfig["generator"]["t_zero_location"])  { 
             mTZeroLocation = mConfig["generator"]["t_zero_location"].as<G4double>() * m; 
         }
@@ -79,7 +82,7 @@ namespace Artie
         }
         else if(profile_type == "ntof")
         {
-            mUsenTOFDistribution = true;
+            mUsenTOFBeamProfile = true;
             mnTOFBeamProfile = EventManager::GetEventManager()->GetnTOFBeamProfile();
         }
         // Set up TOF
@@ -112,7 +115,17 @@ namespace Artie
             return mnTOFEnergyDistribution->GetRandom() * keV;
         }
         else {
-            return (mEnergyCutLow + (mEnergyCutHigh - mEnergyCutLow) * G4UniformRand());
+            // Uniform in TOF
+            auto Manager = EventManager::GetEventManager();
+            G4double lenFlightPath = mDetEntrance - mTZeroLocation;
+            G4double tofLow = Manager->GetNominalTOF(mEnergyCutHigh);
+            G4double tofHigh = Manager->GetNominalTOF(mEnergyCutLow);
+            G4double n_tof = tofLow + (tofHigh - tofLow) * G4UniformRand();
+            G4double n_energy = 0.5 * NeutronMassMeV() * lenFlightPath * lenFlightPath / (SpeedOfLight() * SpeedOfLight() * n_tof * n_tof);
+            return (n_energy * MeV);
+
+            // Uniform in Energy
+            // return (mEnergyCutLow + (mEnergyCutHigh - mEnergyCutLow) * G4UniformRand());
         }
     }
 
@@ -156,6 +169,7 @@ namespace Artie
         {
             Double_t nominalTOF = EventManager::GetEventManager()->GetNominalTOF(beam_energy);
             Double_t nominalVelocity = EventManager::GetEventManager()->GetNominalVelocity(beam_energy);
+            mnTOFTOF = EventManager::GetEventManager()->GetnTOFTOF();
             Int_t energy_bin = mnTOFTOF->GetXaxis()->FindBin(beam_energy * MeV);
             TH1D* TOF = EventManager::GetEventManager()->GetnTOFTOFProjection(energy_bin);
             Double_t lambda = TOF->GetRandom() * cm;   

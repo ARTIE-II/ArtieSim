@@ -2,26 +2,27 @@
 manager:
     number_of_threads:  6
     number_of_runs:     1
-    number_of_events:   100
+    number_of_events:   1000000
     seed:               92483598  # 10942
     mode:               "run"   # interactive/run
     detector:           "artieII_dicer"
-    output_filename:    "ana_test"
+    output_filename:    "lanl_ideal_long_filter_out"
     save_particle_maps: true
     save_primary_info:  true
     save_particle_info: true
     save_energy_deposits: true
+    save_hits:          true
     save_neutron_data:  true
     save_profile_data:  true
     save_non_detected_neutrons: false
-    save_hits: true
 
-# analysis functions
+# analysis parameters
 analysis:
     N_x: 8
     N_y: 8
     N_z: 15
-
+    background_neutrons:  2000
+    distribution_type:    "Uniform"
 
 # physics lists
 physics:
@@ -64,8 +65,8 @@ argon:
 
 # generator parameters
 generator:
-    energy_cut_low:         20     # keV
-    energy_cut_high:        70    # keV
+    energy_cut_low:         1     # keV
+    energy_cut_high:        100    # keV
     t_zero_location:        0.0     # m
 
     energy_distribution:
@@ -80,7 +81,7 @@ generator:
         beam_location:  "right"      # left, right, both, profile for LANL, none for nTOF
         
     time_of_flight:
-        tof_type:       "lanl"
+        tof_type:       "lanl"       # lanl, ntof
         tof_file:       "data/moderator_hist.root"
         tof_name:       "tally15"   
 
@@ -144,11 +145,11 @@ target:
 # ARTIE Filters
 filters:
     construct_filters:  false                 #bool
-    filter_materials:   ["aluminum", "aluminum", "aluminum", "aluminum", "aluminum", "aluminum", "aluminum", "aluminum"]
-    filter_x_position:  [2.475, -2.475, 2.475, -2.475, 2.475, -2.475, 2.475, -2.475]
-    filter_z_position:  [15.5, 15.5, 15.55, 15.55, 15.6, 15.6, 15.65, 15.65]            # m
-    filter_thickness:   [2.54, 2.54, 2.54, 2.54, 2.54, 2.54, 2.54, 2.54]             # cm
-    filter_radius:      [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0]      # cm
+    filter_materials:   ["aluminum", "aluminum", "aluminum", "aluminum"] #, "aluminum", "aluminum", "aluminum", "aluminum"
+    filter_x_position:  [2.475, -2.475, 2.475, -2.475] #, 2.475, -2.475, 2.475, -2.475
+    filter_z_position:  [15.5, 15.5, 15.55, 15.55]  # m #, 15.6, 15.6, 15.65, 15.65
+    filter_thickness:   [2.54, 2.54, 2.54, 2.54]  # cm # , 2.54, 2.54, 2.54, 2.54
+    filter_radius:      [4.0, 4.0, 4.0, 4.0] # cm #, 4.0, 4.0, 4.0, 4.0
 
 dicer:
     construct_rbb:	true

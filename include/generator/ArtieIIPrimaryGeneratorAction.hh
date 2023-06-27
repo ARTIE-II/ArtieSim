@@ -25,6 +25,9 @@
 #include "TMath.h"
 #include "TRandom3.h"
 
+#include "Core.hh"
+#include "EventManager.hh"
+
 #include "yaml-cpp/yaml.h"
 
 namespace Artie
@@ -54,6 +57,7 @@ namespace Artie
         G4ThreeVector mParticlePosition;
         G4ThreeVector mParticleMomentumDirection;
 
+        G4double mDetEntrance =     { 188 * m };
         G4double mTZeroLocation =   { -30.0 * m };
         G4double mEnergyCutLow =    { 40 * keV };
         G4double mEnergyCutHigh =   { 70 * keV };

@@ -136,6 +136,11 @@ namespace Artie
             return voxel;
         }
 
+        G4int GetNumBkgdEvents()    { return mNumBkgdEvents; }
+        G4String GetBkgdDistType()  { return mBkgdDistType; }
+        G4double GetEnergyCutLow()  { return mEnergyCutLow; }
+        G4double GetEnergyCutHigh() { return mEnergyCutHigh; }
+
         //sign function
         G4int sgn(G4double x) {
             return (x > 0) ? 1 : ((x < 0) ? -1 : 0);
@@ -375,6 +380,8 @@ namespace Artie
         inline static G4int mN_x = 0;
         inline static G4int mN_y = 0;
         inline static G4int mN_z = 0;
+        inline static G4int mNumBkgdEvents = 0;
+        inline static G4String mBkgdDistType = {"Uniform"};
 
         // Experimental hall parameters
         inline static G4double mHallX = {500 * m};

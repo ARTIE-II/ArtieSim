@@ -1,5 +1,5 @@
 /**
- * @file nTOF.hh
+ * @file LiGDetector.hh
  * @author Yashwanth Bezawada [ysbezawada@ucdavis.edu]
  * @author Nicholas Carrara [nmcarrara@ucdavis.edu]
  * @brief 
@@ -46,44 +46,36 @@
 
 namespace Artie
 {
-    class nTOF
+    class LiGDetector
     {
     public:
-        nTOF();
-        ~nTOF();
+        LiGDetector();
+        ~LiGDetector();
 
 #ifdef ARTIE_YAML
-        nTOF(YAML::Node config);
+        LiGDetector(YAML::Node config);
 #endif
 
         void DefineMaterials();
         void Construct(G4LogicalVolume* logicalWorld);
     
     private:
-        // G4String mWorldMaterialName = {"high_vacuum"};
-        // G4double mTZeroLocation = { -30.0 * m };
+        G4String mWorldMaterialName = {"high_vacuum"};
 
-        G4bool mConstructBeamPipe = {true};
-        G4double mBeamPipeLength = { 100 * m };
-        G4double mBeamPipeInnerRadius = { 10 * cm };
-        G4double mBeamPipeOuterRadius = { 12 * cm };
-        G4String mBeamPipeVacuumMaterialName = { "high_vacuum" };
-        G4String mBeamPipePipeMaterialName = { "stainless_steel" };
-        G4double mBeamPipeEntrance = { 0 * m };
+        // Detector
+        G4bool mConstructDetector = {true};
+        G4String mDetectorMaterialName = {"water"};
+        G4double mDetectorRadius = {2.0 * cm};
+        G4double mDetectorLength = {20.0 * cm};
+        G4double mDetectorEntrance = {30.0 * m};
 
-        G4ThreeVector mBeamPipePosition;
+        // Detectors
+        G4Material* mDetectorMaterial;
+        G4Tubs *mSolidDetector;
+        G4LogicalVolume* mLogicalDetector;
+        G4VPhysicalVolume* mPhysicalDetector;
 
-        //Beam Pipe Vacuum
-        G4Material* mBeamPipeVacuumMaterial;
-        G4Tubs* mSolidBeamPipeVacuum;
-        G4LogicalVolume* mLogicalBeamPipeVacuum;
-        G4VPhysicalVolume* mPhysicalBeamPipeVacuum;
-
-        //Beam Pipe Pipe
-        G4Material* mBeamPipePipeMaterial;
-        G4Tubs* mSolidBeamPipePipe;
-        G4LogicalVolume* mLogicalBeamPipePipe;
-        G4VPhysicalVolume* mPhysicalBeamPipePipe;
+        G4double mTZeroLocation = {-30.0 * m};
 
 #ifdef ARTIE_YAML
         YAML::Node mConfig;

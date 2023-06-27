@@ -20,11 +20,40 @@ namespace Artie
         AnalysisManager->CreateNtuple("bkgdAnalysis", "bkgdAnalysis");
         AnalysisManager->CreateNtupleDColumn("n_energy");
         AnalysisManager->CreateNtupleDColumn("n_energy_detected");
+        AnalysisManager->CreateNtupleDColumn("n_energy_bkgd");
         AnalysisManager->FinishNtuple(index);
     }
     void bkgdAnalysisFunctionRunEnd()
     {
         auto AnalysisManager = G4AnalysisManager::Instance();
+        auto Manager = EventManager::GetEventManager();
+        G4int index = Manager->GetIndex("bkgdAnalysis");
+
+        TRandom3* rand3 = new TRandom3();
+
+        G4int numThreads = Manager->NumberOfThreads();
+        G4int numBkgdEvts = Manager->GetNumBkgdEvents();
+        G4String bkgdDistType = Manager->GetBkgdDistType();
+        G4double eCutLow = Manager->GetEnergyCutLow();
+        G4double eCutHigh = Manager->GetEnergyCutHigh();
+
+        if (bkgdDistType == "Uniform")
+        {
+            G4int evtsLoop = std::round(numBkgdEvts/numThreads);
+            for (G4int i = 0; i < evtsLoop; i++)
+            {
+                G4double randEvt = rand3->Uniform(eCutLow, eCutHigh);
+                bkgdTuple.n_energy = randEvt;
+                bkgdTuple.n_energy_detected = randEvt;
+                bkgdTuple.n_energy_bkgd = randEvt;
+
+                // G4cout << "Random bkgd energy [ " << i <<  " ] : " << randEvt << G4endl;
+                AnalysisManager->FillNtupleDColumn(index, 0, bkgdTuple.n_energy);
+                AnalysisManager->FillNtupleDColumn(index, 1, bkgdTuple.n_energy_detected);
+                AnalysisManager->FillNtupleDColumn(index, 2, bkgdTuple.n_energy_bkgd);
+                AnalysisManager->AddNtupleRow(index);
+            }
+        }
     }
     void bkgdAnalysisFunctionEventBegin()
     {

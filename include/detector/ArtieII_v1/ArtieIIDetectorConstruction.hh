@@ -41,14 +41,15 @@
 #endif
 
 #include "DICER.hh"
-#include "LiG.hh"
 #include "Material.hh"
 #include "Filters.hh"
 #include "nTOF.hh"
 #include "SensitiveDetector.hh"
 #include "SimpleDetector.hh"
 #include "DICERDetector.hh"
+#include "LiGDetector.hh"
 #include "Target.hh"
+#include "MArEXTarget.hh"
 
 namespace Artie
 {
@@ -82,11 +83,13 @@ namespace Artie
         G4VPhysicalVolume* mPhysicalExperimentalHall;
 
         ArtieIITarget mTarget;
+        MArEXTarget mMArEXTarget;
         Filters mFilters;
         DICER mDICER;
         nTOF mnTOF;
         SimpleDetector mSimpleDetector;
         DICERDetector mDICERDetector;
+        LiGDetector mLiGDetector;
 
 #ifdef ARTIE_YAML
         YAML::Node mConfig;

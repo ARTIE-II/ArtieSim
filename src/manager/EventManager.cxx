@@ -104,6 +104,12 @@ namespace Artie
             if(mConfig["analysis"]["N_z"]) { 
                 mN_z = mConfig["analysis"]["N_z"].as<G4int>(); 
             }
+            if(mConfig["analysis"]["background_neutrons"]) { 
+                mNumBkgdEvents = mConfig["analysis"]["background_neutrons"].as<G4int>(); 
+            }
+            if(mConfig["analysis"]["distribution_type"]) { 
+                mBkgdDistType = mConfig["analysis"]["distribution_type"].as<std::string>(); 
+            }
         }
         if(mConfig["hall"]["world_x"]) { mHallX = mConfig["hall"]["world_x"].as<G4double>() * m; }
         if(mConfig["hall"]["world_y"]) { mHallY = mConfig["hall"]["world_y"].as<G4double>() * m; }
