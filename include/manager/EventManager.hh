@@ -29,6 +29,7 @@
 #include "TH2D.h"
 #include "TGraph.h"
 #include "TMath.h"
+#include "TCanvas.h"
 #endif
 
 #ifdef ARTIE_GEANT_10
@@ -169,6 +170,13 @@ namespace Artie
             G4double factor = sqrt(1.0 - 1.0/((kinetic_mass + 1.0)*(kinetic_mass + 1.0)));
             return SpeedOfLight() * factor;
         }
+        inline static G4double GetEnergyFromTOF(G4double tof)
+        {
+            G4double denom_term = (mDetectorEntrance - mTZeroLocation)/(SpeedOfLight() * tof);
+            G4double denominator = 1.0 - (denom_term * denom_term);
+            G4double factor = sqrt(1.0 / denominator) - 1;
+            return NeutronMassMeV() * factor;
+        }
 
         // Tuple related functions
         G4String OutputFileName()           { return sOutputFileName; }
@@ -190,7 +198,7 @@ namespace Artie
         TH1D* GetLANLTOFHist(G4int ii)          { return mLANLTOFHists[ii].get(); }
         TH2D* GetLANLBeamProfile()              { return mLANLBeamProfile.get(); }
 
-        TH1D* GetnTOFEnergyDistribution()       { return mnTOFEnergyDistribution.get(); }
+        TH1D* GetnTOFTOFDistribution()          { return mnTOFTOFDistribution.get(); }
         TH2D* GetnTOFTOF()                      { return mnTOFTOF.get(); }
         TH1D* GetnTOFTOFProjection(G4int ii)    { return mnTOFTOFProjections[ii].get(); }
         TH2D* GetnTOFBeamProfile()              { return mnTOFBeamProfile.get(); }
@@ -467,11 +475,11 @@ namespace Artie
         inline static TFile* mLANLTOFFile = {0};
         inline static std::vector<std::shared_ptr<TH1D>> mLANLTOFHists = {};
 
-        // nTOF energy distribution
-        inline static G4String mnTOFEnergyDistributionFileName = {"resolution13a.root"};
-        inline static G4String mnTOFEnergyDistributionName = {"tally5"};
-        inline static TFile* mnTOFEnergyDistributionFile = {0};
-        inline static std::shared_ptr<TH1D> mnTOFEnergyDistribution = {nullptr};
+        // nTOF neutron beam TOF distribution
+        inline static G4String mnTOFTOFDistributionFileName = {"Neutron_Gamma_Flux_1cmColli_188m.root"};
+        inline static G4String mnTOFTOFDistributionName = {"histfluka"};
+        inline static TFile* mnTOFTOFDistributionFile = {0};
+        inline static std::shared_ptr<TH1D> mnTOFTOFDistribution = {nullptr};
 
         // nTOF beam profile
         inline static G4String mnTOFBeamProfileFileName = {"Profile_188m.root"};
@@ -479,7 +487,7 @@ namespace Artie
         inline static TFile* mnTOFBeamProfileFile = {0};
         inline static std::shared_ptr<TH2D> mnTOFBeamProfile = {nullptr};
 
-        // nTOF tof distribution
+        // nTOF tof distribution (Moderator function)
         inline static G4String mnTOFTOFFileName = {"RF.root"};
         inline static G4String mnTOFTOFName = {"histfluka"};
         inline static TFile* mnTOFTOFFile = {0};

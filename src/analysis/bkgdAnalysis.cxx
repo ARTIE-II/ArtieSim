@@ -20,7 +20,7 @@ namespace Artie
         AnalysisManager->CreateNtuple("bkgdAnalysis", "bkgdAnalysis");
         AnalysisManager->CreateNtupleDColumn("n_energy");
         AnalysisManager->CreateNtupleDColumn("n_energy_detected");
-        AnalysisManager->CreateNtupleDColumn("n_energy_bkgd");
+        AnalysisManager->CreateNtupleDColumn("n_tof_bkgd");
         AnalysisManager->FinishNtuple(index);
     }
     void bkgdAnalysisFunctionRunEnd()
@@ -37,20 +37,23 @@ namespace Artie
         G4double eCutLow = Manager->GetEnergyCutLow();
         G4double eCutHigh = Manager->GetEnergyCutHigh();
 
+        G4double tofLow = Manager->GetNominalTOF(eCutHigh);
+        G4double tofHigh = Manager->GetNominalTOF(eCutLow);
+
         if (bkgdDistType == "Uniform")
         {
             G4int evtsLoop = std::round(numBkgdEvts/numThreads);
             for (G4int i = 0; i < evtsLoop; i++)
             {
-                G4double randEvt = rand3->Uniform(eCutLow, eCutHigh);
-                bkgdTuple.n_energy = randEvt;
-                bkgdTuple.n_energy_detected = randEvt;
-                bkgdTuple.n_energy_bkgd = randEvt;
+                G4double randEvt = rand3->Uniform(tofLow, tofHigh);
+                // bkgdTuple.n_energy = randEvt;
+                // bkgdTuple.n_energy_detected = randEvt;
+                bkgdTuple.n_tof_bkgd = randEvt;
 
                 // G4cout << "Random bkgd energy [ " << i <<  " ] : " << randEvt << G4endl;
-                AnalysisManager->FillNtupleDColumn(index, 0, bkgdTuple.n_energy);
-                AnalysisManager->FillNtupleDColumn(index, 1, bkgdTuple.n_energy_detected);
-                AnalysisManager->FillNtupleDColumn(index, 2, bkgdTuple.n_energy_bkgd);
+                // AnalysisManager->FillNtupleDColumn(index, 0, bkgdTuple.n_energy);
+                // AnalysisManager->FillNtupleDColumn(index, 1, bkgdTuple.n_energy_detected);
+                AnalysisManager->FillNtupleDColumn(index, 2, bkgdTuple.n_tof_bkgd);
                 AnalysisManager->AddNtupleRow(index);
             }
         }

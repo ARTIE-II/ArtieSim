@@ -134,6 +134,9 @@ namespace Artie
         if(mConfig["generator"]["energy_cut_high"]) { 
             mEnergyCutHigh = mConfig["generator"]["energy_cut_high"].as<G4double>() * keV; 
         }
+        if(mConfig["generator"]["t_zero_location"]) { 
+            mTZeroLocation = mConfig["generator"]["t_zero_location"].as<G4double>() * m; 
+        }
 
         // Set up energy distributions
         std::string distribution_type = mConfig["generator"]["energy_distribution"]["distribution_type"].as<std::string>();
@@ -176,6 +179,31 @@ namespace Artie
         }
         if(distribution_type == "ntof")
         {
+            mnTOFTOFDistributionFileName = mConfig["generator"]["energy_distribution"]["distribution_file"].as<std::string>();
+            G4cout << mnTOFTOFDistributionFileName << G4endl;
+            mnTOFTOFDistributionName = mConfig["generator"]["energy_distribution"]["distribution_name"].as<std::string>();
+            mnTOFTOFDistributionFile = new TFile(mnTOFTOFDistributionFileName);
+
+            // Getting histogram from the canvas
+            TCanvas *c1 = (TCanvas*)mnTOFTOFDistributionFile->Get("Canvas_1");
+            TH1D* h1 = (TH1D*)c1->GetPrimitive(mnTOFTOFDistributionName);
+
+            G4double tofLow = GetNominalTOF(mEnergyCutHigh);
+            G4double tofHigh = GetNominalTOF(mEnergyCutLow);
+
+            G4int binLow = h1->GetXaxis()->FindBin(tofLow);
+            G4int binHigh = h1->GetXaxis()->FindBin(tofHigh);
+            G4int numBins = binHigh - binLow + 1;
+
+            mnTOFTOFDistribution.reset(
+                new TH1D("h2", "TOF hist in the energy range", numBins, tofLow, tofHigh)
+            );
+
+            // Filling the TOF histogram
+            for (G4int i = 1; i < numBins + 1; i++)
+            {
+                mnTOFTOFDistribution->SetBinContent(i, h1->GetBinContent(binLow + i - 1));
+            }
         }
         
         std::string profile_type = mConfig["generator"]["beam_profile"]["profile_type"].as<std::string>();

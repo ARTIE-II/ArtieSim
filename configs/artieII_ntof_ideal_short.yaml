@@ -70,9 +70,9 @@ generator:
     t_zero_location:        0  # m -200.0 
 
     energy_distribution:
-        distribution_type:  "uniform"      # "lanl", "ntof", "uniform"
-        distribution_file:  "data/resolution13a.root"
-        distribution_name:  "tally5"
+        distribution_type:  "ntof"      # "lanl", "ntof", "uniform"
+        distribution_file:  "data/Neutron_Gamma_Flux_1cmColli_188m.root"
+        distribution_name:  "histfluka"
 
     beam_profile:
         profile_type:   "ntof"      # "lanl", "ntof", "none"

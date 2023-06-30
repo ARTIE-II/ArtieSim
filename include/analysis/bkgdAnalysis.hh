@@ -18,7 +18,7 @@ namespace Artie
     {
         G4double n_energy = 0;
         G4double n_energy_detected = 0;
-        G4double n_energy_bkgd = 0;
+        G4double n_tof_bkgd = 0;
     };
 
     void bkgdAnalysisFunctionRunBegin();

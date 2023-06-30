@@ -79,7 +79,7 @@ namespace Artie
         TH2D* mLANLBeamProfile = {0};
         TH2D* mLANLTOF = {0};
         
-        TH1D* mnTOFEnergyDistribution = {0};
+        TH1D* mnTOFTOFDistribution = {0};
         TH2D* mnTOFBeamProfile = {0};
         TH2D* mnTOFTOF = {0};
 

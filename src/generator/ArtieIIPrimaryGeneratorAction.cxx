@@ -56,7 +56,7 @@ namespace Artie
         else if(distribution_type == "ntof")
         {
             mUsenTOFDistribution = true;
-            mnTOFEnergyDistribution = EventManager::GetEventManager()->GetnTOFEnergyDistribution();
+            mnTOFTOFDistribution = EventManager::GetEventManager()->GetnTOFTOFDistribution();
         }
         else
         {
@@ -112,20 +112,21 @@ namespace Artie
             return mLANLEnergyDistribution->GetRandom() * keV;
         }
         else if(mUsenTOFDistribution) {
-            return mnTOFEnergyDistribution->GetRandom() * keV;
+            G4double ranTOF = mnTOFTOFDistribution->GetRandom() * ns;
+            return EventManager::GetEventManager()->GetEnergyFromTOF(ranTOF) * MeV;
         }
         else {
             // Uniform in TOF
-            auto Manager = EventManager::GetEventManager();
-            G4double lenFlightPath = mDetEntrance - mTZeroLocation;
-            G4double tofLow = Manager->GetNominalTOF(mEnergyCutHigh);
-            G4double tofHigh = Manager->GetNominalTOF(mEnergyCutLow);
-            G4double n_tof = tofLow + (tofHigh - tofLow) * G4UniformRand();
-            G4double n_energy = 0.5 * NeutronMassMeV() * lenFlightPath * lenFlightPath / (SpeedOfLight() * SpeedOfLight() * n_tof * n_tof);
-            return (n_energy * MeV);
+            // auto Manager = EventManager::GetEventManager();
+            // G4double lenFlightPath = mDetEntrance - mTZeroLocation;
+            // G4double tofLow = Manager->GetNominalTOF(mEnergyCutHigh);
+            // G4double tofHigh = Manager->GetNominalTOF(mEnergyCutLow);
+            // G4double n_tof = tofLow + (tofHigh - tofLow) * G4UniformRand();
+            // G4double n_energy = 0.5 * NeutronMassMeV() * lenFlightPath * lenFlightPath / (SpeedOfLight() * SpeedOfLight() * n_tof * n_tof);
+            // return (n_energy * MeV);
 
             // Uniform in Energy
-            // return (mEnergyCutLow + (mEnergyCutHigh - mEnergyCutLow) * G4UniformRand());
+            return (mEnergyCutLow + (mEnergyCutHigh - mEnergyCutLow) * G4UniformRand());
         }
     }
 
