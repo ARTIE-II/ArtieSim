@@ -20,6 +20,23 @@ namespace Artie
     {
     }
 
+    // void NeutronHPPhysics::CreateModels()
+    // {
+    //     theNeutrons=new G4NeutronBuilder;
+    //     theNeutrons->RegisterMe(theQGSPNeutron=new G4QGSPNeutronBuilder());
+    //     // theNeutrons->RegisterMe(theLEPNeutron=new G4LEPNeutronBuilder);
+    //     // theLEPNeutron->SetMinInelasticEnergy(9.5*GeV);
+    //     // theLEPNeutron->SetMaxInelasticEnergy(25*GeV);  
+     
+    //     // theNeutrons->RegisterMe(theBertiniNeutron=new G4BertiniNeutronBuilder);
+    //     // theBertiniNeutron->SetMinEnergy(2.9*GeV);
+    //     // theBertiniNeutron->SetMaxEnergy(9.9*GeV);
+     
+    //     theNeutrons->RegisterMe(theInclAblaNeutron=new G4INCLXXNeutronBuilder);
+    //     theInclAblaNeutron->SetMinEnergy(0.0*GeV);
+    //     theInclAblaNeutron->SetMaxEnergy(3.0*GeV);
+    // }
+
     void NeutronHPPhysics::ConstructParticle()
     {
         G4Neutron::Neutron();
@@ -174,7 +191,11 @@ namespace Artie
 //         pManager->AddDiscreteProcess(process4);
 //         process4->AddDataSet(dataSet4);     
 //         process4->RegisterMe(model4);
-G4ParticleDefinition* neutron = G4Neutron::Neutron();
+
+        // CreateModels();
+        // theNeutrons->Build();
+
+        G4ParticleDefinition* neutron = G4Neutron::Neutron();
         G4ProcessManager* pManager = neutron->GetProcessManager();
         G4ProcessTable* processTable = G4ProcessTable::GetProcessTable();
 

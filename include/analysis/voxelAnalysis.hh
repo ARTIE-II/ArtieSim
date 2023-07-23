@@ -11,7 +11,7 @@
 
 namespace Artie
 {
-    struct AnalysisTuple
+    struct VoxelAnalysisTuple
     {
         G4double x_pos = 0;
         G4double y_pos = 0;
@@ -27,9 +27,9 @@ namespace Artie
         G4double z_tracking = 0;
     };
 
-    void AnalysisFunctionRunBegin();
-    void AnalysisFunctionRunEnd();
-    void AnalysisFunctionEventBegin();
-    void AnalysisFunctionEventEnd();
+    void VoxelAnalysisFunctionRunBegin();
+    void VoxelAnalysisFunctionRunEnd();
+    void VoxelAnalysisFunctionEventBegin();
+    void VoxelAnalysisFunctionEventEnd();
 
 }

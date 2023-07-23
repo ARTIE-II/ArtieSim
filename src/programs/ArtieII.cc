@@ -21,6 +21,9 @@
 #include "G4Types.hh"
 #include "G4GDMLParser.hh"
 
+// #include "QGSP_INCLXX_HP.hh"
+// #include "G4HadronPhysicsINCLXX.hh"
+
 #include "Analysis.hh"
 #include "ArtieIIActionInitialization.hh"
 #include "ArtieIIDetectorConstruction.hh"
@@ -79,7 +82,17 @@ int main(int argc, char** argv)
     RunManager->SetUserInitialization(
         new Artie::ArtieIIActionInitialization(Config.GetConfig())
     );
-    
+
+    // if(Config.GetConfig()["physics"]["register_hadron_qgsp_inclxx_hp"].as<G4bool>())
+    // {
+    //     auto physicsList = new QGSP_INCLXX_HP;
+    //     RunManager->SetUserInitialization(physicsList);
+    // }
+    // if(Config.GetConfig()["physics"]["register_hadron_inclxx"].as<G4bool>())
+    // {
+    //     auto physicsList = new G4HadronPhysicsINCLXX();
+    //     RunManager->SetUserInitialization(physicsList);
+    // }
 
     if(Config.GetConfig()["manager"]["mode"].as<std::string>() == "interactive")
     {

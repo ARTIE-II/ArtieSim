@@ -36,6 +36,12 @@
 #include "G4ParticleHPFissionData.hh"
 #include "G4ParticleHPFission.hh"
 
+#include "G4NeutronBuilder.hh"
+// #include "G4LEPNeutronBuilder.hh"
+#include "G4QGSPNeutronBuilder.hh"
+// #include "G4BertiniNeutronBuilder.hh"
+#include "G4INCLXXNeutronBuilder.hh"
+
 #include "G4ParticleDefinition.hh"
 #include "G4ProcessManager.hh"
 #include "G4ProcessTable.hh"
@@ -60,6 +66,12 @@ namespace Artie
         
     private:
         G4bool mThermal = {true};
+        // void CreateModels();
+        // G4NeutronBuilder * theNeutrons;
+        // // G4LEPNeutronBuilder * theLEPNeutron;
+        // G4QGSPNeutronBuilder * theQGSPNeutron;
+        // // G4BertiniNeutronBuilder * theBertiniNeutron;
+        // G4INCLXXNeutronBuilder * theInclAblaNeutron;
         
     };
 }

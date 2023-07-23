@@ -58,9 +58,13 @@ namespace Artie
             mUsenTOFDistribution = true;
             mnTOFTOFDistribution = EventManager::GetEventManager()->GetnTOFTOFDistribution();
         }
-        else
+        else if(distribution_type == "uniform_tof")
         {
-            mUseUniformDistribution = true;
+            mUseUniformTOFDistribution = true;
+        }
+        else if(distribution_type == "uniform_energy")
+        {
+            mUseUniformEnergyDistribution = true;
         }
         // Set up beam profile
         if(profile_type == "lanl")
@@ -115,16 +119,17 @@ namespace Artie
             G4double ranTOF = mnTOFTOFDistribution->GetRandom() * ns;
             return EventManager::GetEventManager()->GetEnergyFromTOF(ranTOF) * MeV;
         }
-        else {
+        else if(mUseUniformTOFDistribution) {
             // Uniform in TOF
-            // auto Manager = EventManager::GetEventManager();
-            // G4double lenFlightPath = mDetEntrance - mTZeroLocation;
-            // G4double tofLow = Manager->GetNominalTOF(mEnergyCutHigh);
-            // G4double tofHigh = Manager->GetNominalTOF(mEnergyCutLow);
-            // G4double n_tof = tofLow + (tofHigh - tofLow) * G4UniformRand();
-            // G4double n_energy = 0.5 * NeutronMassMeV() * lenFlightPath * lenFlightPath / (SpeedOfLight() * SpeedOfLight() * n_tof * n_tof);
-            // return (n_energy * MeV);
-
+            auto Manager = EventManager::GetEventManager();
+            G4double lenFlightPath = mDetEntrance - mTZeroLocation;
+            G4double tofLow = Manager->GetNominalTOF(mEnergyCutHigh);
+            G4double tofHigh = Manager->GetNominalTOF(mEnergyCutLow);
+            G4double n_tof = tofLow + (tofHigh - tofLow) * G4UniformRand();
+            G4double n_energy = 0.5 * NeutronMassMeV() * lenFlightPath * lenFlightPath / (SpeedOfLight() * SpeedOfLight() * n_tof * n_tof);
+            return (n_energy * MeV);
+        }
+        else if(mUseUniformEnergyDistribution) {
             // Uniform in Energy
             return (mEnergyCutLow + (mEnergyCutHigh - mEnergyCutLow) * G4UniformRand());
         }
@@ -210,6 +215,8 @@ namespace Artie
         }
         else if(mUsenTOFBeamProfile) {
             mnTOFBeamProfile->GetRandom2(x, y, mTRandom3);
+            x *= cm;
+            y *= cm;
         }
         return G4ThreeVector(x, y, t_zero_location);
     }

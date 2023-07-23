@@ -66,12 +66,15 @@ namespace Artie
         G4bool mConstructDetector = {true};
         G4String mDetectorMaterialName = {"water"};
         G4double mDetectorRadius = {2.0 * cm};
+        G4double mDetectorWidth = {20.0 * cm};
+        G4double mDetectorHeight = {20.0 * cm};
         G4double mDetectorLength = {20.0 * cm};
         G4double mDetectorEntrance = {30.0 * m};
 
-        // Detectors
+        // Detector
         G4Material* mDetectorMaterial;
-        G4Tubs *mSolidDetector;
+        G4Tubs *mSolidDetectorDisk;
+        G4Box* mSolidDetectorCube;
         G4LogicalVolume* mLogicalDetector;
         G4VPhysicalVolume* mPhysicalDetector;
 

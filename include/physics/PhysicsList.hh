@@ -18,6 +18,8 @@
 #include "G4IonPhysics.hh"
 #include "G4HadronElasticPhysicsHP.hh"
 #include "G4HadronPhysicsQGSP_BERT_HP.hh"
+// #include "HadronPhysicsQGSP_INCLXX.hh"
+// #include "G4HadronPhysicsINCLXX.hh"
 
 #include "G4ParticleHPThermalScattering.hh"
 #include "G4ParticleHPElasticData.hh"

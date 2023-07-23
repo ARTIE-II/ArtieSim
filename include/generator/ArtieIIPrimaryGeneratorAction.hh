@@ -64,7 +64,8 @@ namespace Artie
 
         G4bool mUseLANLDistribution = { false };
         G4bool mUsenTOFDistribution = { false };
-        G4bool mUseUniformDistribution = { false };
+        G4bool mUseUniformTOFDistribution = { false };
+        G4bool mUseUniformEnergyDistribution = { false };
 
         G4bool mUseLANLBeamProfile = { false };
         G4bool mUsenTOFBeamProfile = { false };

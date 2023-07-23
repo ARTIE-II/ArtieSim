@@ -71,6 +71,11 @@ namespace Artie
                 RegisterPhysics(new G4HadronPhysicsQGSP_BERT_HP());
             }
         }
+        // if(mConfig["physics"]["register_hadron_inclxx"]) {
+        //     if(mConfig["physics"]["register_hadron_inclxx"].as<G4bool>()) {
+        //         RegisterPhysics(new G4HadronPhysicsINCLXX());
+        //     }
+        // }
         if(mConfig["physics"]["register_step_limiter"]) {
             if(mConfig["physics"]["register_step_limiter"].as<G4bool>()) {
                 RegisterPhysics(new G4StepLimiterPhysics());

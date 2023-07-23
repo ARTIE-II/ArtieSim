@@ -10,9 +10,9 @@
 
 namespace Artie
 {
-    AnalysisTuple MyTuple;
+    VoxelAnalysisTuple voxelTuple;
 
-    void AnalysisFunctionRunBegin()
+    void VoxelAnalysisFunctionRunBegin()
     {
         auto AnalysisManager = G4AnalysisManager::Instance();
         auto Manager = EventManager::GetEventManager();
@@ -32,15 +32,15 @@ namespace Artie
         AnalysisManager->CreateNtupleDColumn("z_tracking");
         AnalysisManager->FinishNtuple(index);
     }
-    void AnalysisFunctionRunEnd()
+    void VoxelAnalysisFunctionRunEnd()
     {
         auto AnalysisManager = G4AnalysisManager::Instance();
     }
-    void AnalysisFunctionEventBegin()
+    void VoxelAnalysisFunctionEventBegin()
     {
         auto AnalysisManager = G4AnalysisManager::Instance();        
     }
-    void AnalysisFunctionEventEnd()
+    void VoxelAnalysisFunctionEventEnd()
     {
         auto AnalysisManager = G4AnalysisManager::Instance();
         auto Manager = EventManager::GetEventManager();
@@ -115,31 +115,31 @@ namespace Artie
                     CurrentVoxel[1] = V_i[1];
                     CurrentVoxel[2] = V_i[2];
 
-                    MyTuple.x_pos = x_i;//current_x;
-                    MyTuple.y_pos = y_i;//current_y;
-                    MyTuple.z_pos = z_i;//current_z;
-                    MyTuple.n_energy = trajectory.E[0];
-                    MyTuple.N_x = CurrentVoxel[0];
-                    MyTuple.N_y = CurrentVoxel[1];
-                    MyTuple.N_z = CurrentVoxel[2];
-                    MyTuple.n_tof = global_time;
-                    MyTuple.n_track_id = track_id;
-                    MyTuple.x_tracking = x_i;
-                    MyTuple.y_tracking = y_i;
-                    MyTuple.z_tracking = z_i;
+                    voxelTuple.x_pos = x_i;//current_x;
+                    voxelTuple.y_pos = y_i;//current_y;
+                    voxelTuple.z_pos = z_i;//current_z;
+                    voxelTuple.n_energy = trajectory.E[0];
+                    voxelTuple.N_x = CurrentVoxel[0];
+                    voxelTuple.N_y = CurrentVoxel[1];
+                    voxelTuple.N_z = CurrentVoxel[2];
+                    voxelTuple.n_tof = global_time;
+                    voxelTuple.n_track_id = track_id;
+                    voxelTuple.x_tracking = x_i;
+                    voxelTuple.y_tracking = y_i;
+                    voxelTuple.z_tracking = z_i;
 
-                    AnalysisManager->FillNtupleDColumn(index, 0, MyTuple.x_pos);
-                    AnalysisManager->FillNtupleDColumn(index, 1, MyTuple.y_pos);
-                    AnalysisManager->FillNtupleDColumn(index, 2, MyTuple.z_pos);
-                    AnalysisManager->FillNtupleDColumn(index, 3, MyTuple.n_energy);
-                    AnalysisManager->FillNtupleIColumn(index, 4, MyTuple.N_x);
-                    AnalysisManager->FillNtupleIColumn(index, 5, MyTuple.N_y);
-                    AnalysisManager->FillNtupleIColumn(index, 6, MyTuple.N_z);
-                    AnalysisManager->FillNtupleDColumn(index, 7, MyTuple.n_tof);
-                    AnalysisManager->FillNtupleIColumn(index, 8, MyTuple.n_track_id);
-                    AnalysisManager->FillNtupleDColumn(index, 9, MyTuple.x_tracking);
-                    AnalysisManager->FillNtupleDColumn(index, 10, MyTuple.y_tracking);
-                    AnalysisManager->FillNtupleDColumn(index, 11, MyTuple.z_tracking);
+                    AnalysisManager->FillNtupleDColumn(index, 0, voxelTuple.x_pos);
+                    AnalysisManager->FillNtupleDColumn(index, 1, voxelTuple.y_pos);
+                    AnalysisManager->FillNtupleDColumn(index, 2, voxelTuple.z_pos);
+                    AnalysisManager->FillNtupleDColumn(index, 3, voxelTuple.n_energy);
+                    AnalysisManager->FillNtupleIColumn(index, 4, voxelTuple.N_x);
+                    AnalysisManager->FillNtupleIColumn(index, 5, voxelTuple.N_y);
+                    AnalysisManager->FillNtupleIColumn(index, 6, voxelTuple.N_z);
+                    AnalysisManager->FillNtupleDColumn(index, 7, voxelTuple.n_tof);
+                    AnalysisManager->FillNtupleIColumn(index, 8, voxelTuple.n_track_id);
+                    AnalysisManager->FillNtupleDColumn(index, 9, voxelTuple.x_tracking);
+                    AnalysisManager->FillNtupleDColumn(index, 10, voxelTuple.y_tracking);
+                    AnalysisManager->FillNtupleDColumn(index, 11, voxelTuple.z_tracking);
                     AnalysisManager->AddNtupleRow(index);
                 }
                 
@@ -230,31 +230,31 @@ namespace Artie
                     G4cout << "[ " << d_travel << " ]" << "Updated Curent Voxel = ( " << CurrentVoxel[0] << ", " << CurrentVoxel[1] << ", " << CurrentVoxel[2] << " )" << G4endl;
 
                     // Filling the tuple
-                    MyTuple.x_pos = x_i;//current_x;
-                    MyTuple.y_pos = y_i;//urrent_y;
-                    MyTuple.z_pos = z_i;//current_z;
-                    MyTuple.n_energy = trajectory.E[0];
-                    MyTuple.N_x = CurrentVoxel[0];
-                    MyTuple.N_y = CurrentVoxel[1];
-                    MyTuple.N_z = CurrentVoxel[2];
-                    MyTuple.n_tof = global_time;
-                    MyTuple.n_track_id = track_id;
-                    MyTuple.x_tracking = current_x;
-                    MyTuple.y_tracking = current_y;
-                    MyTuple.z_tracking = current_z;
+                    voxelTuple.x_pos = x_i;//current_x;
+                    voxelTuple.y_pos = y_i;//urrent_y;
+                    voxelTuple.z_pos = z_i;//current_z;
+                    voxelTuple.n_energy = trajectory.E[0];
+                    voxelTuple.N_x = CurrentVoxel[0];
+                    voxelTuple.N_y = CurrentVoxel[1];
+                    voxelTuple.N_z = CurrentVoxel[2];
+                    voxelTuple.n_tof = global_time;
+                    voxelTuple.n_track_id = track_id;
+                    voxelTuple.x_tracking = current_x;
+                    voxelTuple.y_tracking = current_y;
+                    voxelTuple.z_tracking = current_z;
 
-                    AnalysisManager->FillNtupleDColumn(index, 0, MyTuple.x_pos);
-                    AnalysisManager->FillNtupleDColumn(index, 1, MyTuple.y_pos);
-                    AnalysisManager->FillNtupleDColumn(index, 2, MyTuple.z_pos);
-                    AnalysisManager->FillNtupleDColumn(index, 3, MyTuple.n_energy);
-                    AnalysisManager->FillNtupleIColumn(index, 4, MyTuple.N_x);
-                    AnalysisManager->FillNtupleIColumn(index, 5, MyTuple.N_y);
-                    AnalysisManager->FillNtupleIColumn(index, 6, MyTuple.N_z);
-                    AnalysisManager->FillNtupleDColumn(index, 7, MyTuple.n_tof);
-                    AnalysisManager->FillNtupleIColumn(index, 8, MyTuple.n_track_id);
-                    AnalysisManager->FillNtupleDColumn(index, 9, MyTuple.x_tracking);
-                    AnalysisManager->FillNtupleDColumn(index, 10, MyTuple.y_tracking);
-                    AnalysisManager->FillNtupleDColumn(index, 11, MyTuple.z_tracking);
+                    AnalysisManager->FillNtupleDColumn(index, 0, voxelTuple.x_pos);
+                    AnalysisManager->FillNtupleDColumn(index, 1, voxelTuple.y_pos);
+                    AnalysisManager->FillNtupleDColumn(index, 2, voxelTuple.z_pos);
+                    AnalysisManager->FillNtupleDColumn(index, 3, voxelTuple.n_energy);
+                    AnalysisManager->FillNtupleIColumn(index, 4, voxelTuple.N_x);
+                    AnalysisManager->FillNtupleIColumn(index, 5, voxelTuple.N_y);
+                    AnalysisManager->FillNtupleIColumn(index, 6, voxelTuple.N_z);
+                    AnalysisManager->FillNtupleDColumn(index, 7, voxelTuple.n_tof);
+                    AnalysisManager->FillNtupleIColumn(index, 8, voxelTuple.n_track_id);
+                    AnalysisManager->FillNtupleDColumn(index, 9, voxelTuple.x_tracking);
+                    AnalysisManager->FillNtupleDColumn(index, 10, voxelTuple.y_tracking);
+                    AnalysisManager->FillNtupleDColumn(index, 11, voxelTuple.z_tracking);
                     AnalysisManager->AddNtupleRow(index);
                 }
 
@@ -262,31 +262,31 @@ namespace Artie
                 if (i == trajectory.size()-2)
                 {
                     
-                    MyTuple.x_pos = x_f;
-                    MyTuple.y_pos = y_f;
-                    MyTuple.z_pos = z_f;
-                    MyTuple.n_energy = trajectory.E[0];
-                    MyTuple.N_x = V_f[0];
-                    MyTuple.N_y = V_f[1];
-                    MyTuple.N_z = V_f[2];
-                    MyTuple.n_tof = global_time;
-                    MyTuple.n_track_id = track_id;
-                    MyTuple.x_tracking = x_f;
-                    MyTuple.y_tracking = y_f;
-                    MyTuple.z_tracking = z_f;
+                    voxelTuple.x_pos = x_f;
+                    voxelTuple.y_pos = y_f;
+                    voxelTuple.z_pos = z_f;
+                    voxelTuple.n_energy = trajectory.E[0];
+                    voxelTuple.N_x = V_f[0];
+                    voxelTuple.N_y = V_f[1];
+                    voxelTuple.N_z = V_f[2];
+                    voxelTuple.n_tof = global_time;
+                    voxelTuple.n_track_id = track_id;
+                    voxelTuple.x_tracking = x_f;
+                    voxelTuple.y_tracking = y_f;
+                    voxelTuple.z_tracking = z_f;
 
-                    AnalysisManager->FillNtupleDColumn(index, 0, MyTuple.x_pos);
-                    AnalysisManager->FillNtupleDColumn(index, 1, MyTuple.y_pos);
-                    AnalysisManager->FillNtupleDColumn(index, 2, MyTuple.z_pos);
-                    AnalysisManager->FillNtupleDColumn(index, 3, MyTuple.n_energy);
-                    AnalysisManager->FillNtupleIColumn(index, 4, MyTuple.N_x);
-                    AnalysisManager->FillNtupleIColumn(index, 5, MyTuple.N_y);
-                    AnalysisManager->FillNtupleIColumn(index, 6, MyTuple.N_z);
-                    AnalysisManager->FillNtupleDColumn(index, 7, MyTuple.n_tof);
-                    AnalysisManager->FillNtupleIColumn(index, 8, MyTuple.n_track_id);
-                    AnalysisManager->FillNtupleDColumn(index, 9, MyTuple.x_tracking);
-                    AnalysisManager->FillNtupleDColumn(index, 10, MyTuple.y_tracking);
-                    AnalysisManager->FillNtupleDColumn(index, 11, MyTuple.z_tracking);
+                    AnalysisManager->FillNtupleDColumn(index, 0, voxelTuple.x_pos);
+                    AnalysisManager->FillNtupleDColumn(index, 1, voxelTuple.y_pos);
+                    AnalysisManager->FillNtupleDColumn(index, 2, voxelTuple.z_pos);
+                    AnalysisManager->FillNtupleDColumn(index, 3, voxelTuple.n_energy);
+                    AnalysisManager->FillNtupleIColumn(index, 4, voxelTuple.N_x);
+                    AnalysisManager->FillNtupleIColumn(index, 5, voxelTuple.N_y);
+                    AnalysisManager->FillNtupleIColumn(index, 6, voxelTuple.N_z);
+                    AnalysisManager->FillNtupleDColumn(index, 7, voxelTuple.n_tof);
+                    AnalysisManager->FillNtupleIColumn(index, 8, voxelTuple.n_track_id);
+                    AnalysisManager->FillNtupleDColumn(index, 9, voxelTuple.x_tracking);
+                    AnalysisManager->FillNtupleDColumn(index, 10, voxelTuple.y_tracking);
+                    AnalysisManager->FillNtupleDColumn(index, 11, voxelTuple.z_tracking);
                     AnalysisManager->AddNtupleRow(index);
                 }
                 // G4cout << "Curent Voxel after step loop = ( " << CurrentVoxel[0] << ", " << CurrentVoxel[1] << ", " << CurrentVoxel[2] << " )" << G4endl;             
