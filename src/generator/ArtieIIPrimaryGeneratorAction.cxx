@@ -30,9 +30,6 @@ namespace Artie
     : G4VUserPrimaryGeneratorAction()
     , mConfig(config)
     {
-        if(mConfig["detector"]["detector_entrance"]) {
-            mDetEntrance = mConfig["detector"]["detector_entrance"].as<G4double>() * m;
-        }        
         if(mConfig["generator"]["t_zero_location"])  { 
             mTZeroLocation = mConfig["generator"]["t_zero_location"].as<G4double>() * m; 
         }
@@ -56,15 +53,12 @@ namespace Artie
         else if(distribution_type == "ntof")
         {
             mUsenTOFDistribution = true;
-            mnTOFTOFDistribution = EventManager::GetEventManager()->GetnTOFTOFDistribution();
+            //mnTOFEnergyDistribution = EventManager::GetEventManager()->GetnTOFEnergyDistribution();
+            mnTOFEnergyDistribution = EventManager::GetEventManager()->GetLANLEnergyDistribution();
         }
-        else if(distribution_type == "uniform_tof")
+        else
         {
-            mUseUniformTOFDistribution = true;
-        }
-        else if(distribution_type == "uniform_energy")
-        {
-            mUseUniformEnergyDistribution = true;
+            mUseUniformDistribution = true;
         }
         // Set up beam profile
         if(profile_type == "lanl")
@@ -86,7 +80,7 @@ namespace Artie
         }
         else if(profile_type == "ntof")
         {
-            mUsenTOFBeamProfile = true;
+            mUsenTOFDistribution = true;
             mnTOFBeamProfile = EventManager::GetEventManager()->GetnTOFBeamProfile();
         }
         // Set up TOF
@@ -113,24 +107,26 @@ namespace Artie
     {
 
         if(mUseLANLDistribution) {
-            return mLANLEnergyDistribution->GetRandom() * keV;
+            G4double result = mLANLEnergyDistribution->GetRandom();
+            //int i = 0;
+            while (result < 150) {
+                result = mLANLEnergyDistribution->GetRandom();
+                //std::cout<<"i: "<<i<<" result: "<<result<<std::endl;
+                //i++;
+            }
+            return result * keV;
         }
         else if(mUsenTOFDistribution) {
-            G4double ranTOF = mnTOFTOFDistribution->GetRandom() * ns;
-            return EventManager::GetEventManager()->GetEnergyFromTOF(ranTOF) * MeV;
+            return mnTOFEnergyDistribution->GetRandom() * keV;
         }
-        else if(mUseUniformTOFDistribution) {
-            // Uniform in TOF
-            auto Manager = EventManager::GetEventManager();
-            G4double lenFlightPath = mDetEntrance - mTZeroLocation;
-            G4double tofLow = Manager->GetNominalTOF(mEnergyCutHigh);
-            G4double tofHigh = Manager->GetNominalTOF(mEnergyCutLow);
-            G4double n_tof = tofLow + (tofHigh - tofLow) * G4UniformRand();
-            G4double n_energy = 0.5 * NeutronMassMeV() * lenFlightPath * lenFlightPath / (SpeedOfLight() * SpeedOfLight() * n_tof * n_tof);
-            return (n_energy * MeV);
-        }
-        else if(mUseUniformEnergyDistribution) {
-            // Uniform in Energy
+        else {
+            /*double base = 10;
+            double minValue = mEnergyCutLow;
+            double maxValue = mEnergyCutHigh;
+            double logMin = std::log(minValue) / std::log(base);
+            double logMax = std::log(maxValue) / std::log(base);
+            double logValue = logMin + (G4UniformRand() * (logMax - logMin));
+            return std::pow(base, logValue); */
             return (mEnergyCutLow + (mEnergyCutHigh - mEnergyCutLow) * G4UniformRand());
         }
     }
@@ -175,7 +171,6 @@ namespace Artie
         {
             Double_t nominalTOF = EventManager::GetEventManager()->GetNominalTOF(beam_energy);
             Double_t nominalVelocity = EventManager::GetEventManager()->GetNominalVelocity(beam_energy);
-            mnTOFTOF = EventManager::GetEventManager()->GetnTOFTOF();
             Int_t energy_bin = mnTOFTOF->GetXaxis()->FindBin(beam_energy * MeV);
             TH1D* TOF = EventManager::GetEventManager()->GetnTOFTOFProjection(energy_bin);
             Double_t lambda = TOF->GetRandom() * cm;   
@@ -215,8 +210,6 @@ namespace Artie
         }
         else if(mUsenTOFBeamProfile) {
             mnTOFBeamProfile->GetRandom2(x, y, mTRandom3);
-            x *= cm;
-            y *= cm;
         }
         return G4ThreeVector(x, y, t_zero_location);
     }
@@ -230,6 +223,7 @@ namespace Artie
 
     void ArtieIIPrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
     {
+        std::cout<<"event id: "<<event->GetEventID()<<std::endl;
         mParticleGun->SetNumberOfParticles(1);
         G4double BeamEnergy = SampleBeamEnergy();
         G4double deltaTOF = SampleTOF(BeamEnergy);
