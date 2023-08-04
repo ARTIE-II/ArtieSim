@@ -31,5 +31,4 @@ namespace Artie
     void AnalysisFunctionRunEnd();
     void AnalysisFunctionEventBegin();
     void AnalysisFunctionEventEnd();
-
 }

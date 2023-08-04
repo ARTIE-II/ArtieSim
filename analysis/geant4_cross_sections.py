@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import csv
 
-geant4_elastic_file = "ArIsotopes_elastic.csv"
+geant4_elastic_file = "physics/Ar_elastic.csv"
 geant4_elastic_energy = []
 geant4_elastic_xsec = []
 with open(geant4_elastic_file, "r") as file:
